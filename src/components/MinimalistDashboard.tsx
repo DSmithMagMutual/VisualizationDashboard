@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { ArrowUp } from 'lucide-react';
-import JiraClient from '../lib/jira';
-import { jiraConfig } from '../config/jira';
 import { transformSprintData, transformFeatureStatus, transformTeamMetrics } from '../lib/jira';
 import axios from 'axios';
 
@@ -90,18 +88,12 @@ const MinimalistDashboard = () => {
           hasToken: !!process.env.NEXT_PUBLIC_JIRA_API_TOKEN
         });
 
-        // Initialize Jira client
-        const jiraClient = new JiraClient({
-          baseUrl: process.env.NEXT_PUBLIC_JIRA_BASE_URL || '',
-          email: process.env.NEXT_PUBLIC_JIRA_EMAIL || '',
-          apiToken: process.env.NEXT_PUBLIC_JIRA_API_TOKEN || ''
-        });
-
         // First, test the connection with a simple endpoint
         console.log('Testing connection...');
         try {
-          const testResponse = await jiraClient.getProjects();
-          console.log('Connection successful! Available projects:', testResponse);
+          // Fetch from the new API route instead of calling JiraClient directly
+          const testResponse = await axios.get('/api/jira-projects');
+          console.log('Connection successful! Available projects:', testResponse.data);
         } catch (error) {
           console.error('Connection test failed:', error);
           if (axios.isAxiosError(error)) {
@@ -112,41 +104,42 @@ const MinimalistDashboard = () => {
 
         // If connection test passes, proceed with fetching data
         console.log('Fetching active sprint...');
-        const sprintResponse = await jiraClient.getActiveSprint(Number(process.env.NEXT_PUBLIC_JIRA_BOARD_ID));
-        console.log('Sprint response:', sprintResponse);
+        const sprintResponse = await axios.get('/api/jira-active-sprint');
+        console.log('Sprint response:', sprintResponse.data);
         
-        if (!sprintResponse.values || sprintResponse.values.length === 0) {
+        if (!sprintResponse.data || sprintResponse.data.values.length === 0) {
           throw new Error('No active sprint found');
         }
 
-        const activeSprint = sprintResponse.values[0];
+        const activeSprint = sprintResponse.data.values[0];
         console.log('Active sprint:', activeSprint);
 
         // Fetch sprint issues
         console.log('Fetching sprint issues...');
-        const sprintIssues = await jiraClient.getSprintIssues(activeSprint.id);
-        console.log('Sprint issues:', sprintIssues);
+        const sprintIssues = await axios.get('/api/jira-sprint-issues', { params: { sprintId: activeSprint.id } });
+        console.log('Sprint issues:', sprintIssues.data);
 
         // Fetch team members
         console.log('Fetching team members...');
-        const teamMembers = await jiraClient.getTeamMembers(process.env.NEXT_PUBLIC_JIRA_PROJECT_KEY || '') as TeamMember[];
+        const teamMembersResponse = await axios.get('/api/jira-team-members', { params: { projectKey: process.env.NEXT_PUBLIC_JIRA_PROJECT_KEY } });
+        const teamMembers = teamMembersResponse.data as TeamMember[];
         console.log('Team Members:', teamMembers);
 
         // Transform data
-        const sprintProgress = transformSprintData(sprintIssues);
-        const featureStatus = transformFeatureStatus(sprintIssues.issues);
-        const teamMetrics = transformTeamMetrics(sprintIssues.issues, teamMembers);
+        const sprintProgress = transformSprintData(sprintIssues.data);
+        const featureStatus = transformFeatureStatus(sprintIssues.data.issues);
+        const teamMetrics = transformTeamMetrics(sprintIssues.data.issues, teamMembers);
 
         // Calculate performance trend (last 6 sprints)
-        const performanceTrend = await calculatePerformanceTrend(jiraClient);
+        const performanceTrend = await calculatePerformanceTrend();
 
         setDashboardData({
           sprintProgress,
           featureStatus,
           teamMetrics,
           performanceTrend,
-          metricStatus: calculateMetricStatus(sprintIssues.issues),
-          actionItems: calculateActionItems(sprintIssues.issues)
+          metricStatus: calculateMetricStatus(sprintIssues.data.issues),
+          actionItems: calculateActionItems(sprintIssues.data.issues)
         });
 
         setLoading(false);
@@ -161,7 +154,7 @@ const MinimalistDashboard = () => {
   }, []);
 
   // Helper functions for data transformation
-  const calculatePerformanceTrend = async (jira: JiraClient) => {
+  const calculatePerformanceTrend = async () => {
     // Implementation for fetching historical sprint data
     // This is a placeholder - you'll need to implement the actual logic
     return [
