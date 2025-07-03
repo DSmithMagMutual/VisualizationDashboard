@@ -1,2 +1,77 @@
+# Environment variables and API keys
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env
+.env.*
+
+# API credentials and configuration
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cert
+api-keys.json
+credentials.json
+secrets.json
+config.json
+jira-config.json
+auth-tokens.json
+
+# API logs and debugging
+api-logs/
+*.log
+debug.log
+error.log
+
+# API cache and temporary files
+.cache/
+tmp/
+temp/
+*.tmp
+*.temp
+
+# API documentation (if contains sensitive examples)
+api-docs/
+swagger/
+openapi/
+
+# API testing files that might contain credentials
+test-credentials/
+test-data/
+fixtures/credentials/
+
+# Node modules and build artifacts
 /node_modules
+/.next
+/.next
+/.next/cache
+/.next/cache/webpack/client-development
+*.gz
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Test artifacts
+test-results/
+junit.xml
+*.gz
