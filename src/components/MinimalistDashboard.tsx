@@ -5,6 +5,7 @@ import JiraClient from '../lib/jira';
 import { jiraConfig } from '../config/jira';
 import { transformSprintData, transformFeatureStatus, transformTeamMetrics } from '../lib/jira';
 import axios from 'axios';
+import Link from 'next/link';
 
 interface DashboardData {
   sprintProgress: {
@@ -133,6 +134,33 @@ const MetricCard = ({ title, current, target, trend, status, isDummyData = false
   );
 };
 
+const getTargets = () => {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('dashboard_targets');
+    if (stored) return JSON.parse(stored);
+  }
+  return {
+    sprintProgress: 10,
+    featureStatus: 10,
+    teamUtilization: 80,
+    codeQuality: 90,
+    techDebt: 90,
+    crossTeam: 85,
+    codeReview: 85,
+  };
+};
+
+const SurveyCell = ({ activeCount }) => (
+  <div className="bg-white rounded-lg shadow-md p-4 mb-4 flex flex-col justify-between">
+    <div>
+      <h3 className="text-lg font-semibold mb-2">Surveys & Feedback</h3>
+      <p className="text-slate-700 mb-2">Active Surveys: <span className="font-bold">{activeCount}</span></p>
+      <p className="text-slate-500 text-sm mb-4">Collect feedback from your team and stakeholders to improve project outcomes.</p>
+    </div>
+    <Link href="/surveys" className="inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 text-sm font-medium text-center">Go to Surveys</Link>
+  </div>
+);
+
 const MinimalistDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
@@ -145,6 +173,9 @@ const MinimalistDashboard = () => {
     metricStatus: [],
     actionItems: []
   });
+  const [targets, setTargets] = useState(getTargets());
+  const [surveyCount, setSurveyCount] = useState(0);
+  const [activeSurveyCount, setActiveSurveyCount] = useState(0);
 
   useEffect(() => {
     const fetchJiraData = async () => {
@@ -220,7 +251,18 @@ const MinimalistDashboard = () => {
           actionItems: calculateActionItems(sprintIssues.issues)
         });
 
+        setTargets(getTargets());
         setLoading(false);
+
+        // Survey summary
+        if (typeof window !== 'undefined') {
+          const stored = localStorage.getItem('dashboard_surveys');
+          if (stored) {
+            const surveys = JSON.parse(stored);
+            setSurveyCount(surveys.length);
+            setActiveSurveyCount(surveys.filter(s => s.status === 'active').length);
+          }
+        }
       } catch (error) {
         console.error('Error fetching Jira data:', error);
         setError(error instanceof Error ? error.message : 'Failed to fetch Jira data');
@@ -302,6 +344,7 @@ const MinimalistDashboard = () => {
               <p className="text-sm text-slate-500 mt-1">Updated: {new Date().toLocaleDateString()}</p>
             </div>
             <div className="flex items-center gap-3">
+              <a href="/configure-targets" className="text-indigo-600 hover:underline text-sm font-medium">Configure Targets</a>
               <div className="flex items-center gap-2 bg-slate-100 p-2 rounded-lg">
                 <div className="font-medium text-slate-700">Overall Score</div>
                 <div className="flex items-center gap-1">
@@ -354,11 +397,13 @@ const MinimalistDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Survey Cell */}
+            <SurveyCell activeCount={activeSurveyCount} />
             {/* Real Jira Data Widgets */}
             <MetricCard 
               title="Sprint Progress" 
               current={dashboardData.sprintProgress.completed}
-              target={dashboardData.sprintProgress.completed + dashboardData.sprintProgress.inProgress}
+              target={targets.sprintProgress}
               trend="up"
               status="green"
             >
@@ -393,7 +438,7 @@ const MinimalistDashboard = () => {
             <MetricCard 
               title="Feature Status" 
               current={dashboardData.featureStatus.completed}
-              target={dashboardData.featureStatus.completed + dashboardData.featureStatus.inProgress}
+              target={targets.featureStatus}
               trend="up"
               status="green"
             >
@@ -416,7 +461,7 @@ const MinimalistDashboard = () => {
             <MetricCard 
               title="Code Quality Score" 
               current={85}
-              target={90}
+              target={targets.codeQuality}
               trend="up"
               status="yellow"
               isDummyData={true}
@@ -440,7 +485,7 @@ const MinimalistDashboard = () => {
             <MetricCard 
               title="Tech Debt Resolution" 
               current={75}
-              target={90}
+              target={targets.techDebt}
               trend="up"
               status="yellow"
               isDummyData={true}
@@ -471,7 +516,7 @@ const MinimalistDashboard = () => {
             <MetricCard 
               title="Team Utilization" 
               current={Math.round(dashboardData.teamMetrics.reduce((acc, curr) => acc + curr.value, 0) / dashboardData.teamMetrics.length)}
-              target={80}
+              target={targets.teamUtilization}
               trend="up"
               status="green"
             >
@@ -490,7 +535,7 @@ const MinimalistDashboard = () => {
             <MetricCard 
               title="Cross-Team Collaboration" 
               current={82}
-              target={85}
+              target={targets.crossTeam}
               trend="up"
               status="yellow"
               isDummyData={true}
@@ -521,7 +566,7 @@ const MinimalistDashboard = () => {
             <MetricCard 
               title="Sprint Velocity" 
               current={dashboardData.sprintProgress.completed}
-              target={dashboardData.sprintProgress.completed + dashboardData.sprintProgress.inProgress}
+              target={targets.sprintProgress}
               trend="up"
               status="green"
             >
@@ -540,7 +585,7 @@ const MinimalistDashboard = () => {
             <MetricCard 
               title="Code Review Efficiency" 
               current={78}
-              target={85}
+              target={targets.codeReview}
               trend="up"
               status="yellow"
               isDummyData={true}
