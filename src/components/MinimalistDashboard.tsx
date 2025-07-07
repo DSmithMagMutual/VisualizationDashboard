@@ -1,11 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, Legend, LineChart, Line } from 'recharts';
-import { ArrowUp, ArrowDown, Activity, Code, Users, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowUp, ArrowDown, Activity, Code, Users, Filter, ChevronDown, ChevronUp, AlertCircle, RefreshCw } from 'lucide-react';
 import JiraClient from '../lib/jira';
 import { jiraConfig } from '../config/jira';
 import { transformSprintData, transformFeatureStatus, transformTeamMetrics } from '../lib/jira';
 import axios from 'axios';
-import Link from 'next/link';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Chip,
+  Divider,
+  IconButton,
+  CircularProgress,
+  Tooltip as MuiTooltip,
+  Paper,
+  Tabs,
+  Tab,
+  Stack,
+} from '@mui/material';
+import Grid from '@mui/material/Grid';
 
 interface DashboardData {
   sprintProgress: {
@@ -38,6 +54,11 @@ interface DashboardData {
   }>;
 }
 
+interface WidgetError {
+  message: string;
+  retry?: () => void;
+}
+
 interface SprintData {
   values: Array<{
     id: number;
@@ -64,73 +85,216 @@ interface TeamMember {
   emailAddress: string;
 }
 
-// Metric Card Component
-const MetricCard = ({ title, current, target, trend, status, isDummyData = false, children }) => {
-  const [expanded, setExpanded] = useState(false);
-  
-  const statusColors = {
-    green: 'bg-green-500',
-    yellow: 'bg-yellow-500',
-    red: 'bg-red-500'
-  };
-  
-  const getStatusIcon = () => {
-    if (trend === 'up') {
-      return <ArrowUp className="text-green-500" size={20} />;
-    } else {
-      return <ArrowDown className="text-red-500" size={20} />;
-    }
-  };
-  
+const ErrorWidget = ({ title, error, onRetry }: { title: string; error: WidgetError; onRetry?: () => void }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-      <div className="flex justify-between items-center mb-2">
-        <div>
-          <h3 className="text-lg font-semibold">{title}</h3>
-          {isDummyData && (
-            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Demo Data</span>
+    <Card sx={{ mb: 1.5, maxWidth: 420, mx: 'auto', borderLeft: '4px solid #f44336', bgcolor: '#fff', boxShadow: 1 }}>
+      <CardContent sx={{ p: 2 }}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.5}>
+          <Box display="flex" alignItems="center" gap={1}>
+            <AlertCircle color="#f44336" size={18} />
+            <Typography variant="subtitle1" color="error" fontWeight={600}>{title}</Typography>
+          </Box>
+          {onRetry && (
+            <Button onClick={onRetry} size="small" startIcon={<RefreshCw size={14} />} color="primary" variant="outlined">
+              Retry
+            </Button>
           )}
-        </div>
-        <div className={`w-3 h-3 rounded-full ${statusColors[status]}`}></div>
-      </div>
-      
-      <div className="flex justify-between items-end mb-4">
-        <div>
-          <p className="text-sm text-gray-500">Current</p>
-          <p className="text-3xl font-bold">{current}</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-500">Target</p>
-          <p className="text-xl font-semibold">{target}</p>
-        </div>
-        <div className="flex items-center">
-          {getStatusIcon()}
-        </div>
-      </div>
-      
-      <div 
-        className="cursor-pointer text-blue-500 flex items-center text-sm"
-        onClick={() => setExpanded(!expanded)}
-      >
-        {expanded ? (
-          <>
-            <span>Hide details</span>
-            <ChevronUp size={16} />
-          </>
-        ) : (
-          <>
-            <span>Show details</span>
-            <ChevronDown size={16} />
-          </>
-        )}
-      </div>
-      
-      {expanded && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          {children}
-        </div>
-      )}
-    </div>
+        </Box>
+        <Typography variant="body2" color="text.secondary" mb={0.5} fontSize={13}>{error.message}</Typography>
+        <Paper variant="outlined" sx={{ p: 1, bgcolor: '#fafafa' }}>
+          <Typography variant="caption" color="text.secondary" fontSize={12}>
+            This widget is temporarily unavailable. Other widgets should continue to function normally.
+          </Typography>
+        </Paper>
+      </CardContent>
+    </Card>
+  );
+};
+
+const LoadingWidget = ({ title }: { title: string }) => {
+  return (
+    <Card sx={{ mb: 2, maxWidth: 420, mx: 'auto' }}>
+      <CardContent>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+          <Typography variant="h6">{title}</Typography>
+          <CircularProgress size={20} />
+        </Box>
+        <Box height={24} mb={1} bgcolor="#eee" borderRadius={1} />
+        <Box height={24} width="75%" bgcolor="#eee" borderRadius={1} />
+      </CardContent>
+    </Card>
+  );
+};
+
+const MetricCard = ({ title, current, target, trend, status, isDummyData = false, children }: {
+  title: string;
+  current: number;
+  target: number;
+  trend: 'up' | 'down';
+  status: 'green' | 'yellow' | 'red';
+  isDummyData?: boolean;
+  children: React.ReactNode;
+}) => {
+  const [expanded, setExpanded] = useState(false);
+  const statusColors: Record<string, string> = {
+    green: '#4caf50',
+    yellow: '#ffb300',
+    red: '#f44336',
+  };
+  const getStatusIcon = () => (
+    trend === 'up' ? <ArrowUp color="#4caf50" size={20} /> : <ArrowDown color="#f44336" size={20} />
+  );
+  return (
+    <Card sx={{ mb: 2, maxWidth: 420, mx: 'auto' }}>
+      <CardContent>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Box>
+            <Typography variant="h6">{title}</Typography>
+            {isDummyData && <Chip label="Demo Data" size="small" sx={{ mt: 0.5 }} />}
+          </Box>
+          <Box width={16} height={16} borderRadius={8} bgcolor={statusColors[status]} />
+        </Box>
+        <Box display="flex" justifyContent="space-between" alignItems="flex-end" mb={2}>
+          <Box>
+            <Typography variant="caption" color="text.secondary">Current</Typography>
+            <Typography variant="h4">{current}</Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">Target</Typography>
+            <Typography variant="h6">{target}</Typography>
+          </Box>
+          <Box display="flex" alignItems="center">{getStatusIcon()}</Box>
+        </Box>
+        <Button size="small" color="primary" onClick={() => setExpanded(e => !e)} endIcon={expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />} sx={{ mb: expanded ? 2 : 0 }}>
+          {expanded ? 'Hide details' : 'Show details'}
+        </Button>
+        {expanded && <Divider sx={{ my: 2 }} />}
+        {expanded && children}
+      </CardContent>
+    </Card>
+  );
+};
+
+const SprintProgressWidget = ({ data, target, error, loading, onRetry }: {
+  data?: { completed: number; inProgress: number; planned: number };
+  target: number;
+  error?: WidgetError;
+  loading: boolean;
+  onRetry?: () => void;
+}) => {
+  if (loading) return <LoadingWidget title="Sprint Progress" />;
+  if (error) return <ErrorWidget title="Sprint Progress" error={error} onRetry={onRetry} />;
+  if (!data) return null;
+  return (
+    <MetricCard title="Sprint Progress" current={data.completed} target={target} trend="up" status="green">
+      <ResponsiveContainer width="100%" height={200}>
+        <PieChart>
+          <Pie
+            data={[
+              { name: 'Completed', value: data.completed, color: '#3B82F6' },
+              { name: 'In Progress', value: data.inProgress, color: '#4CAF50' },
+              { name: 'Planned', value: data.planned, color: '#FFB74D' }
+            ]}
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={80}
+            dataKey="value"
+          >
+            {[
+              { name: 'Completed', value: data.completed, color: '#3B82F6' },
+              { name: 'In Progress', value: data.inProgress, color: '#4CAF50' },
+              { name: 'Planned', value: data.planned, color: '#FFB74D' }
+            ].map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </MetricCard>
+  );
+};
+
+const FeatureStatusWidget = ({ data, target, error, loading, onRetry }: {
+  data?: { completed: number; inProgress: number; blocked: number };
+  target: number;
+  error?: WidgetError;
+  loading: boolean;
+  onRetry?: () => void;
+}) => {
+  if (loading) return <LoadingWidget title="Feature Status" />;
+  if (error) return <ErrorWidget title="Feature Status" error={error} onRetry={onRetry} />;
+  if (!data) return null;
+  return (
+    <MetricCard title="Feature Status" current={data.completed} target={target} trend="up" status="green">
+      <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={[
+          { name: 'Completed', value: data.completed },
+          { name: 'In Progress', value: data.inProgress },
+          { name: 'Blocked', value: data.blocked }
+        ]}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Bar dataKey="value" fill="#6366F1" />
+        </BarChart>
+      </ResponsiveContainer>
+    </MetricCard>
+  );
+};
+
+const TeamUtilizationWidget = ({ data, target, error, loading, onRetry }: {
+  data?: Array<{ name: string; value: number }>;
+  target: number;
+  error?: WidgetError;
+  loading: boolean;
+  onRetry?: () => void;
+}) => {
+  if (loading) return <LoadingWidget title="Team Utilization" />;
+  if (error) return <ErrorWidget title="Team Utilization" error={error} onRetry={onRetry} />;
+  if (!data || data.length === 0) return null;
+  const avgUtilization = Math.round(data.reduce((acc, curr) => acc + curr.value, 0) / data.length);
+  return (
+    <MetricCard title="Team Utilization" current={avgUtilization} target={target} trend="up" status="green">
+      <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Bar dataKey="value" fill="#4CAF50" />
+        </BarChart>
+      </ResponsiveContainer>
+    </MetricCard>
+  );
+};
+
+const SprintVelocityWidget = ({ data, target, error, loading, onRetry }: {
+  data?: Array<{ month: string; value: number }>;
+  target: number;
+  error?: WidgetError;
+  loading: boolean;
+  onRetry?: () => void;
+}) => {
+  if (loading) return <LoadingWidget title="Sprint Velocity" />;
+  if (error) return <ErrorWidget title="Sprint Velocity" error={error} onRetry={onRetry} />;
+  if (!data || data.length === 0) return null;
+  const currentVelocity = data[data.length - 1]?.value || 0;
+  return (
+    <MetricCard title="Sprint Velocity" current={currentVelocity} target={target} trend="up" status="green">
+      <ResponsiveContainer width="100%" height={200}>
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tooltip />
+          <Line type="monotone" dataKey="value" stroke="#3b82f6" />
+        </LineChart>
+      </ResponsiveContainer>
+    </MetricCard>
   );
 };
 
@@ -150,466 +314,352 @@ const getTargets = () => {
   };
 };
 
-const SurveyCell = ({ activeCount }) => (
-  <div className="bg-white rounded-lg shadow-md p-4 mb-4 flex flex-col justify-between">
-    <div>
-      <h3 className="text-lg font-semibold mb-2">Surveys & Feedback</h3>
-      <p className="text-slate-700 mb-2">Active Surveys: <span className="font-bold">{activeCount}</span></p>
-      <p className="text-slate-500 text-sm mb-4">Collect feedback from your team and stakeholders to improve project outcomes.</p>
-    </div>
-    <Link href="/surveys" className="inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 text-sm font-medium text-center">Go to Surveys</Link>
-  </div>
+const SurveyCell = ({ activeCount }: { activeCount: number }) => (
+  <Card sx={{ mb: 2 }}>
+    <CardContent>
+      <Typography variant="h6" mb={1}>Surveys & Feedback</Typography>
+      <Typography variant="body1" mb={1}>Active Surveys: <b>{activeCount}</b></Typography>
+      <Typography variant="body2" color="text.secondary" mb={2}>
+        Collect feedback from your team and stakeholders to improve project outcomes.
+      </Typography>
+      <Button variant="contained" color="primary">Go to Surveys</Button>
+    </CardContent>
+  </Card>
 );
 
 const MinimalistDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [dashboardData, setDashboardData] = useState<DashboardData>({
-    sprintProgress: { completed: 0, inProgress: 0, planned: 0 },
-    featureStatus: { completed: 0, inProgress: 0, blocked: 0 },
-    teamMetrics: [],
-    performanceTrend: [],
-    metricStatus: [],
-    actionItems: []
-  });
+  const [activeTab, setActiveTab] = useState(0);
   const [targets, setTargets] = useState(getTargets());
   const [surveyCount, setSurveyCount] = useState(0);
   const [activeSurveyCount, setActiveSurveyCount] = useState(0);
 
-  useEffect(() => {
-    const fetchJiraData = async () => {
-      try {
-        setLoading(true);
-        
-        // Log the Jira configuration
-        console.log('Jira Config:', {
-          baseUrl: process.env.NEXT_PUBLIC_JIRA_BASE_URL,
-          email: process.env.NEXT_PUBLIC_JIRA_EMAIL,
-          boardId: process.env.NEXT_PUBLIC_JIRA_BOARD_ID,
-          projectKey: process.env.NEXT_PUBLIC_JIRA_PROJECT_KEY,
-          hasToken: !!process.env.NEXT_PUBLIC_JIRA_API_TOKEN
-        });
+  // Widget state management
+  const [sprintProgressData, setSprintProgressData] = useState<{ completed: number; inProgress: number; planned: number } | undefined>(undefined);
+  const [sprintProgressError, setSprintProgressError] = useState<WidgetError | undefined>(undefined);
+  const [sprintProgressLoading, setSprintProgressLoading] = useState(true);
 
-        // Initialize Jira client
-        const jiraClient = new JiraClient({
-          baseUrl: process.env.NEXT_PUBLIC_JIRA_BASE_URL || '',
-          email: process.env.NEXT_PUBLIC_JIRA_EMAIL || '',
-          apiToken: process.env.NEXT_PUBLIC_JIRA_API_TOKEN || ''
-        });
+  const [featureStatusData, setFeatureStatusData] = useState<{ completed: number; inProgress: number; blocked: number } | undefined>(undefined);
+  const [featureStatusError, setFeatureStatusError] = useState<WidgetError | undefined>(undefined);
+  const [featureStatusLoading, setFeatureStatusLoading] = useState(true);
 
-        // First, test the connection with the simplest possible endpoint
-        console.log('Testing connection with /myself endpoint...');
-        try {
-          const testResponse = await jiraClient.testConnection();
-          console.log('Connection successful! User info:', testResponse);
-        } catch (error) {
-          console.error('Connection test failed:', error);
-          if (axios.isAxiosError(error)) {
-            const errorMessage = error.response?.data?.message || error.message;
-            throw new Error(`Failed to connect to Jira: ${error.response?.status} ${error.response?.statusText} - ${errorMessage}`);
-          }
-          throw new Error('Failed to connect to Jira. Please check your credentials and base URL.');
-        }
+  const [teamMetricsData, setTeamMetricsData] = useState<Array<{ name: string; value: number }> | undefined>(undefined);
+  const [teamMetricsError, setTeamMetricsError] = useState<WidgetError | undefined>(undefined);
+  const [teamMetricsLoading, setTeamMetricsLoading] = useState(true);
 
-        // If connection test passes, proceed with fetching data
-        console.log('Fetching active sprint...');
-        const sprintResponse = await jiraClient.getActiveSprint(Number(process.env.NEXT_PUBLIC_JIRA_BOARD_ID));
-        console.log('Sprint response:', sprintResponse);
-        
-        if (!sprintResponse.values || sprintResponse.values.length === 0) {
-          throw new Error('No active sprint found');
-        }
+  const [performanceTrendData, setPerformanceTrendData] = useState<Array<{ month: string; value: number }> | undefined>(undefined);
+  const [performanceTrendError, setPerformanceTrendError] = useState<WidgetError | undefined>(undefined);
+  const [performanceTrendLoading, setPerformanceTrendLoading] = useState(true);
 
-        const activeSprint = sprintResponse.values[0];
-        console.log('Active sprint:', activeSprint);
+  // Initialize Jira client
+  const getJiraClient = () => {
+    return new JiraClient({
+      baseUrl: import.meta.env.VITE_JIRA_BASE_URL || '',
+      email: import.meta.env.VITE_JIRA_EMAIL || '',
+      apiToken: import.meta.env.VITE_JIRA_API_TOKEN || ''
+    });
+  };
 
-        // Fetch sprint issues
-        console.log('Fetching sprint issues...');
-        const sprintIssues = await jiraClient.getSprintIssues(activeSprint.id);
-        console.log('Sprint issues:', sprintIssues);
-
-        // Fetch team members
-        console.log('Fetching team members...');
-        const teamMembers = await jiraClient.getTeamMembers(process.env.NEXT_PUBLIC_JIRA_PROJECT_KEY || '') as TeamMember[];
-        console.log('Team Members:', teamMembers);
-
-        // Transform data
-        const sprintProgress = transformSprintData(sprintIssues);
-        const featureStatus = transformFeatureStatus(sprintIssues.issues);
-        const teamMetrics = transformTeamMetrics(sprintIssues.issues, teamMembers);
-
-        // Calculate performance trend (last 6 sprints)
-        const performanceTrend = await calculatePerformanceTrend(jiraClient);
-
-        setDashboardData({
-          sprintProgress,
-          featureStatus,
-          teamMetrics,
-          performanceTrend,
-          metricStatus: calculateMetricStatus(sprintIssues.issues),
-          actionItems: calculateActionItems(sprintIssues.issues)
-        });
-
-        setTargets(getTargets());
-        setLoading(false);
-
-        // Survey summary
-        if (typeof window !== 'undefined') {
-          const stored = localStorage.getItem('dashboard_surveys');
-          if (stored) {
-            const surveys = JSON.parse(stored);
-            setSurveyCount(surveys.length);
-            setActiveSurveyCount(surveys.filter(s => s.status === 'active').length);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching Jira data:', error);
-        setError(error instanceof Error ? error.message : 'Failed to fetch Jira data');
-        setLoading(false);
+  // Fetch sprint progress data
+  const fetchSprintProgress = async () => {
+    try {
+      setSprintProgressLoading(true);
+      setSprintProgressError(undefined);
+      const jiraClient = getJiraClient();
+      const sprintResponse = await jiraClient.getActiveSprint(Number(import.meta.env.VITE_JIRA_BOARD_ID));
+      if (!sprintResponse.values || sprintResponse.values.length === 0) {
+        throw new Error('No active sprint found');
       }
-    };
+      const activeSprint = sprintResponse.values[0];
+      const sprintIssues = await jiraClient.getSprintIssues(activeSprint.id);
+      const sprintProgress = transformSprintData(sprintIssues);
+      setSprintProgressData(sprintProgress);
+    } catch (error) {
+      setSprintProgressError({ message: error instanceof Error ? error.message : 'Failed to fetch sprint progress data' });
+    } finally {
+      setSprintProgressLoading(false);
+    }
+  };
 
-    fetchJiraData();
+  // Fetch feature status data
+  const fetchFeatureStatus = async () => {
+    try {
+      setFeatureStatusLoading(true);
+      setFeatureStatusError(undefined);
+      const jiraClient = getJiraClient();
+      const sprintResponse = await jiraClient.getActiveSprint(Number(import.meta.env.VITE_JIRA_BOARD_ID));
+      if (!sprintResponse.values || sprintResponse.values.length === 0) {
+        throw new Error('No active sprint found');
+      }
+      const activeSprint = sprintResponse.values[0];
+      const sprintIssues = await jiraClient.getSprintIssues(activeSprint.id);
+      const featureStatus = transformFeatureStatus(sprintIssues.issues);
+      setFeatureStatusData(featureStatus);
+    } catch (error) {
+      setFeatureStatusError({ message: error instanceof Error ? error.message : 'Failed to fetch feature status data' });
+    } finally {
+      setFeatureStatusLoading(false);
+    }
+  };
+
+  // Fetch team metrics data
+  const fetchTeamMetrics = async () => {
+    try {
+      setTeamMetricsLoading(true);
+      setTeamMetricsError(undefined);
+      const jiraClient = getJiraClient();
+      const sprintResponse = await jiraClient.getActiveSprint(Number(import.meta.env.VITE_JIRA_BOARD_ID));
+      if (!sprintResponse.values || sprintResponse.values.length === 0) {
+        throw new Error('No active sprint found');
+      }
+      const activeSprint = sprintResponse.values[0];
+      const sprintIssues = await jiraClient.getSprintIssues(activeSprint.id);
+      const teamMembers = await jiraClient.getTeamMembers(import.meta.env.VITE_JIRA_PROJECT_KEY || '') as TeamMember[];
+      const teamMetrics = transformTeamMetrics(sprintIssues.issues, teamMembers);
+      setTeamMetricsData(teamMetrics);
+    } catch (error) {
+      setTeamMetricsError({ message: error instanceof Error ? error.message : 'Failed to fetch team metrics data' });
+    } finally {
+      setTeamMetricsLoading(false);
+    }
+  };
+
+  // Fetch performance trend data
+  const fetchPerformanceTrend = async () => {
+    try {
+      setPerformanceTrendLoading(true);
+      setPerformanceTrendError(undefined);
+      // This is a placeholder - you'll need to implement the actual logic
+      const performanceTrend = [
+        { month: 'Jan', value: 85 },
+        { month: 'Feb', value: 87 },
+        { month: 'Mar', value: 83 },
+        { month: 'Apr', value: 88 },
+        { month: 'May', value: 91 },
+        { month: 'Jun', value: 86 }
+      ];
+      setPerformanceTrendData(performanceTrend);
+    } catch (error) {
+      setPerformanceTrendError({ message: error instanceof Error ? error.message : 'Failed to fetch performance trend data' });
+    } finally {
+      setPerformanceTrendLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSprintProgress();
+    fetchFeatureStatus();
+    fetchTeamMetrics();
+    fetchPerformanceTrend();
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('dashboard_surveys');
+      if (stored) {
+        const surveys = JSON.parse(stored);
+        setSurveyCount(surveys.length);
+        setActiveSurveyCount(surveys.filter((s: any) => s.status === 'active').length);
+      }
+    }
   }, []);
 
-  // Helper functions for data transformation
-  const calculatePerformanceTrend = async (jira: JiraClient) => {
-    // Implementation for fetching historical sprint data
-    // This is a placeholder - you'll need to implement the actual logic
-    return [
-      { month: 'Jan', value: 85 },
-      { month: 'Feb', value: 87 },
-      { month: 'Mar', value: 83 },
-      { month: 'Apr', value: 88 },
-      { month: 'May', value: 91 },
-      { month: 'Jun', value: 86 }
-    ];
-  };
-
-  const calculateMetricStatus = (issues: any[]) => {
-    const total = issues.length;
-    return [
-      { name: 'On Target', value: Math.round((issues.filter(i => i.fields.status.name === 'Done').length / total) * 100), color: '#4CAF50' },
-      { name: 'At Risk', value: Math.round((issues.filter(i => ['In Progress', 'In Review'].includes(i.fields.status.name)).length / total) * 100), color: '#FF9800' },
-      { name: 'Below Target', value: Math.round((issues.filter(i => ['To Do', 'Backlog'].includes(i.fields.status.name)).length / total) * 100), color: '#F44336' }
-    ];
-  };
-
-  const calculateActionItems = (issues: any[]) => {
-    const total = issues.length;
-    return [
-      { name: 'Completed', value: Math.round((issues.filter(i => i.fields.status.name === 'Done').length / total) * 100), color: '#4CAF50' },
-      { name: 'In Progress', value: Math.round((issues.filter(i => ['In Progress', 'In Review'].includes(i.fields.status.name)).length / total) * 100), color: '#3B82F6' },
-      { name: 'Planned', value: Math.round((issues.filter(i => ['To Do', 'Backlog'].includes(i.fields.status.name)).length / total) * 100), color: '#9CA3AF' }
-    ];
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg text-gray-600">Loading dashboard data...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg">
-          <h2 className="text-xl font-bold text-red-600 mb-4">Error Loading Dashboard</h2>
-          <p className="text-gray-700 mb-4">{error}</p>
-          <div className="text-sm text-gray-500">
-            <p>Please check:</p>
-            <ul className="list-disc list-inside mt-2">
-              <li>Your Jira credentials in .env.local</li>
-              <li>Your board ID and project key</li>
-              <li>Your network connection</li>
-              <li>Jira API access permissions</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Tab labels
+  const tabLabels = ['Overview', 'Team Performance', 'Delivery Metrics'];
 
   return (
-    <div className="bg-slate-50 min-h-screen">
+    <Box minHeight="100vh" bgcolor="#f6f7fb">
       {/* Dashboard Header */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-800">Product Owner Dashboard</h1>
-              <p className="text-sm text-slate-500 mt-1">Updated: {new Date().toLocaleDateString()}</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <a href="/configure-targets" className="text-indigo-600 hover:underline text-sm font-medium">Configure Targets</a>
-              <div className="flex items-center gap-2 bg-slate-100 p-2 rounded-lg">
-                <div className="font-medium text-slate-700">Overall Score</div>
-                <div className="flex items-center gap-1">
-                  <span className="text-2xl font-bold text-emerald-600">
-                    {Math.round(
-                      (dashboardData.sprintProgress.completed /
-                        (dashboardData.sprintProgress.completed +
-                          dashboardData.sprintProgress.inProgress +
-                          dashboardData.sprintProgress.planned)) *
-                        100
-                    )}%
-                  </span>
-                  <ArrowUp className="text-emerald-500" size={16} />
-                </div>
-              </div>
-              <div className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm font-medium">
-                Good
-              </div>
-            </div>
-          </div>
-          <div className="flex space-x-6 pt-1 pb-2">
-            <button
-              className={`px-3 py-2 font-medium text-sm rounded-md ${
-                activeTab === 'overview' ? 'text-indigo-700 bg-indigo-50' : 'text-slate-600 hover:text-slate-900'
-              }`}
-              onClick={() => setActiveTab('overview')}
-            >
-              Overview
-            </button>
-            <button
-              className={`px-3 py-2 font-medium text-sm rounded-md ${
-                activeTab === 'team' ? 'text-indigo-700 bg-indigo-50' : 'text-slate-600 hover:text-slate-900'
-              }`}
-              onClick={() => setActiveTab('team')}
-            >
-              Team Performance
-            </button>
-            <button
-              className={`px-3 py-2 font-medium text-sm rounded-md ${
-                activeTab === 'delivery' ? 'text-indigo-700 bg-indigo-50' : 'text-slate-600 hover:text-slate-900'
-              }`}
-              onClick={() => setActiveTab('delivery')}
-            >
-              Delivery Metrics
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Real Jira Data Widgets */}
-            <MetricCard 
-              title="Sprint Progress" 
-              current={dashboardData.sprintProgress.completed}
-              target={targets.sprintProgress}
-              trend="up"
-              status="green"
-            >
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={[
-                      { name: 'Completed', value: dashboardData.sprintProgress.completed, color: '#3B82F6' },
-                      { name: 'In Progress', value: dashboardData.sprintProgress.inProgress, color: '#4CAF50' },
-                      { name: 'Planned', value: dashboardData.sprintProgress.planned, color: '#FFB74D' }
-                    ]}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    dataKey="value"
-                  >
-                    {[
-                      { name: 'Completed', value: dashboardData.sprintProgress.completed, color: '#3B82F6' },
-                      { name: 'In Progress', value: dashboardData.sprintProgress.inProgress, color: '#4CAF50' },
-                      { name: 'Planned', value: dashboardData.sprintProgress.planned, color: '#FFB74D' }
-                    ].map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </MetricCard>
-
-            <MetricCard 
-              title="Feature Status" 
-              current={dashboardData.featureStatus.completed}
-              target={targets.featureStatus}
-              trend="up"
-              status="green"
-            >
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={[
-                  { name: 'Completed', value: dashboardData.featureStatus.completed },
-                  { name: 'In Progress', value: dashboardData.featureStatus.inProgress },
-                  { name: 'Blocked', value: dashboardData.featureStatus.blocked }
-                ]}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#6366F1" />
-                </BarChart>
-              </ResponsiveContainer>
-            </MetricCard>
-
-            {/* Demo Data Widgets */}
-            <MetricCard 
-              title="Code Quality Score" 
-              current={85}
-              target={targets.codeQuality}
-              trend="up"
-              status="yellow"
-              isDummyData={true}
-            >
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={[
-                  { month: 'Jan', value: 82 },
-                  { month: 'Feb', value: 83 },
-                  { month: 'Mar', value: 84 },
-                  { month: 'Apr', value: 85 }
-                ]}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="value" stroke="#3b82f6" />
-                </LineChart>
-              </ResponsiveContainer>
-            </MetricCard>
-
-            <MetricCard 
-              title="Tech Debt Resolution" 
-              current={75}
-              target={targets.techDebt}
-              trend="up"
-              status="yellow"
-              isDummyData={true}
-            >
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={[
-                  { month: 'Jan', created: 15, resolved: 10 },
-                  { month: 'Feb', created: 12, resolved: 14 },
-                  { month: 'Mar', created: 10, resolved: 12 },
-                  { month: 'Apr', created: 8, resolved: 11 }
-                ]}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="created" fill="#ef4444" name="Created" />
-                  <Bar dataKey="resolved" fill="#22c55e" name="Resolved" />
-                </BarChart>
-              </ResponsiveContainer>
-            </MetricCard>
-
-            {/* Survey Cell moved to the bottom */}
-            <SurveyCell activeCount={activeSurveyCount} />
-          </div>
+      <Paper elevation={0} square sx={{ borderBottom: 1, borderColor: 'divider', mb: 0, bgcolor: '#fff' }}>
+        <Box maxWidth="md" mx="auto" px={2} py={4}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box>
+              <Typography variant="h4" fontWeight={700} gutterBottom>Product Owner Dashboard</Typography>
+              <Typography variant="caption" color="text.secondary">Updated: {new Date().toLocaleDateString()}</Typography>
+            </Box>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Button href="/configure-targets" color="primary" variant="text" size="small">Configure Targets</Button>
+              <Paper elevation={0} sx={{ p: 1, display: 'flex', alignItems: 'center', gap: 1, bgcolor: '#f0f4f8' }}>
+                <Typography fontWeight={500} color="text.secondary">Overall Score</Typography>
+                <Box display="flex" alignItems="center" gap={0.5}>
+                  <Typography variant="h5" color="success.main" fontWeight={700}>
+                    {sprintProgressData ? Math.round(
+                      (sprintProgressData.completed /
+                        (sprintProgressData.completed +
+                          sprintProgressData.inProgress +
+                          sprintProgressData.planned)) *
+                      100
+                    ) : 0}%
+                  </Typography>
+                  <ArrowUp color="#4caf50" size={16} />
+                </Box>
+              </Paper>
+              <Chip label="Good" color="success" size="small" />
+            </Stack>
+          </Box>
+          <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} sx={{ mt: 2 }} textColor="primary" indicatorColor="primary">
+            {tabLabels.map((label, idx) => (
+              <Tab key={label} label={label} sx={{ fontWeight: 500, fontSize: 16, minWidth: 160 }} />
+            ))}
+          </Tabs>
+        </Box>
+      </Paper>
+      <Box maxWidth="lg" mx="auto" px={2} py={5}>
+        {activeTab === 0 && (
+          <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
+            <Grid item xs={12} md={8}>
+              <Stack spacing={3}>
+                <SprintProgressWidget
+                  data={sprintProgressData}
+                  target={targets.sprintProgress}
+                  error={sprintProgressError}
+                  loading={sprintProgressLoading}
+                  onRetry={fetchSprintProgress}
+                />
+                <FeatureStatusWidget
+                  data={featureStatusData}
+                  target={targets.featureStatus}
+                  error={featureStatusError}
+                  loading={featureStatusLoading}
+                  onRetry={fetchFeatureStatus}
+                />
+              </Stack>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Stack spacing={3}>
+                <MetricCard 
+                  title="Code Quality Score" 
+                  current={85}
+                  target={targets.codeQuality}
+                  trend="up"
+                  status="yellow"
+                  isDummyData={true}
+                >
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={[
+                      { month: 'Jan', value: 82 },
+                      { month: 'Feb', value: 83 },
+                      { month: 'Mar', value: 84 },
+                      { month: 'Apr', value: 85 }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="value" stroke="#3b82f6" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </MetricCard>
+                <MetricCard 
+                  title="Tech Debt Resolution" 
+                  current={75}
+                  target={targets.techDebt}
+                  trend="up"
+                  status="yellow"
+                  isDummyData={true}
+                >
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={[
+                      { month: 'Jan', created: 15, resolved: 10 },
+                      { month: 'Feb', created: 12, resolved: 14 },
+                      { month: 'Mar', created: 10, resolved: 12 },
+                      { month: 'Apr', created: 8, resolved: 11 }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="created" fill="#ef4444" name="Created" />
+                      <Bar dataKey="resolved" fill="#22c55e" name="Resolved" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </MetricCard>
+              </Stack>
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <SurveyCell activeCount={activeSurveyCount} />
+            </Grid>
+          </Grid>
         )}
-
-        {activeTab === 'team' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Real Jira Data Widget */}
-            <MetricCard 
-              title="Team Utilization" 
-              current={Math.round(dashboardData.teamMetrics.reduce((acc, curr) => acc + curr.value, 0) / dashboardData.teamMetrics.length)}
-              target={targets.teamUtilization}
-              trend="up"
-              status="green"
-            >
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={dashboardData.teamMetrics}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#4CAF50" />
-                </BarChart>
-              </ResponsiveContainer>
-            </MetricCard>
-
-            {/* Demo Data Widget */}
-            <MetricCard 
-              title="Cross-Team Collaboration" 
-              current={82}
-              target={targets.crossTeam}
-              trend="up"
-              status="yellow"
-              isDummyData={true}
-            >
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={[
-                  { team: 'QA', interactions: 28, effectiveness: 85 },
-                  { team: 'Product', interactions: 22, effectiveness: 78 },
-                  { team: 'Design', interactions: 18, effectiveness: 82 },
-                  { team: 'DevOps', interactions: 15, effectiveness: 90 }
-                ]}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="team" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="interactions" fill="#9ca3af" name="Interactions" />
-                  <Bar dataKey="effectiveness" fill="#3b82f6" name="Effectiveness %" />
-                </BarChart>
-              </ResponsiveContainer>
-            </MetricCard>
-          </div>
+        {activeTab === 1 && (
+          <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
+            <Grid item xs={12} md={8}>
+              <TeamUtilizationWidget
+                data={teamMetricsData}
+                target={targets.teamUtilization}
+                error={teamMetricsError}
+                loading={teamMetricsLoading}
+                onRetry={fetchTeamMetrics}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <MetricCard 
+                title="Cross-Team Collaboration" 
+                current={82}
+                target={targets.crossTeam}
+                trend="up"
+                status="yellow"
+                isDummyData={true}
+              >
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={[
+                    { team: 'QA', interactions: 28, effectiveness: 85 },
+                    { team: 'Product', interactions: 22, effectiveness: 78 },
+                    { team: 'Design', interactions: 18, effectiveness: 82 },
+                    { team: 'DevOps', interactions: 15, effectiveness: 90 }
+                  ]}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="team" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="interactions" fill="#9ca3af" name="Interactions" />
+                    <Bar dataKey="effectiveness" fill="#3b82f6" name="Effectiveness %" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </MetricCard>
+            </Grid>
+          </Grid>
         )}
-
-        {activeTab === 'delivery' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Real Jira Data Widget */}
-            <MetricCard 
-              title="Sprint Velocity" 
-              current={dashboardData.sprintProgress.completed}
-              target={targets.sprintProgress}
-              trend="up"
-              status="green"
-            >
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={dashboardData.performanceTrend}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="value" stroke="#3b82f6" />
-                </LineChart>
-              </ResponsiveContainer>
-            </MetricCard>
-
-            {/* Demo Data Widget */}
-            <MetricCard 
-              title="Code Review Efficiency" 
-              current={78}
-              target={targets.codeReview}
-              trend="up"
-              status="yellow"
-              isDummyData={true}
-            >
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={[
-                  { month: 'Jan', efficiency: 72 },
-                  { month: 'Feb', efficiency: 75 },
-                  { month: 'Mar', efficiency: 78 },
-                  { month: 'Apr', efficiency: 80 }
-                ]}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="efficiency" stroke="#3b82f6" />
-                </LineChart>
-              </ResponsiveContainer>
-            </MetricCard>
-          </div>
+        {activeTab === 2 && (
+          <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
+            <Grid item xs={12} md={8}>
+              <Box display="flex" justifyContent="center">
+                <SprintVelocityWidget
+                  data={performanceTrendData}
+                  target={targets.sprintProgress}
+                  error={performanceTrendError}
+                  loading={performanceTrendLoading}
+                  onRetry={fetchPerformanceTrend}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <MetricCard 
+                title="Code Review Efficiency" 
+                current={78}
+                target={targets.codeReview}
+                trend="up"
+                status="yellow"
+                isDummyData={true}
+              >
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={[
+                    { month: 'Jan', efficiency: 72 },
+                    { month: 'Feb', efficiency: 75 },
+                    { month: 'Mar', efficiency: 78 },
+                    { month: 'Apr', efficiency: 80 }
+                  ]}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="efficiency" stroke="#3b82f6" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </MetricCard>
+            </Grid>
+          </Grid>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

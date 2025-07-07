@@ -16,7 +16,8 @@ class JiraClient {
       .replace(/\/rest\/api\/3\/?$/, '')  // Remove /rest/api/3 if present
       .replace(/\/$/, '');                // Remove trailing slash
     
-    this.auth = Buffer.from(`${config.email}:${config.apiToken}`).toString('base64');
+    // Use browser-compatible base64 encoding
+    this.auth = btoa(`${config.email}:${config.apiToken}`);
     
     // Log configuration (without sensitive data)
     console.log('Jira Client initialized with:', {
@@ -32,18 +33,22 @@ class JiraClient {
       // Remove leading slash from endpoint if present
       const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
       
-      // Use the proxy API route
-      const proxyUrl = `/api/jira-proxy?endpoint=${encodeURIComponent(cleanEndpoint)}`;
+      // Construct the full URL
+      const url = `${this.baseUrl}/${cleanEndpoint}`;
       
       // Log request details
-      console.log('Making Jira API request through proxy:', {
-        proxyUrl,
+      console.log('Making direct Jira API request:', {
+        url,
         endpoint: cleanEndpoint,
         params
       });
       
-      const response = await axios.get(proxyUrl, {
+      const response = await axios.get(url, {
         params,
+        headers: {
+          'Authorization': `Basic ${this.auth}`,
+          'Accept': 'application/json'
+        },
         timeout: 10000
       });
 
