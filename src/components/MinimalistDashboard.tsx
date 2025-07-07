@@ -20,6 +20,10 @@ import {
   Tabs,
   Tab,
   Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 
@@ -332,6 +336,24 @@ const MinimalistDashboard = () => {
   const [targets, setTargets] = useState(getTargets());
   const [surveyCount, setSurveyCount] = useState(0);
   const [activeSurveyCount, setActiveSurveyCount] = useState(0);
+  const [configOpen, setConfigOpen] = useState(false);
+  const [editTargets, setEditTargets] = useState(targets);
+
+  useEffect(() => {
+    setEditTargets(targets);
+  }, [configOpen, targets]);
+
+  const handleTargetChange = (key: string, value: number) => {
+    setEditTargets((prev: any) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSaveTargets = () => {
+    setTargets(editTargets);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dashboard_targets', JSON.stringify(editTargets));
+    }
+    setConfigOpen(false);
+  };
 
   // Widget state management
   const [sprintProgressData, setSprintProgressData] = useState<{ completed: number; inProgress: number; planned: number } | undefined>(undefined);
@@ -474,7 +496,7 @@ const MinimalistDashboard = () => {
               <Typography variant="caption" color="text.secondary">Updated: {new Date().toLocaleDateString()}</Typography>
             </Box>
             <Stack direction="row" spacing={2} alignItems="center">
-              <Button href="/configure-targets" color="primary" variant="text" size="small">Configure Targets</Button>
+              <Button onClick={() => setConfigOpen(true)} color="primary" variant="text" size="small">Configure Targets</Button>
               <Paper elevation={0} sx={{ p: 1, display: 'flex', alignItems: 'center', gap: 1, bgcolor: '#f0f4f8' }}>
                 <Typography fontWeight={500} color="text.secondary">Overall Score</Typography>
                 <Box display="flex" alignItems="center" gap={0.5}>
@@ -500,6 +522,33 @@ const MinimalistDashboard = () => {
           </Tabs>
         </Box>
       </Paper>
+      {/* Configure Targets Modal */}
+      <Dialog open={configOpen} onClose={() => setConfigOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Configure Targets</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" mb={2}>Set your target values for each dashboard metric:</Typography>
+          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            {Object.entries(editTargets).map(([key, value]) => (
+              <Box key={key} display="flex" alignItems="center" gap={2}>
+                <Typography sx={{ minWidth: 180, textTransform: 'capitalize' }}>
+                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
+                </Typography>
+                <input
+                  type="number"
+                  value={Number(value)}
+                  min={0}
+                  style={{ width: 80, fontSize: 16, padding: 4 }}
+                  onChange={e => handleTargetChange(key, Number(e.target.value))}
+                />
+              </Box>
+            ))}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfigOpen(false)} color="inherit">Cancel</Button>
+          <Button onClick={handleSaveTargets} color="primary" variant="contained">Save</Button>
+        </DialogActions>
+      </Dialog>
       <Box maxWidth="lg" mx="auto" px={2} py={5}>
         {activeTab === 0 && (
           <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
