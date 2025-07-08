@@ -26,6 +26,12 @@ import {
   DialogActions,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import SprintProgressWidget from './widgets/SprintProgressWidget';
+import FeatureStatusWidget from './widgets/FeatureStatusWidget';
+import TeamUtilizationWidget from './widgets/TeamUtilizationWidget';
+import SprintVelocityWidget from './widgets/SprintVelocityWidget';
+import SurveyCell from './widgets/SurveyCell';
+import ConfigureTargetsDialog from './dialogs/ConfigureTargetsDialog';
 
 interface DashboardData {
   sprintProgress: {
@@ -179,129 +185,6 @@ const MetricCard = ({ title, current, target, trend, status, isDummyData = false
   );
 };
 
-const SprintProgressWidget = ({ data, target, error, loading, onRetry }: {
-  data?: { completed: number; inProgress: number; planned: number };
-  target: number;
-  error?: WidgetError;
-  loading: boolean;
-  onRetry?: () => void;
-}) => {
-  if (loading) return <LoadingWidget title="Sprint Progress" />;
-  if (error) return <ErrorWidget title="Sprint Progress" error={error} onRetry={onRetry} />;
-  if (!data) return null;
-  return (
-    <MetricCard title="Sprint Progress" current={data.completed} target={target} trend="up" status="green">
-      <ResponsiveContainer width="100%" height={200}>
-        <PieChart>
-          <Pie
-            data={[
-              { name: 'Completed', value: data.completed, color: '#3B82F6' },
-              { name: 'In Progress', value: data.inProgress, color: '#4CAF50' },
-              { name: 'Planned', value: data.planned, color: '#FFB74D' }
-            ]}
-            cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={80}
-            dataKey="value"
-          >
-            {[
-              { name: 'Completed', value: data.completed, color: '#3B82F6' },
-              { name: 'In Progress', value: data.inProgress, color: '#4CAF50' },
-              { name: 'Planned', value: data.planned, color: '#FFB74D' }
-            ].map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
-    </MetricCard>
-  );
-};
-
-const FeatureStatusWidget = ({ data, target, error, loading, onRetry }: {
-  data?: { completed: number; inProgress: number; blocked: number };
-  target: number;
-  error?: WidgetError;
-  loading: boolean;
-  onRetry?: () => void;
-}) => {
-  if (loading) return <LoadingWidget title="Feature Status" />;
-  if (error) return <ErrorWidget title="Feature Status" error={error} onRetry={onRetry} />;
-  if (!data) return null;
-  return (
-    <MetricCard title="Feature Status" current={data.completed} target={target} trend="up" status="green">
-      <ResponsiveContainer width="100%" height={200}>
-        <BarChart data={[
-          { name: 'Completed', value: data.completed },
-          { name: 'In Progress', value: data.inProgress },
-          { name: 'Blocked', value: data.blocked }
-        ]}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="value" fill="#6366F1" />
-        </BarChart>
-      </ResponsiveContainer>
-    </MetricCard>
-  );
-};
-
-const TeamUtilizationWidget = ({ data, target, error, loading, onRetry }: {
-  data?: Array<{ name: string; value: number }>;
-  target: number;
-  error?: WidgetError;
-  loading: boolean;
-  onRetry?: () => void;
-}) => {
-  if (loading) return <LoadingWidget title="Team Utilization" />;
-  if (error) return <ErrorWidget title="Team Utilization" error={error} onRetry={onRetry} />;
-  if (!data || data.length === 0) return null;
-  const avgUtilization = Math.round(data.reduce((acc, curr) => acc + curr.value, 0) / data.length);
-  return (
-    <MetricCard title="Team Utilization" current={avgUtilization} target={target} trend="up" status="green">
-      <ResponsiveContainer width="100%" height={200}>
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="value" fill="#4CAF50" />
-        </BarChart>
-      </ResponsiveContainer>
-    </MetricCard>
-  );
-};
-
-const SprintVelocityWidget = ({ data, target, error, loading, onRetry }: {
-  data?: Array<{ month: string; value: number }>;
-  target: number;
-  error?: WidgetError;
-  loading: boolean;
-  onRetry?: () => void;
-}) => {
-  if (loading) return <LoadingWidget title="Sprint Velocity" />;
-  if (error) return <ErrorWidget title="Sprint Velocity" error={error} onRetry={onRetry} />;
-  if (!data || data.length === 0) return null;
-  const currentVelocity = data[data.length - 1]?.value || 0;
-  return (
-    <MetricCard title="Sprint Velocity" current={currentVelocity} target={target} trend="up" status="green">
-      <ResponsiveContainer width="100%" height={200}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
-          <Line type="monotone" dataKey="value" stroke="#3b82f6" />
-        </LineChart>
-      </ResponsiveContainer>
-    </MetricCard>
-  );
-};
-
 const getTargets = () => {
   if (typeof window !== 'undefined') {
     const stored = localStorage.getItem('dashboard_targets');
@@ -317,19 +200,6 @@ const getTargets = () => {
     codeReview: 85,
   };
 };
-
-const SurveyCell = ({ activeCount }: { activeCount: number }) => (
-  <Card sx={{ mb: 2 }}>
-    <CardContent>
-      <Typography variant="h6" mb={1}>Surveys & Feedback</Typography>
-      <Typography variant="body1" mb={1}>Active Surveys: <b>{activeCount}</b></Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>
-        Collect feedback from your team and stakeholders to improve project outcomes.
-      </Typography>
-      <Button variant="contained" color="primary">Go to Surveys</Button>
-    </CardContent>
-  </Card>
-);
 
 const MinimalistDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -523,32 +393,17 @@ const MinimalistDashboard = () => {
         </Box>
       </Paper>
       {/* Configure Targets Modal */}
-      <Dialog open={configOpen} onClose={() => setConfigOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Configure Targets</DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" mb={2}>Set your target values for each dashboard metric:</Typography>
-          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            {Object.entries(editTargets).map(([key, value]) => (
-              <Box key={key} display="flex" alignItems="center" gap={2}>
-                <Typography sx={{ minWidth: 180, textTransform: 'capitalize' }}>
-                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
-                </Typography>
-                <input
-                  type="number"
-                  value={Number(value)}
-                  min={0}
-                  style={{ width: 80, fontSize: 16, padding: 4 }}
-                  onChange={e => handleTargetChange(key, Number(e.target.value))}
-                />
-              </Box>
-            ))}
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setConfigOpen(false)} color="inherit">Cancel</Button>
-          <Button onClick={handleSaveTargets} color="primary" variant="contained">Save</Button>
-        </DialogActions>
-      </Dialog>
+      <ConfigureTargetsDialog
+        open={configOpen}
+        onClose={() => setConfigOpen(false)}
+        targets={targets}
+        onSave={(newTargets) => {
+          setTargets(newTargets);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('dashboard_targets', JSON.stringify(newTargets));
+          }
+        }}
+      />
       <Box maxWidth="lg" mx="auto" px={2} py={5}>
         {activeTab === 0 && (
           <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
@@ -568,101 +423,75 @@ const MinimalistDashboard = () => {
                   loading={featureStatusLoading}
                   onRetry={fetchFeatureStatus}
                 />
+                <TeamUtilizationWidget
+                  data={teamMetricsData}
+                  target={targets.teamUtilization}
+                  error={teamMetricsError}
+                  loading={teamMetricsLoading}
+                  onRetry={fetchTeamMetrics}
+                />
               </Stack>
             </Grid>
             <Grid item xs={12} md={4}>
               <Stack spacing={3}>
-                <MetricCard 
-                  title="Code Quality Score" 
+                <SurveyCell activeCount={activeSurveyCount} />
+                <MetricCard
+                  title="Code Quality"
                   current={85}
                   target={targets.codeQuality}
                   trend="up"
-                  status="yellow"
-                  isDummyData={true}
+                  status="green"
+                  isDummyData
                 >
-                  <ResponsiveContainer width="100%" height={200}>
-                    <LineChart data={[
-                      { month: 'Jan', value: 82 },
-                      { month: 'Feb', value: 83 },
-                      { month: 'Mar', value: 84 },
-                      { month: 'Apr', value: 85 }
-                    ]}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <Tooltip />
-                      <Line type="monotone" dataKey="value" stroke="#3b82f6" />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <Typography variant="body2" color="text.secondary">Static analysis, test coverage, and code smells.</Typography>
                 </MetricCard>
-                <MetricCard 
-                  title="Tech Debt Resolution" 
-                  current={75}
+                <MetricCard
+                  title="Tech Debt"
+                  current={12}
                   target={targets.techDebt}
-                  trend="up"
+                  trend="down"
                   status="yellow"
-                  isDummyData={true}
+                  isDummyData
                 >
-                  <ResponsiveContainer width="100%" height={200}>
-                    <BarChart data={[
-                      { month: 'Jan', created: 15, resolved: 10 },
-                      { month: 'Feb', created: 12, resolved: 14 },
-                      { month: 'Mar', created: 10, resolved: 12 },
-                      { month: 'Apr', created: 8, resolved: 11 }
-                    ]}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="created" fill="#ef4444" name="Created" />
-                      <Bar dataKey="resolved" fill="#22c55e" name="Resolved" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <Typography variant="body2" color="text.secondary">Open tech debt items and refactoring backlog.</Typography>
+                </MetricCard>
+                <MetricCard
+                  title="Cross-Team Collaboration"
+                  current={7}
+                  target={targets.crossTeam}
+                  trend="up"
+                  status="green"
+                  isDummyData
+                >
+                  <Typography variant="body2" color="text.secondary">Joint initiatives and shared deliverables.</Typography>
                 </MetricCard>
               </Stack>
-            </Grid>
-            <Grid item xs={12} md={8}>
-              <SurveyCell activeCount={activeSurveyCount} />
             </Grid>
           </Grid>
         )}
         {activeTab === 1 && (
           <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
             <Grid item xs={12} md={8}>
-              <TeamUtilizationWidget
-                data={teamMetricsData}
-                target={targets.teamUtilization}
-                error={teamMetricsError}
-                loading={teamMetricsLoading}
-                onRetry={fetchTeamMetrics}
-              />
+              <Box display="flex" justifyContent="center">
+                <TeamUtilizationWidget
+                  data={teamMetricsData}
+                  target={targets.teamUtilization}
+                  error={teamMetricsError}
+                  loading={teamMetricsLoading}
+                  onRetry={fetchTeamMetrics}
+                />
+              </Box>
             </Grid>
             <Grid item xs={12} md={4}>
-              <MetricCard 
-                title="Cross-Team Collaboration" 
-                current={82}
-                target={targets.crossTeam}
+              <MetricCard
+                title="Code Review Efficiency"
+                current={78}
+                target={targets.codeReview}
                 trend="up"
                 status="yellow"
-                isDummyData={true}
+                isDummyData
               >
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={[
-                    { team: 'QA', interactions: 28, effectiveness: 85 },
-                    { team: 'Product', interactions: 22, effectiveness: 78 },
-                    { team: 'Design', interactions: 18, effectiveness: 82 },
-                    { team: 'DevOps', interactions: 15, effectiveness: 90 }
-                  ]}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="team" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="interactions" fill="#9ca3af" name="Interactions" />
-                    <Bar dataKey="effectiveness" fill="#3b82f6" name="Effectiveness %" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <Typography variant="body2" color="text.secondary">Avg. time to review and merge PRs.</Typography>
               </MetricCard>
             </Grid>
           </Grid>
@@ -687,22 +516,9 @@ const MinimalistDashboard = () => {
                 target={targets.codeReview}
                 trend="up"
                 status="yellow"
-                isDummyData={true}
+                isDummyData
               >
-                <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={[
-                    { month: 'Jan', efficiency: 72 },
-                    { month: 'Feb', efficiency: 75 },
-                    { month: 'Mar', efficiency: 78 },
-                    { month: 'Apr', efficiency: 80 }
-                  ]}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="efficiency" stroke="#3b82f6" />
-                  </LineChart>
-                </ResponsiveContainer>
+                <Typography variant="body2" color="text.secondary">Avg. time to review and merge PRs.</Typography>
               </MetricCard>
             </Grid>
           </Grid>
