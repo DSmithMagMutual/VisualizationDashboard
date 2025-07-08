@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack } from '@mui/material';
 import { getProjectIssues } from '@/lib/jira-proxy';
 
 interface ProjectMetricsWidgetProps {
@@ -71,16 +71,12 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
 
   if (loading) {
     return (
-      <Card sx={{ mb: 1.5, maxWidth: 420, mx: 'auto' }}>
-        <CardContent sx={{ p: 2 }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-            <Typography variant="h6">{title}</Typography>
-            <Box sx={{ width: 20, height: 20 }}>
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-            </Box>
-          </Box>
-          <Box height={24} mb={1} bgcolor="#eee" borderRadius={1}></Box>
-          <Box height={24} width="75%" bgcolor="#eee" borderRadius={1}></Box>
+      <Card sx={{ mb: 2, maxWidth: 420, mx: 'auto', borderRadius: 3, boxShadow: 6, bgcolor: 'background.paper', backdropFilter: 'blur(8px)' }} aria-busy="true" aria-label="Loading project metrics" role="status">
+        <CardContent sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 120 }}>
+          <CircularProgress color="primary" size={40} aria-label="Loading" sx={{ mb: 2 }} />
+          <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+            Loading project metrics…
+          </Typography>
         </CardContent>
       </Card>
     );
@@ -88,9 +84,9 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
 
   if (error) {
     return (
-      <Card sx={{ mb: 1.5, maxWidth: 420, mx: 'auto', borderLeft: '4px solid #f44336', bgcolor: '#fff', boxShadow: 1 }}>
-        <CardContent sx={{ p: 2 }}>
-          <Typography variant="h6" color="error" gutterBottom>
+      <Card sx={{ mb: 2, maxWidth: 420, mx: 'auto', borderRadius: 3, boxShadow: 6, bgcolor: 'background.paper', backdropFilter: 'blur(8px)' }} aria-label="Project metrics error" role="alert">
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" color="error" gutterBottom tabIndex={0}>
             {title}
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -112,68 +108,33 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
     }
   };
 
+  const { totalIssues, completedIssues, inProgressIssues, openIssues, averagePriority } = metrics;
+
   return (
-    <Card sx={{ mb: 1.5, maxWidth: 420, mx: 'auto' }}>
-      <CardContent sx={{ p: 2 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6">{title}</Typography>
-          <Chip 
-            label={`${metrics.totalIssues} total`} 
-            size="small" 
-            color="primary" 
-          />
-        </Box>
-        
-        <Box display="flex" flexDirection="column" gap={1}>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="body2" color="text.secondary">
-              Completed
-            </Typography>
-            <Chip 
-              label={metrics.completedIssues} 
-              size="small" 
-              color="success"
-              variant="outlined"
-              sx={{ minWidth: 40 }}
-            />
+    <Card sx={{ mb: 2, maxWidth: 420, mx: 'auto', borderRadius: 3, boxShadow: 6, bgcolor: 'background.paper', backdropFilter: 'blur(8px)' }} aria-label="Project metrics" role="region" tabIndex={0}>
+      <CardContent sx={{ p: 3 }}>
+        <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+          <Typography variant="h6" fontWeight={700} color="text.primary" id="project-metrics-title">
+            {title}
+          </Typography>
+          <Chip label={`${totalIssues} total`} size="small" color="primary" sx={{ ml: 'auto', fontWeight: 700, bgcolor: '#6C63FF', color: '#fff', borderRadius: 2 }} aria-label={`Total issues: ${totalIssues}`} />
+        </Stack>
+        <Box component="ul" aria-labelledby="project-metrics-title" sx={{ listStyle: 'none', p: 0, m: 0 }}>
+          <Box component="li" display="flex" justifyContent="space-between" alignItems="center" py={0.5}>
+            <Typography variant="body2" color="#fff" sx={{ fontWeight: 500 }}>Completed</Typography>
+            <Chip label={completedIssues} size="small" sx={{ bgcolor: '#23293A', color: '#4caf50', fontWeight: 700, borderRadius: 2 }} aria-label={`Completed: ${completedIssues}`} />
           </Box>
-          
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="body2" color="text.secondary">
-              In Progress
-            </Typography>
-            <Chip 
-              label={metrics.inProgressIssues} 
-              size="small" 
-              color="warning"
-              variant="outlined"
-              sx={{ minWidth: 40 }}
-            />
+          <Box component="li" display="flex" justifyContent="space-between" alignItems="center" py={0.5}>
+            <Typography variant="body2" color="#fff" sx={{ fontWeight: 500 }}>In Progress</Typography>
+            <Chip label={inProgressIssues} size="small" sx={{ bgcolor: '#23293A', color: '#ffb300', fontWeight: 700, borderRadius: 2 }} aria-label={`In Progress: ${inProgressIssues}`} />
           </Box>
-          
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="body2" color="text.secondary">
-              Open
-            </Typography>
-            <Chip 
-              label={metrics.openIssues} 
-              size="small" 
-              color="info"
-              variant="outlined"
-              sx={{ minWidth: 40 }}
-            />
+          <Box component="li" display="flex" justifyContent="space-between" alignItems="center" py={0.5}>
+            <Typography variant="body2" color="#fff" sx={{ fontWeight: 500 }}>Open</Typography>
+            <Chip label={openIssues} size="small" sx={{ bgcolor: '#23293A', color: '#6C63FF', fontWeight: 700, borderRadius: 2 }} aria-label={`Open: ${openIssues}`} />
           </Box>
-          
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="body2" color="text.secondary">
-              Avg Priority
-            </Typography>
-            <Chip 
-              label={getPriorityLabel(metrics.averagePriority)} 
-              size="small" 
-              variant="outlined"
-              sx={{ minWidth: 60 }}
-            />
+          <Box component="li" display="flex" justifyContent="space-between" alignItems="center" py={0.5}>
+            <Typography variant="body2" color="#fff" sx={{ fontWeight: 500 }}>Avg Priority</Typography>
+            <Chip label={getPriorityLabel(averagePriority)} size="small" sx={{ bgcolor: '#23293A', color: '#fff', fontWeight: 700, borderRadius: 2 }} aria-label={`Average Priority: ${averagePriority}`} />
           </Box>
         </Box>
       </CardContent>

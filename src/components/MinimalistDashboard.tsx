@@ -427,13 +427,13 @@ const MinimalistDashboard = () => {
       <Box maxWidth="lg" mx="auto" px={2} py={5}>
         {activeTab === 0 && (
           <Grid container spacing={4}>
-            <Grid xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Stack spacing={3}>
                 <ProjectProgressWidget />
                 <IssueStatusWidget />
               </Stack>
             </Grid>
-            <Grid xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Stack spacing={3}>
                 <TeamUtilizationWidget />
                 <ProjectMetricsWidget />
@@ -443,12 +443,12 @@ const MinimalistDashboard = () => {
         )}
         {activeTab === 1 && (
           <Grid container spacing={4}>
-            <Grid xs={12} md={8}>
+            <Grid size={{ xs: 12, md: 8 }}>
               <Box display="flex" justifyContent="center">
                 <TeamUtilizationWidget />
               </Box>
             </Grid>
-            <Grid xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <MetricCard
                 title="Code Review Efficiency"
                 current={78}
@@ -464,12 +464,12 @@ const MinimalistDashboard = () => {
         )}
         {activeTab === 2 && (
           <Grid container spacing={4}>
-            <Grid xs={12} md={8}>
+            <Grid size={{ xs: 12, md: 8 }}>
               <Box display="flex" justifyContent="center">
                 <ProjectMetricsWidget />
               </Box>
             </Grid>
-            <Grid xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <MetricCard 
                 title="Code Review Efficiency" 
                 current={78}

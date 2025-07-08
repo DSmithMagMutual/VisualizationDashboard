@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack } from '@mui/material';
 import { getProjectIssues, getTeamMembers } from '@/lib/jira-proxy';
 
 interface TeamUtilizationWidgetProps {
@@ -69,16 +69,12 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
 
   if (loading) {
     return (
-      <Card sx={{ mb: 1.5, maxWidth: 420, mx: 'auto' }}>
-        <CardContent sx={{ p: 2 }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-            <Typography variant="h6">{title}</Typography>
-            <Box sx={{ width: 20, height: 20 }}>
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-            </Box>
-          </Box>
-          <Box height={24} mb={1} bgcolor="#eee" borderRadius={1}></Box>
-          <Box height={24} width="75%" bgcolor="#eee" borderRadius={1}></Box>
+      <Card sx={{ mb: 2, maxWidth: 420, mx: 'auto', borderRadius: 3, boxShadow: 6, bgcolor: 'background.paper', backdropFilter: 'blur(8px)' }} aria-busy="true" aria-label="Loading team utilization" role="status">
+        <CardContent sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 120 }}>
+          <CircularProgress color="primary" size={40} aria-label="Loading" sx={{ mb: 2 }} />
+          <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+            Loading team utilization…
+          </Typography>
         </CardContent>
       </Card>
     );
@@ -86,9 +82,9 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
 
   if (error) {
     return (
-      <Card sx={{ mb: 1.5, maxWidth: 420, mx: 'auto', borderLeft: '4px solid #f44336', bgcolor: '#fff', boxShadow: 1 }}>
-        <CardContent sx={{ p: 2 }}>
-          <Typography variant="h6" color="error" gutterBottom>
+      <Card sx={{ mb: 2, maxWidth: 420, mx: 'auto', borderRadius: 3, boxShadow: 6, bgcolor: 'background.paper', backdropFilter: 'blur(8px)' }} aria-label="Team utilization error" role="alert">
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" color="error" gutterBottom tabIndex={0}>
             {title}
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -102,36 +98,25 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
   const totalIssues = Object.values(assigneeCounts).reduce((sum, count) => sum + count, 0);
 
   return (
-    <Card sx={{ mb: 1.5, maxWidth: 420, mx: 'auto' }}>
-      <CardContent sx={{ p: 2 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6">{title}</Typography>
-          <Chip 
-            label={`${teamMembers.length} members`} 
-            size="small" 
-            color="primary" 
-          />
-        </Box>
-        
-        <Box display="flex" flexDirection="column" gap={1}>
-          {Object.entries(assigneeCounts).map(([assignee, count]) => (
-            <Box key={assignee} display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="body2" color="text.secondary">
-                {assignee}
-              </Typography>
-              <Chip 
-                label={`${count} issues`} 
-                size="small" 
-                variant="outlined"
-                sx={{ minWidth: 60 }}
-              />
-            </Box>
-          ))}
-          {Object.keys(assigneeCounts).length === 0 && (
-            <Typography variant="body2" color="text.secondary" align="center">
-              No assigned issues found
-            </Typography>
-          )}
+    <Card sx={{ mb: 2, maxWidth: 420, mx: 'auto', borderRadius: 3, boxShadow: 6, bgcolor: 'background.paper', backdropFilter: 'blur(8px)' }} aria-label="Team utilization" role="region" tabIndex={0}>
+      <CardContent sx={{ p: 3 }}>
+        <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+          <Typography variant="h6" fontWeight={700} color="text.primary" id="team-utilization-title">
+            {title}
+          </Typography>
+          <Chip label={`${teamMembers.length} members`} size="small" color="primary" sx={{ ml: 'auto', fontWeight: 700, bgcolor: '#6C63FF', color: '#fff', borderRadius: 2 }} aria-label={`Team members: ${teamMembers.length}`} />
+        </Stack>
+        <Box component="ul" aria-labelledby="team-utilization-title" sx={{ listStyle: 'none', p: 0, m: 0 }}>
+          {teamMembers.map((member) => {
+            const name = member.displayName || member.emailAddress || 'Unknown';
+            const count = assigneeCounts[name] || 0;
+            return (
+              <Box component="li" key={member.emailAddress || name} display="flex" justifyContent="space-between" alignItems="center" py={0.5}>
+                <Typography variant="body2" color="#fff" sx={{ fontWeight: 500 }}>{name}</Typography>
+                <Chip label={`${count} issues`} size="small" sx={{ bgcolor: '#23293A', color: '#fff', fontWeight: 700, borderRadius: 2 }} aria-label={`${count} issues for ${name}`} />
+              </Box>
+            );
+          })}
         </Box>
       </CardContent>
     </Card>
