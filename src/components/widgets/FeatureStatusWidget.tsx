@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack } from '@mui/material';
 import { getProjectIssues } from '@/lib/jira-proxy';
+import { useBoard } from '../MinimalistDashboard';
 
 interface IssueStatusWidgetProps {
   title?: string;
@@ -9,6 +10,7 @@ interface IssueStatusWidgetProps {
 const IssueStatusWidget: React.FC<IssueStatusWidgetProps> = ({ 
   title = "Issue Status" 
 }) => {
+  const { activeBoard } = useBoard();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
@@ -18,22 +20,17 @@ const IssueStatusWidget: React.FC<IssueStatusWidgetProps> = ({
       try {
         setLoading(true);
         setError(null);
-        
-        const projectKey = process.env.NEXT_PUBLIC_JIRA_PROJECT_KEY || '';
+        const projectKey = activeBoard.name;
         const issuesData = await getProjectIssues(projectKey);
-        
         if (!issuesData.issues) {
           throw new Error('No issues found');
         }
-
         const issues = issuesData.issues;
         const statusCount: Record<string, number> = {};
-        
         issues.forEach((issue: any) => {
           const status = issue.fields.status?.name || 'Unknown';
           statusCount[status] = (statusCount[status] || 0) + 1;
         });
-
         setStatusCounts(statusCount);
       } catch (err) {
         console.error('IssueStatusWidget error:', err);
@@ -42,9 +39,8 @@ const IssueStatusWidget: React.FC<IssueStatusWidgetProps> = ({
         setLoading(false);
       }
     };
-
     fetchData();
-  }, []);
+  }, [activeBoard]);
 
   if (loading) {
     return (

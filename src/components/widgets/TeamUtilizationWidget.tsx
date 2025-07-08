@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack } from '@mui/material';
 import { getProjectIssues, getTeamMembers } from '@/lib/jira-proxy';
+import { useBoard } from '../MinimalistDashboard';
 
 interface TeamUtilizationWidgetProps {
   title?: string;
@@ -9,6 +10,7 @@ interface TeamUtilizationWidgetProps {
 const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({ 
   title = "Team Utilization" 
 }) => {
+  const { activeBoard } = useBoard();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
@@ -19,18 +21,13 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
       try {
         setLoading(true);
         setError(null);
-        
-        const projectKey = process.env.NEXT_PUBLIC_JIRA_PROJECT_KEY || '';
+        const projectKey = activeBoard.name;
         const issuesData = await getProjectIssues(projectKey);
         const teamMembersData = await getTeamMembers(projectKey);
-        
         if (!issuesData.issues) {
           throw new Error('No issues found');
         }
-
         const issues = issuesData.issues;
-        
-        // Extract team members from project issues if API call failed
         let finalTeamMembers = teamMembersData.values || [];
         if (finalTeamMembers.length === 0 && issues) {
           const assignees = new Set();
@@ -41,11 +38,9 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
           });
           finalTeamMembers = Array.from(assignees as Set<string>).map((email: string) => ({
             emailAddress: email,
-            displayName: email.split('@')[0] // Simple fallback
+            displayName: email.split('@')[0]
           }));
         }
-
-        // Count issues per assignee
         const assigneeCount: Record<string, number> = {};
         issues.forEach((issue: any) => {
           if (issue.fields.assignee) {
@@ -53,7 +48,6 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
             assigneeCount[assignee] = (assigneeCount[assignee] || 0) + 1;
           }
         });
-
         setTeamMembers(finalTeamMembers);
         setAssigneeCounts(assigneeCount);
       } catch (err) {
@@ -63,9 +57,8 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
         setLoading(false);
       }
     };
-
     fetchData();
-  }, []);
+  }, [activeBoard]);
 
   if (loading) {
     return (

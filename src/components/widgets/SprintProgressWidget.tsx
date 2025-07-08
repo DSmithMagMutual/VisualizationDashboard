@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, Box, LinearProgress, Chip, Stack, CircularProgress } from '@mui/material';
 import { getProjectIssues, getProjectData } from '@/lib/jira-proxy';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { useBoard } from '../MinimalistDashboard';
 
 interface ProjectProgressWidgetProps {
   title?: string;
@@ -10,6 +11,7 @@ interface ProjectProgressWidgetProps {
 const ProjectProgressWidget: React.FC<ProjectProgressWidgetProps> = ({ 
   title = "Project Progress" 
 }) => {
+  const { activeBoard } = useBoard();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -21,21 +23,17 @@ const ProjectProgressWidget: React.FC<ProjectProgressWidgetProps> = ({
       try {
         setLoading(true);
         setError(null);
-        
-        const projectKey = process.env.NEXT_PUBLIC_JIRA_PROJECT_KEY || '';
+        const projectKey = activeBoard.name;
         const projectData = await getProjectData(projectKey);
         const issuesData = await getProjectIssues(projectKey);
-        
         if (!issuesData.issues) {
           throw new Error('No issues found');
         }
-
         const issues = issuesData.issues;
         const total = issues.length;
         const completed = issues.filter((issue: any) => 
           issue.fields.status?.statusCategory?.key === 'done'
         ).length;
-
         setTotalIssues(total);
         setCompletedIssues(completed);
         setProgress(total > 0 ? Math.round((completed / total) * 100) : 0);
@@ -46,9 +44,8 @@ const ProjectProgressWidget: React.FC<ProjectProgressWidgetProps> = ({
         setLoading(false);
       }
     };
-
     fetchData();
-  }, []);
+  }, [activeBoard]);
 
   if (loading) {
     return (

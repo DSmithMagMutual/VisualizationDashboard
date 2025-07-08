@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, createContext } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, Legend, LineChart, Line } from 'recharts';
 import { ArrowUp, ArrowDown, Activity, Code, Users, Filter, ChevronDown, ChevronUp, AlertCircle, RefreshCw } from 'lucide-react';
 import JiraClient from '../lib/jira';
-import { jiraConfig } from '../config/jira';
 import { transformSprintData, transformFeatureStatus, transformTeamMetrics } from '../lib/jira';
 import axios from 'axios';
 import {
@@ -31,7 +30,6 @@ import IssueStatusWidget from './widgets/FeatureStatusWidget';
 import TeamUtilizationWidget from './widgets/TeamUtilizationWidget';
 import ProjectMetricsWidget from './widgets/SprintVelocityWidget';
 import SurveyCell from './widgets/SurveyCell';
-import ConfigureTargetsDialog from './dialogs/ConfigureTargetsDialog';
 
 interface DashboardData {
   sprintProgress: {
@@ -201,6 +199,113 @@ const getTargets = () => {
   };
 };
 
+// Board context for managing boards and active board
+const defaultBoards = [
+  { name: 'JPP', id: 634 },
+  { name: 'ADVICE', id: 1164 },
+];
+
+const BoardContext = createContext({
+  boards: defaultBoards,
+  activeBoard: defaultBoards[0],
+  setActiveBoard: (b: any) => {},
+  addBoard: (b: any) => {},
+});
+
+export function useBoard() {
+  return useContext(BoardContext);
+}
+
+function BoardProvider({ children }: { children: React.ReactNode }) {
+  const [boards, setBoards] = useState(defaultBoards);
+  const [activeBoard, setActiveBoard] = useState(defaultBoards[0]);
+  const addBoard = (board: { name: string; id: number }) => {
+    setBoards((prev) => [...prev, board]);
+    setActiveBoard(board);
+  };
+  return (
+    <BoardContext.Provider value={{ boards, activeBoard, setActiveBoard, addBoard }}>
+      {children}
+    </BoardContext.Provider>
+  );
+}
+
+function BoardSwitcher() {
+  const { boards, activeBoard, setActiveBoard, addBoard } = useBoard();
+  const [open, setOpen] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newId, setNewId] = useState('');
+  return (
+    <Box display="flex" alignItems="center" gap={2} mb={3}>
+      <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700 }}>
+        Board:
+      </Typography>
+      <select
+        aria-label="Select board"
+        value={activeBoard.id}
+        onChange={e => {
+          const b = boards.find(b => b.id === Number(e.target.value));
+          if (b) setActiveBoard(b);
+        }}
+        style={{ padding: 8, borderRadius: 8, fontSize: 16 }}
+      >
+        {boards.map(b => (
+          <option key={b.id} value={b.id}>{b.name} (ID: {b.id})</option>
+        ))}
+      </select>
+      <button
+        onClick={() => setOpen(true)}
+        style={{ marginLeft: 8, padding: '6px 12px', borderRadius: 8, background: '#6C63FF', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+        aria-label="Add board"
+      >
+        + Add Board
+      </button>
+      {open && (
+        <div role="dialog" aria-modal="true" style={{ background: '#23293A', color: '#fff', padding: 24, borderRadius: 12, position: 'absolute', top: 80, left: '50%', transform: 'translateX(-50%)', zIndex: 10, minWidth: 320 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>Add Board</Typography>
+          <input
+            aria-label="Board name"
+            placeholder="Board name/key"
+            value={newName}
+            onChange={e => setNewName(e.target.value)}
+            style={{ width: '100%', marginBottom: 12, padding: 8, borderRadius: 6, border: '1px solid #444', background: '#181C24', color: '#fff' }}
+          />
+          <input
+            aria-label="Board ID"
+            placeholder="Board ID"
+            value={newId}
+            onChange={e => setNewId(e.target.value)}
+            style={{ width: '100%', marginBottom: 12, padding: 8, borderRadius: 6, border: '1px solid #444', background: '#181C24', color: '#fff' }}
+          />
+          <Box display="flex" gap={2}>
+            <button
+              onClick={() => {
+                if (newName && newId) {
+                  addBoard({ name: newName, id: Number(newId) });
+                  setNewName('');
+                  setNewId('');
+                  setOpen(false);
+                }
+              }}
+              style={{ padding: '6px 16px', borderRadius: 8, background: '#6C63FF', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+              aria-label="Save board"
+            >
+              Save
+            </button>
+            <button
+              onClick={() => setOpen(false)}
+              style={{ padding: '6px 16px', borderRadius: 8, background: '#444', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+              aria-label="Cancel add board"
+            >
+              Cancel
+            </button>
+          </Box>
+        </div>
+      )}
+    </Box>
+  );
+}
+
 const MinimalistDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [targets, setTargets] = useState(getTargets());
@@ -208,6 +313,7 @@ const MinimalistDashboard = () => {
   const [activeSurveyCount, setActiveSurveyCount] = useState(0);
   const [configOpen, setConfigOpen] = useState(false);
   const [editTargets, setEditTargets] = useState(targets);
+  const { activeBoard } = useBoard();
 
   useEffect(() => {
     setEditTargets(targets);
@@ -243,26 +349,29 @@ const MinimalistDashboard = () => {
   const [performanceTrendLoading, setPerformanceTrendLoading] = useState(true);
 
   // Initialize Jira client
-  const getJiraClient = () => {
-    return new JiraClient({
-      baseUrl: process.env.NEXT_PUBLIC_JIRA_BASE_URL || '',
-      email: process.env.NEXT_PUBLIC_JIRA_EMAIL || '',
-      apiToken: process.env.NEXT_PUBLIC_JIRA_API_TOKEN || ''
-    });
-  };
+  // Remove getJiraClient and all process.env usage
+  // Replace all JiraClient calls with fetches to /api/jira using activeBoard.id and activeBoard.name
+  // Clean up unused imports
 
   // Fetch sprint progress data
   const fetchSprintProgress = async () => {
     try {
       setSprintProgressLoading(true);
       setSprintProgressError(undefined);
-      const jiraClient = getJiraClient();
-      const sprintResponse = await jiraClient.getActiveSprint(Number(process.env.NEXT_PUBLIC_JIRA_BOARD_ID) || 1164);
-      if (!sprintResponse.values || sprintResponse.values.length === 0) {
+      const response = await fetch(`/api/jira/sprint-progress/${activeBoard.id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data: SprintData = await response.json();
+      if (!data.values || data.values.length === 0) {
         throw new Error('No active sprint found');
       }
-      const activeSprint = sprintResponse.values[0];
-      const sprintIssues = await jiraClient.getSprintIssues(activeSprint.id);
+      const activeSprint = data.values[0];
+      const responseIssues = await fetch(`/api/jira/sprint-issues/${activeSprint.id}`);
+      if (!responseIssues.ok) {
+        throw new Error(`HTTP error! status: ${responseIssues.status}`);
+      }
+      const sprintIssues: SprintIssues = await responseIssues.json();
       const sprintProgress = transformSprintData(sprintIssues);
       setSprintProgressData(sprintProgress);
     } catch (error) {
@@ -277,13 +386,20 @@ const MinimalistDashboard = () => {
     try {
       setFeatureStatusLoading(true);
       setFeatureStatusError(undefined);
-      const jiraClient = getJiraClient();
-      const sprintResponse = await jiraClient.getActiveSprint(Number(process.env.NEXT_PUBLIC_JIRA_BOARD_ID) || 1164);
-      if (!sprintResponse.values || sprintResponse.values.length === 0) {
+      const response = await fetch(`/api/jira/sprint-progress/${activeBoard.id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data: SprintData = await response.json();
+      if (!data.values || data.values.length === 0) {
         throw new Error('No active sprint found');
       }
-      const activeSprint = sprintResponse.values[0];
-      const sprintIssues = await jiraClient.getSprintIssues(activeSprint.id);
+      const activeSprint = data.values[0];
+      const responseIssues = await fetch(`/api/jira/sprint-issues/${activeSprint.id}`);
+      if (!responseIssues.ok) {
+        throw new Error(`HTTP error! status: ${responseIssues.status}`);
+      }
+      const sprintIssues: SprintIssues = await responseIssues.json();
       const featureStatus = transformFeatureStatus(sprintIssues.issues);
       setFeatureStatusData(featureStatus);
     } catch (error) {
@@ -298,14 +414,25 @@ const MinimalistDashboard = () => {
     try {
       setTeamMetricsLoading(true);
       setTeamMetricsError(undefined);
-      const jiraClient = getJiraClient();
-      const sprintResponse = await jiraClient.getActiveSprint(Number(process.env.NEXT_PUBLIC_JIRA_BOARD_ID) || 1164);
-      if (!sprintResponse.values || sprintResponse.values.length === 0) {
+      const response = await fetch(`/api/jira/sprint-progress/${activeBoard.id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data: SprintData = await response.json();
+      if (!data.values || data.values.length === 0) {
         throw new Error('No active sprint found');
       }
-      const activeSprint = sprintResponse.values[0];
-      const sprintIssues = await jiraClient.getSprintIssues(activeSprint.id);
-      const teamMembers = await jiraClient.getTeamMembers(process.env.NEXT_PUBLIC_JIRA_PROJECT_KEY || 'ADVICE') as TeamMember[];
+      const activeSprint = data.values[0];
+      const responseIssues = await fetch(`/api/jira/sprint-issues/${activeSprint.id}`);
+      if (!responseIssues.ok) {
+        throw new Error(`HTTP error! status: ${responseIssues.status}`);
+      }
+      const sprintIssues: SprintIssues = await responseIssues.json();
+      const responseMembers = await fetch(`/api/jira/team-members/${activeBoard.name}`);
+      if (!responseMembers.ok) {
+        throw new Error(`HTTP error! status: ${responseMembers.status}`);
+      }
+      const teamMembers: TeamMember[] = await responseMembers.json();
       const teamMetrics = transformTeamMetrics(sprintIssues.issues, teamMembers);
       setTeamMetricsData(teamMetrics);
     } catch (error) {
@@ -355,12 +482,11 @@ const MinimalistDashboard = () => {
   // Test Jira connection handler
   const handleTestJiraConnection = async () => {
     try {
-      const jiraClient = new JiraClient({
-        baseUrl: process.env.NEXT_PUBLIC_JIRA_BASE_URL || '',
-        email: process.env.NEXT_PUBLIC_JIRA_EMAIL || '',
-        apiToken: process.env.NEXT_PUBLIC_JIRA_API_TOKEN || ''
-      });
-      const boards = await jiraClient.getBoards();
+      const response = await fetch(`/api/jira/boards`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const boards = await response.json();
       console.log('Jira Boards:', boards);
       alert('Jira connection successful! Check the console for board data.');
     } catch (error) {
@@ -386,7 +512,6 @@ const MinimalistDashboard = () => {
               <Typography variant="caption" color="text.secondary">Updated: {new Date().toLocaleDateString()}</Typography>
             </Box>
             <Stack direction="row" spacing={2} alignItems="center">
-              <Button onClick={() => setConfigOpen(true)} color="primary" variant="text" size="small">Configure Targets</Button>
               <Paper elevation={0} sx={{ p: 1, display: 'flex', alignItems: 'center', gap: 1, bgcolor: '#f0f4f8' }}>
                 <Typography fontWeight={500} color="text.secondary">Overall Score</Typography>
                 <Box display="flex" alignItems="center" gap={0.5}>
@@ -412,19 +537,8 @@ const MinimalistDashboard = () => {
           </Tabs>
         </Box>
       </Paper>
-      {/* Configure Targets Modal */}
-      <ConfigureTargetsDialog
-        open={configOpen}
-        onClose={() => setConfigOpen(false)}
-        targets={targets}
-        onSave={(newTargets) => {
-          setTargets(newTargets);
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('dashboard_targets', JSON.stringify(newTargets));
-          }
-        }}
-      />
       <Box maxWidth="lg" mx="auto" px={2} py={5}>
+        <BoardSwitcher />
         {activeTab === 0 && (
           <Grid container spacing={4}>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -488,4 +602,10 @@ const MinimalistDashboard = () => {
   );
 };
 
-export default MinimalistDashboard; 
+export default function DashboardWithBoardProvider() {
+  return (
+    <BoardProvider>
+      <MinimalistDashboard />
+    </BoardProvider>
+  );
+} 

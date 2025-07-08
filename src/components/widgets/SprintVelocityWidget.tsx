@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack } from '@mui/material';
 import { getProjectIssues } from '@/lib/jira-proxy';
+import { useBoard } from '../MinimalistDashboard';
 
 interface ProjectMetricsWidgetProps {
   title?: string;
@@ -9,6 +10,7 @@ interface ProjectMetricsWidgetProps {
 const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({ 
   title = "Project Metrics" 
 }) => {
+  const { activeBoard } = useBoard();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [metrics, setMetrics] = useState({
@@ -24,14 +26,11 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
       try {
         setLoading(true);
         setError(null);
-        
-        const projectKey = process.env.NEXT_PUBLIC_JIRA_PROJECT_KEY || '';
+        const projectKey = activeBoard.name;
         const issuesData = await getProjectIssues(projectKey);
-        
         if (!issuesData.issues) {
           throw new Error('No issues found');
         }
-
         const issues = issuesData.issues;
         const total = issues.length;
         const completed = issues.filter((issue: any) => 
@@ -43,14 +42,11 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
         const open = issues.filter((issue: any) => 
           issue.fields.status?.statusCategory?.key === 'new'
         ).length;
-
-        // Calculate average priority (1=Highest, 5=Lowest)
         const prioritySum = issues.reduce((sum: number, issue: any) => {
-          const priority = issue.fields.priority?.id || 3; // Default to medium
+          const priority = issue.fields.priority?.id || 3;
           return sum + priority;
         }, 0);
         const averagePriority = total > 0 ? Math.round(prioritySum / total) : 3;
-
         setMetrics({
           totalIssues: total,
           completedIssues: completed,
@@ -65,9 +61,8 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
         setLoading(false);
       }
     };
-
     fetchData();
-  }, []);
+  }, [activeBoard]);
 
   if (loading) {
     return (
