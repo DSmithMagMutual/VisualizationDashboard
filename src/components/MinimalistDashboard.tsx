@@ -26,10 +26,10 @@ import {
   DialogActions,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import SprintProgressWidget from './widgets/SprintProgressWidget';
-import FeatureStatusWidget from './widgets/FeatureStatusWidget';
+import ProjectProgressWidget from './widgets/SprintProgressWidget';
+import IssueStatusWidget from './widgets/FeatureStatusWidget';
 import TeamUtilizationWidget from './widgets/TeamUtilizationWidget';
-import SprintVelocityWidget from './widgets/SprintVelocityWidget';
+import ProjectMetricsWidget from './widgets/SprintVelocityWidget';
 import SurveyCell from './widgets/SurveyCell';
 import ConfigureTargetsDialog from './dialogs/ConfigureTargetsDialog';
 
@@ -245,9 +245,9 @@ const MinimalistDashboard = () => {
   // Initialize Jira client
   const getJiraClient = () => {
     return new JiraClient({
-      baseUrl: import.meta.env.VITE_JIRA_BASE_URL || '',
-      email: import.meta.env.VITE_JIRA_EMAIL || '',
-      apiToken: import.meta.env.VITE_JIRA_API_TOKEN || ''
+      baseUrl: process.env.NEXT_PUBLIC_JIRA_BASE_URL || '',
+      email: process.env.NEXT_PUBLIC_JIRA_EMAIL || '',
+      apiToken: process.env.NEXT_PUBLIC_JIRA_API_TOKEN || ''
     });
   };
 
@@ -257,7 +257,7 @@ const MinimalistDashboard = () => {
       setSprintProgressLoading(true);
       setSprintProgressError(undefined);
       const jiraClient = getJiraClient();
-      const sprintResponse = await jiraClient.getActiveSprint(Number(import.meta.env.VITE_JIRA_BOARD_ID));
+      const sprintResponse = await jiraClient.getActiveSprint(Number(process.env.NEXT_PUBLIC_JIRA_BOARD_ID) || 1164);
       if (!sprintResponse.values || sprintResponse.values.length === 0) {
         throw new Error('No active sprint found');
       }
@@ -278,7 +278,7 @@ const MinimalistDashboard = () => {
       setFeatureStatusLoading(true);
       setFeatureStatusError(undefined);
       const jiraClient = getJiraClient();
-      const sprintResponse = await jiraClient.getActiveSprint(Number(import.meta.env.VITE_JIRA_BOARD_ID));
+      const sprintResponse = await jiraClient.getActiveSprint(Number(process.env.NEXT_PUBLIC_JIRA_BOARD_ID) || 1164);
       if (!sprintResponse.values || sprintResponse.values.length === 0) {
         throw new Error('No active sprint found');
       }
@@ -299,13 +299,13 @@ const MinimalistDashboard = () => {
       setTeamMetricsLoading(true);
       setTeamMetricsError(undefined);
       const jiraClient = getJiraClient();
-      const sprintResponse = await jiraClient.getActiveSprint(Number(import.meta.env.VITE_JIRA_BOARD_ID));
+      const sprintResponse = await jiraClient.getActiveSprint(Number(process.env.NEXT_PUBLIC_JIRA_BOARD_ID) || 1164);
       if (!sprintResponse.values || sprintResponse.values.length === 0) {
         throw new Error('No active sprint found');
       }
       const activeSprint = sprintResponse.values[0];
       const sprintIssues = await jiraClient.getSprintIssues(activeSprint.id);
-      const teamMembers = await jiraClient.getTeamMembers(import.meta.env.VITE_JIRA_PROJECT_KEY || '') as TeamMember[];
+      const teamMembers = await jiraClient.getTeamMembers(process.env.NEXT_PUBLIC_JIRA_PROJECT_KEY || 'ADVICE') as TeamMember[];
       const teamMetrics = transformTeamMetrics(sprintIssues.issues, teamMembers);
       setTeamMetricsData(teamMetrics);
     } catch (error) {
@@ -352,11 +352,31 @@ const MinimalistDashboard = () => {
     }
   }, []);
 
+  // Test Jira connection handler
+  const handleTestJiraConnection = async () => {
+    try {
+      const jiraClient = new JiraClient({
+        baseUrl: process.env.NEXT_PUBLIC_JIRA_BASE_URL || '',
+        email: process.env.NEXT_PUBLIC_JIRA_EMAIL || '',
+        apiToken: process.env.NEXT_PUBLIC_JIRA_API_TOKEN || ''
+      });
+      const boards = await jiraClient.getBoards();
+      console.log('Jira Boards:', boards);
+      alert('Jira connection successful! Check the console for board data.');
+    } catch (error) {
+      console.error('Jira connection failed:', error);
+      alert('Jira connection failed. Check the console for details.');
+    }
+  };
+
   // Tab labels
   const tabLabels = ['Overview', 'Team Performance', 'Delivery Metrics'];
 
   return (
     <Box minHeight="100vh" bgcolor="#f6f7fb">
+      <Button variant="outlined" color="primary" onClick={handleTestJiraConnection} sx={{ mb: 2 }}>
+        Test Jira Connection
+      </Button>
       {/* Dashboard Header */}
       <Paper elevation={0} square sx={{ borderBottom: 1, borderColor: 'divider', mb: 0, bgcolor: '#fff' }}>
         <Box maxWidth="md" mx="auto" px={2} py={4}>
@@ -406,83 +426,29 @@ const MinimalistDashboard = () => {
       />
       <Box maxWidth="lg" mx="auto" px={2} py={5}>
         {activeTab === 0 && (
-          <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
-            <Grid item xs={12} md={8}>
+          <Grid container spacing={4}>
+            <Grid xs={12} md={6}>
               <Stack spacing={3}>
-                <SprintProgressWidget
-                  data={sprintProgressData}
-                  target={targets.sprintProgress}
-                  error={sprintProgressError}
-                  loading={sprintProgressLoading}
-                  onRetry={fetchSprintProgress}
-                />
-                <FeatureStatusWidget
-                  data={featureStatusData}
-                  target={targets.featureStatus}
-                  error={featureStatusError}
-                  loading={featureStatusLoading}
-                  onRetry={fetchFeatureStatus}
-                />
-                <TeamUtilizationWidget
-                  data={teamMetricsData}
-                  target={targets.teamUtilization}
-                  error={teamMetricsError}
-                  loading={teamMetricsLoading}
-                  onRetry={fetchTeamMetrics}
-                />
+                <ProjectProgressWidget />
+                <IssueStatusWidget />
               </Stack>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid xs={12} md={6}>
               <Stack spacing={3}>
-                <SurveyCell activeCount={activeSurveyCount} />
-                <MetricCard
-                  title="Code Quality"
-                  current={85}
-                  target={targets.codeQuality}
-                  trend="up"
-                  status="green"
-                  isDummyData
-                >
-                  <Typography variant="body2" color="text.secondary">Static analysis, test coverage, and code smells.</Typography>
-                </MetricCard>
-                <MetricCard
-                  title="Tech Debt"
-                  current={12}
-                  target={targets.techDebt}
-                  trend="down"
-                  status="yellow"
-                  isDummyData
-                >
-                  <Typography variant="body2" color="text.secondary">Open tech debt items and refactoring backlog.</Typography>
-                </MetricCard>
-                <MetricCard
-                  title="Cross-Team Collaboration"
-                  current={7}
-                  target={targets.crossTeam}
-                  trend="up"
-                  status="green"
-                  isDummyData
-                >
-                  <Typography variant="body2" color="text.secondary">Joint initiatives and shared deliverables.</Typography>
-                </MetricCard>
+                <TeamUtilizationWidget />
+                <ProjectMetricsWidget />
               </Stack>
             </Grid>
           </Grid>
         )}
         {activeTab === 1 && (
-          <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
-            <Grid item xs={12} md={8}>
+          <Grid container spacing={4}>
+            <Grid xs={12} md={8}>
               <Box display="flex" justifyContent="center">
-                <TeamUtilizationWidget
-                  data={teamMetricsData}
-                  target={targets.teamUtilization}
-                  error={teamMetricsError}
-                  loading={teamMetricsLoading}
-                  onRetry={fetchTeamMetrics}
-                />
+                <TeamUtilizationWidget />
               </Box>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid xs={12} md={4}>
               <MetricCard
                 title="Code Review Efficiency"
                 current={78}
@@ -497,19 +463,13 @@ const MinimalistDashboard = () => {
           </Grid>
         )}
         {activeTab === 2 && (
-          <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
-            <Grid item xs={12} md={8}>
+          <Grid container spacing={4}>
+            <Grid xs={12} md={8}>
               <Box display="flex" justifyContent="center">
-                <SprintVelocityWidget
-                  data={performanceTrendData}
-                  target={targets.sprintProgress}
-                  error={performanceTrendError}
-                  loading={performanceTrendLoading}
-                  onRetry={fetchPerformanceTrend}
-                />
+                <ProjectMetricsWidget />
               </Box>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid xs={12} md={4}>
               <MetricCard 
                 title="Code Review Efficiency" 
                 current={78}
