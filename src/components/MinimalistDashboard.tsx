@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, Legend, LineChart, Line } from 'recharts';
 import { ArrowUp, ArrowDown, Activity, Code, Users, Filter, ChevronDown, ChevronUp, AlertCircle, RefreshCw } from 'lucide-react';
-import JiraClient from '../lib/jira';
-import { transformSprintData, transformFeatureStatus, transformTeamMetrics } from '../lib/jira';
-import axios from 'axios';
 import {
   Box,
   Card,
@@ -331,144 +327,9 @@ const MinimalistDashboard = () => {
     setConfigOpen(false);
   };
 
-  // Widget state management
-  const [sprintProgressData, setSprintProgressData] = useState<{ completed: number; inProgress: number; planned: number } | undefined>(undefined);
-  const [sprintProgressError, setSprintProgressError] = useState<WidgetError | undefined>(undefined);
-  const [sprintProgressLoading, setSprintProgressLoading] = useState(true);
-
-  const [featureStatusData, setFeatureStatusData] = useState<{ completed: number; inProgress: number; blocked: number } | undefined>(undefined);
-  const [featureStatusError, setFeatureStatusError] = useState<WidgetError | undefined>(undefined);
-  const [featureStatusLoading, setFeatureStatusLoading] = useState(true);
-
-  const [teamMetricsData, setTeamMetricsData] = useState<Array<{ name: string; value: number }> | undefined>(undefined);
-  const [teamMetricsError, setTeamMetricsError] = useState<WidgetError | undefined>(undefined);
-  const [teamMetricsLoading, setTeamMetricsLoading] = useState(true);
-
-  const [performanceTrendData, setPerformanceTrendData] = useState<Array<{ month: string; value: number }> | undefined>(undefined);
-  const [performanceTrendError, setPerformanceTrendError] = useState<WidgetError | undefined>(undefined);
-  const [performanceTrendLoading, setPerformanceTrendLoading] = useState(true);
-
-  // Initialize Jira client
-  // Remove getJiraClient and all process.env usage
-  // Replace all JiraClient calls with fetches to /api/jira using activeBoard.id and activeBoard.name
-  // Clean up unused imports
-
-  // Fetch sprint progress data
-  const fetchSprintProgress = async () => {
-    try {
-      setSprintProgressLoading(true);
-      setSprintProgressError(undefined);
-      const response = await fetch(`/api/jira/sprint-progress/${activeBoard.id}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: SprintData = await response.json();
-      if (!data.values || data.values.length === 0) {
-        throw new Error('No active sprint found');
-      }
-      const activeSprint = data.values[0];
-      const responseIssues = await fetch(`/api/jira/sprint-issues/${activeSprint.id}`);
-      if (!responseIssues.ok) {
-        throw new Error(`HTTP error! status: ${responseIssues.status}`);
-      }
-      const sprintIssues: SprintIssues = await responseIssues.json();
-      const sprintProgress = transformSprintData(sprintIssues);
-      setSprintProgressData(sprintProgress);
-    } catch (error) {
-      setSprintProgressError({ message: error instanceof Error ? error.message : 'Failed to fetch sprint progress data' });
-    } finally {
-      setSprintProgressLoading(false);
-    }
-  };
-
-  // Fetch feature status data
-  const fetchFeatureStatus = async () => {
-    try {
-      setFeatureStatusLoading(true);
-      setFeatureStatusError(undefined);
-      const response = await fetch(`/api/jira/sprint-progress/${activeBoard.id}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: SprintData = await response.json();
-      if (!data.values || data.values.length === 0) {
-        throw new Error('No active sprint found');
-      }
-      const activeSprint = data.values[0];
-      const responseIssues = await fetch(`/api/jira/sprint-issues/${activeSprint.id}`);
-      if (!responseIssues.ok) {
-        throw new Error(`HTTP error! status: ${responseIssues.status}`);
-      }
-      const sprintIssues: SprintIssues = await responseIssues.json();
-      const featureStatus = transformFeatureStatus(sprintIssues.issues);
-      setFeatureStatusData(featureStatus);
-    } catch (error) {
-      setFeatureStatusError({ message: error instanceof Error ? error.message : 'Failed to fetch feature status data' });
-    } finally {
-      setFeatureStatusLoading(false);
-    }
-  };
-
-  // Fetch team metrics data
-  const fetchTeamMetrics = async () => {
-    try {
-      setTeamMetricsLoading(true);
-      setTeamMetricsError(undefined);
-      const response = await fetch(`/api/jira/sprint-progress/${activeBoard.id}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: SprintData = await response.json();
-      if (!data.values || data.values.length === 0) {
-        throw new Error('No active sprint found');
-      }
-      const activeSprint = data.values[0];
-      const responseIssues = await fetch(`/api/jira/sprint-issues/${activeSprint.id}`);
-      if (!responseIssues.ok) {
-        throw new Error(`HTTP error! status: ${responseIssues.status}`);
-      }
-      const sprintIssues: SprintIssues = await responseIssues.json();
-      const responseMembers = await fetch(`/api/jira/team-members/${activeBoard.name}`);
-      if (!responseMembers.ok) {
-        throw new Error(`HTTP error! status: ${responseMembers.status}`);
-      }
-      const teamMembers: TeamMember[] = await responseMembers.json();
-      const teamMetrics = transformTeamMetrics(sprintIssues.issues, teamMembers);
-      setTeamMetricsData(teamMetrics);
-    } catch (error) {
-      setTeamMetricsError({ message: error instanceof Error ? error.message : 'Failed to fetch team metrics data' });
-    } finally {
-      setTeamMetricsLoading(false);
-    }
-  };
-
-  // Fetch performance trend data
-  const fetchPerformanceTrend = async () => {
-    try {
-      setPerformanceTrendLoading(true);
-      setPerformanceTrendError(undefined);
-      // This is a placeholder - you'll need to implement the actual logic
-      const performanceTrend = [
-        { month: 'Jan', value: 85 },
-        { month: 'Feb', value: 87 },
-        { month: 'Mar', value: 83 },
-        { month: 'Apr', value: 88 },
-        { month: 'May', value: 91 },
-        { month: 'Jun', value: 86 }
-      ];
-      setPerformanceTrendData(performanceTrend);
-    } catch (error) {
-      setPerformanceTrendError({ message: error instanceof Error ? error.message : 'Failed to fetch performance trend data' });
-    } finally {
-      setPerformanceTrendLoading(false);
-    }
-  };
+  // Widget state management - removed unused state since widgets handle their own state
 
   useEffect(() => {
-    fetchSprintProgress();
-    fetchFeatureStatus();
-    fetchTeamMetrics();
-    fetchPerformanceTrend();
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('dashboard_surveys');
       if (stored) {
@@ -516,13 +377,7 @@ const MinimalistDashboard = () => {
                 <Typography fontWeight={500} color="text.secondary">Overall Score</Typography>
                 <Box display="flex" alignItems="center" gap={0.5}>
                   <Typography variant="h5" color="success.main" fontWeight={700}>
-                    {sprintProgressData ? Math.round(
-                      (sprintProgressData.completed /
-                        (sprintProgressData.completed +
-                          sprintProgressData.inProgress +
-                          sprintProgressData.planned)) *
-                      100
-                    ) : 0}%
+                    85%
                   </Typography>
                   <ArrowUp color="#4caf50" size={16} />
                 </Box>

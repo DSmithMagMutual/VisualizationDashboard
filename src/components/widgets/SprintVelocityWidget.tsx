@@ -26,8 +26,21 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
       try {
         setLoading(true);
         setError(null);
+        
+        // Add timeout to prevent infinite loading
+        const timeoutId = setTimeout(() => {
+          setError('Request timed out. Please check your Jira configuration.');
+          setLoading(false);
+        }, 10000); // 10 second timeout
+
         const projectKey = activeBoard.name;
+        console.log('Fetching project metrics for project:', projectKey);
+        
         const issuesData = await getProjectIssues(projectKey);
+        console.log('Issues data for metrics:', issuesData);
+        
+        clearTimeout(timeoutId);
+        
         if (!issuesData.issues) {
           throw new Error('No issues found');
         }
@@ -61,7 +74,13 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
         setLoading(false);
       }
     };
-    fetchData();
+    
+    if (activeBoard && activeBoard.name) {
+      fetchData();
+    } else {
+      setError('No active board selected');
+      setLoading(false);
+    }
   }, [activeBoard]);
 
   if (loading) {
@@ -71,6 +90,9 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
           <CircularProgress color="primary" size={40} aria-label="Loading" sx={{ mb: 2 }} />
           <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
             Loading project metrics…
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+            Project: {activeBoard?.name || 'Unknown'}
           </Typography>
         </CardContent>
       </Card>
@@ -84,8 +106,11 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
           <Typography variant="h6" color="error" gutterBottom tabIndex={0}>
             {title}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" gutterBottom>
             {error}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Make sure your Jira environment variables are configured correctly.
           </Typography>
         </CardContent>
       </Card>
