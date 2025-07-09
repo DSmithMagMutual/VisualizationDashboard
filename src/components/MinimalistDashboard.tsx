@@ -28,6 +28,7 @@ import ProjectMetricsWidget from './widgets/SprintVelocityWidget';
 import DeliveryMetricsWidget from './widgets/DeliveryMetricsWidget';
 import SurveyCell from './widgets/SurveyCell';
 
+
 interface DashboardData {
   sprintProgress: {
     completed: number;
@@ -435,14 +436,44 @@ const MinimalistDashboard = () => {
         {activeTab === 2 && (
           <Grid container spacing={4}>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Box display="flex" justifyContent="center">
+              <Stack spacing={3}>
                 <ProjectMetricsWidget />
-              </Box>
+                <DeliveryMetricsWidget />
+              </Stack>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Box display="flex" justifyContent="center">
-                <DeliveryMetricsWidget />
-              </Box>
+              <Stack spacing={3}>
+                <MetricCard 
+                  title="Code Review Efficiency" 
+                  current={78}
+                  target={targets.codeReview}
+                  trend="up"
+                  status="yellow"
+                  isDummyData
+                >
+                  <Typography variant="body2" color="text.secondary">Avg. time to review and merge PRs.</Typography>
+                </MetricCard>
+                <MetricCard 
+                  title="Sprint Velocity" 
+                  current={12}
+                  target={15}
+                  trend="up"
+                  status="green"
+                  isDummyData
+                >
+                  <Typography variant="body2" color="text.secondary">Story points completed this sprint.</Typography>
+                </MetricCard>
+                <MetricCard 
+                  title="Bug Resolution Time" 
+                  current={2.5}
+                  target={1.5}
+                  trend="down"
+                  status="red"
+                  isDummyData
+                >
+                  <Typography variant="body2" color="text.secondary">Average days to resolve bugs.</Typography>
+                </MetricCard>
+              </Stack>
             </Grid>
           </Grid>
         )}
