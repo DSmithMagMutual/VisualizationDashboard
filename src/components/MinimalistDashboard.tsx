@@ -25,6 +25,7 @@ import ProjectProgressWidget from './widgets/SprintProgressWidget';
 import IssueStatusWidget from './widgets/FeatureStatusWidget';
 import TeamUtilizationWidget from './widgets/TeamUtilizationWidget';
 import ProjectMetricsWidget from './widgets/SprintVelocityWidget';
+import DeliveryMetricsWidget from './widgets/DeliveryMetricsWidget';
 import SurveyCell from './widgets/SurveyCell';
 
 interface DashboardData {
@@ -433,22 +434,15 @@ const MinimalistDashboard = () => {
         )}
         {activeTab === 2 && (
           <Grid container spacing={4}>
-            <Grid size={{ xs: 12, md: 8 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box display="flex" justifyContent="center">
                 <ProjectMetricsWidget />
               </Box>
             </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <MetricCard 
-                title="Code Review Efficiency" 
-                current={78}
-                target={targets.codeReview}
-                trend="up"
-                status="yellow"
-                isDummyData
-              >
-                <Typography variant="body2" color="text.secondary">Avg. time to review and merge PRs.</Typography>
-              </MetricCard>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Box display="flex" justifyContent="center">
+                <DeliveryMetricsWidget />
+              </Box>
             </Grid>
           </Grid>
         )}
