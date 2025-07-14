@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack, Switch, FormControlLabel } from '@mui/material';
 import { getProjectIssues, getTeamMembers } from '@/lib/jira-proxy';
 import { useBoard } from '../MinimalistDashboard';
 
@@ -15,6 +15,7 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
   const [assigneeCounts, setAssigneeCounts] = useState<Record<string, number>>({});
+  const [showMembersWithoutIssues, setShowMembersWithoutIssues] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,6 +120,13 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
 
   const totalIssues = Object.values(assigneeCounts).reduce((sum, count) => sum + count, 0);
 
+  // Filter team members based on toggle state
+  const filteredTeamMembers = teamMembers.filter((member) => {
+    const name = member.displayName || member.emailAddress || 'Unknown';
+    const count = assigneeCounts[name] || 0;
+    return showMembersWithoutIssues || count > 0;
+  });
+
   return (
     <Card sx={{ mb: 2, maxWidth: 420, mx: 'auto', borderRadius: 3, boxShadow: 6, bgcolor: 'background.paper', backdropFilter: 'blur(8px)' }} aria-label="Team utilization" role="region" tabIndex={0}>
       <CardContent sx={{ p: 3 }}>
@@ -126,10 +134,35 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
           <Typography variant="h6" fontWeight={700} color="text.primary" id="team-utilization-title">
             {title}
           </Typography>
-          <Chip label={`${teamMembers.length} members`} size="small" color="primary" sx={{ ml: 'auto', fontWeight: 700, bgcolor: '#6C63FF', color: '#fff', borderRadius: 2 }} aria-label={`Team members: ${teamMembers.length}`} />
+          <Chip label={`${filteredTeamMembers.length} members`} size="small" color="primary" sx={{ ml: 'auto', fontWeight: 700, bgcolor: '#6C63FF', color: '#fff', borderRadius: 2 }} aria-label={`Team members: ${filteredTeamMembers.length}`} />
         </Stack>
+        
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showMembersWithoutIssues}
+              onChange={(e) => setShowMembersWithoutIssues(e.target.checked)}
+              size="small"
+              sx={{
+                '& .MuiSwitch-switchBase.Mui-checked': {
+                  color: '#6C63FF',
+                },
+                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                  backgroundColor: '#6C63FF',
+                },
+              }}
+            />
+          }
+          label={
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+              Show members without issues
+            </Typography>
+          }
+          sx={{ mb: 2 }}
+        />
+        
         <Box component="ul" aria-labelledby="team-utilization-title" sx={{ listStyle: 'none', p: 0, m: 0 }}>
-          {teamMembers.map((member) => {
+          {filteredTeamMembers.map((member) => {
             const name = member.displayName || member.emailAddress || 'Unknown';
             const count = assigneeCounts[name] || 0;
             return (
