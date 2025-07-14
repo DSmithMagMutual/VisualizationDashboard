@@ -49,18 +49,19 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
           const assignees = new Set();
           issues.forEach((issue: any) => {
             if (issue.fields.assignee) {
-              assignees.add(issue.fields.assignee.emailAddress);
+              const email = issue.fields.assignee.emailAddress;
+              if (email) assignees.add(email);
             }
           });
           finalTeamMembers = Array.from(assignees as Set<string>).map((email: string) => ({
             emailAddress: email,
-            displayName: email.split('@')[0]
+            displayName: email ? email.split('@')[0] : 'Unknown',
           }));
         }
         const assigneeCount: Record<string, number> = {};
         issues.forEach((issue: any) => {
           if (issue.fields.assignee) {
-            const assignee = issue.fields.assignee.displayName || issue.fields.assignee.emailAddress;
+            const assignee = issue.fields.assignee.displayName || issue.fields.assignee.emailAddress || 'Unknown';
             assigneeCount[assignee] = (assigneeCount[assignee] || 0) + 1;
           }
         });
