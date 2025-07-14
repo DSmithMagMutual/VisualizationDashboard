@@ -24,9 +24,18 @@ export async function GET(request: NextRequest) {
     // Use Agile API for board/sprint endpoints, Core API for others
     const isAgile = endpoint.startsWith('board') || endpoint.startsWith('sprint')
     const apiPath = isAgile ? '/rest/agile/1.0/' : '/rest/api/3/'
-    const url = `${JIRA_BASE_URL}${apiPath}${endpoint}`
     
-    const response = await fetch(url, {
+    // Build the URL with query parameters
+    const url = new URL(`${JIRA_BASE_URL}${apiPath}${endpoint}`)
+    
+    // Add all query parameters except 'endpoint'
+    searchParams.forEach((value, key) => {
+      if (key !== 'endpoint') {
+        url.searchParams.append(key, value)
+      }
+    })
+    
+    const response = await fetch(url.toString(), {
       headers: {
         'Authorization': `Basic ${Buffer.from(`${JIRA_EMAIL}:${JIRA_API_TOKEN}`).toString('base64')}`,
         'Accept': 'application/json',

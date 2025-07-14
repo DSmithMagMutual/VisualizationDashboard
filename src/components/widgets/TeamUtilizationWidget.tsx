@@ -43,7 +43,8 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
           throw new Error('No issues found');
         }
         const issues = issuesData.issues;
-        let finalTeamMembers = teamMembersData.values || [];
+        // Handle both array format (assignable users) and values format (fallback)
+        let finalTeamMembers = Array.isArray(teamMembersData) ? teamMembersData : (teamMembersData.values || []);
         if (finalTeamMembers.length === 0 && issues) {
           const assignees = new Set();
           issues.forEach((issue: any) => {
