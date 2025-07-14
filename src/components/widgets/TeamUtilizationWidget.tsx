@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack, Switch, FormControlLabel } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack, Switch, FormControlLabel, Pagination } from '@mui/material';
 import { getProjectIssues, getTeamMembers } from '@/lib/jira-proxy';
 import { useBoard } from '../MinimalistDashboard';
 
@@ -16,6 +16,13 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
   const [assigneeCounts, setAssigneeCounts] = useState<Record<string, number>>({});
   const [showMembersWithoutIssues, setShowMembersWithoutIssues] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 25;
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [showMembersWithoutIssues, teamMembers]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -127,6 +134,16 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
     return showMembersWithoutIssues || count > 0;
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredTeamMembers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedTeamMembers = filteredTeamMembers.slice(startIndex, endIndex);
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <Card sx={{ mb: 2, maxWidth: 420, mx: 'auto', borderRadius: 3, boxShadow: 6, bgcolor: 'background.paper', backdropFilter: 'blur(8px)' }} aria-label="Team utilization" role="region" tabIndex={0}>
       <CardContent sx={{ p: 3 }}>
@@ -162,7 +179,7 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
         />
         
         <Box component="ul" aria-labelledby="team-utilization-title" sx={{ listStyle: 'none', p: 0, m: 0 }}>
-          {filteredTeamMembers.map((member) => {
+          {paginatedTeamMembers.map((member) => {
             const name = member.displayName || member.emailAddress || 'Unknown';
             const count = assigneeCounts[name] || 0;
             return (
@@ -173,6 +190,32 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
             );
           })}
         </Box>
+
+        {totalPages > 1 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              size="small"
+              sx={{
+                '& .MuiPaginationItem-root': {
+                  color: '#fff',
+                  '&.Mui-selected': {
+                    backgroundColor: '#6C63FF',
+                    color: '#fff',
+                    '&:hover': {
+                      backgroundColor: '#5a52d5',
+                    },
+                  },
+                  '&:hover': {
+                    backgroundColor: 'rgba(108, 99, 255, 0.1)',
+                  },
+                },
+              }}
+            />
+          </Box>
+        )}
       </CardContent>
     </Card>
   );
