@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack } from '@mui/material';
-import { getProjectIssues } from '@/lib/jira-proxy';
+import { getAllProjectIssues } from '@/lib/jira-proxy';
 import { useBoard } from '../MinimalistDashboard';
 
 interface ProjectMetricsWidgetProps {
@@ -36,18 +36,17 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
         const projectKey = activeBoard.name;
         console.log('Fetching project metrics for project:', projectKey);
         
-        const issuesData = await getProjectIssues(projectKey);
-        console.log('Issues data for metrics:', issuesData);
+        const issues = await getAllProjectIssues(projectKey);
+        console.log('Issues data for metrics:', issues);
         
         clearTimeout(timeoutId);
         
-        if (!issuesData.issues) {
+        if (!issues) {
           throw new Error('No issues found');
         }
-        const issues = issuesData.issues;
         const total = issues.length;
         const completed = issues.filter((issue: any) => 
-          issue.fields.status?.statusCategory?.key === 'done'
+          issue.fields.status && issue.fields.status.name === 'Done'
         ).length;
         const inProgress = issues.filter((issue: any) => 
           issue.fields.status?.statusCategory?.key === 'indeterminate'

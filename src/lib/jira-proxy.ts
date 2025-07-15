@@ -22,6 +22,41 @@ export async function getProjectIssues(projectKey: string) {
   return res.json();
 }
 
+export async function getAllProjectIssues(projectKey: string) {
+  const maxResults = 1000;
+  const firstRes = await fetch(`/api/jira?endpoint=search&jql=project=${projectKey}&startAt=0&maxResults=${maxResults}`);
+  if (!firstRes.ok) throw new Error('Failed to fetch project issues');
+  const firstData = await firstRes.json();
+  let allIssues = firstData.issues;
+  const total = firstData.total;
+
+  if (total <= maxResults) return allIssues;
+
+  // Calculate how many more pages we need
+  const pages = [];
+  for (let startAt = maxResults; startAt < total; startAt += maxResults) {
+    pages.push(startAt);
+  }
+
+  // Fetch remaining pages in parallel, but limit concurrency
+  const concurrency = 3;
+  const results: any[] = [];
+  for (let i = 0; i < pages.length; i += concurrency) {
+    const batch = pages.slice(i, i + concurrency).map(startAt =>
+      fetch(`/api/jira?endpoint=search&jql=project=${projectKey}&startAt=${startAt}&maxResults=${maxResults}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch project issues');
+          return res.json();
+        })
+        .then(data => data.issues)
+    );
+    const batchResults = await Promise.all(batch);
+    results.push(...batchResults.flat());
+  }
+
+  return allIssues.concat(results);
+}
+
 export async function getProjectData(projectKey: string) {
   const res = await fetch(`/api/jira?endpoint=project/${projectKey}`);
   if (!res.ok) throw new Error('Failed to fetch project data');

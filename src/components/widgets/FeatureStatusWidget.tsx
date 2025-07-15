@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack } from '@mui/material';
-import { getProjectIssues } from '@/lib/jira-proxy';
+import { getAllProjectIssues } from '@/lib/jira-proxy';
 import { useBoard } from '../MinimalistDashboard';
 
 interface IssueStatusWidgetProps {
@@ -30,15 +30,14 @@ const IssueStatusWidget: React.FC<IssueStatusWidgetProps> = ({
         const projectKey = activeBoard.name;
         console.log('Fetching issue status for project:', projectKey);
         
-        const issuesData = await getProjectIssues(projectKey);
-        console.log('Issues data for status:', issuesData);
+        const issues = await getAllProjectIssues(projectKey);
+        console.log('Issues data for status:', issues);
         
         clearTimeout(timeoutId);
         
-        if (!issuesData.issues) {
+        if (!issues) {
           throw new Error('No issues found');
         }
-        const issues = issuesData.issues;
         const statusCount: Record<string, number> = {};
         issues.forEach((issue: any) => {
           const status = issue.fields.status?.name || 'Unknown';
