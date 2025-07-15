@@ -29,18 +29,24 @@ export async function getProjectData(projectKey: string) {
 }
 
 export async function getTeamMembers(projectKey: string) {
-  try {
-    // Get assignable users for the project
-    const res = await fetch(`/api/jira?endpoint=user/assignable/search&project=${projectKey}`);
-    if (res.ok) {
-      const data = await res.json();
-      // Return the array directly since assignable users endpoint returns an array
-      return data;
+  let allUsers: any[] = [];
+  let startAt = 0;
+  const maxResults = 1000;
+  let fetched = 0;
+
+  while (true) {
+    const res = await fetch(`/api/jira?endpoint=user/assignable/search&project=${projectKey}&startAt=${startAt}&maxResults=${maxResults}`);
+    if (!res.ok) throw new Error('Failed to fetch assignable users');
+    const data = await res.json();
+    if (Array.isArray(data)) {
+      allUsers = allUsers.concat(data);
+      fetched = data.length;
+      if (fetched < maxResults) break; // last page
+      startAt += maxResults;
+    } else {
+      break; // Defensive: if Jira returns non-array, stop
     }
-  } catch (error) {
-    console.warn('Failed to fetch assignable users, will extract from project issues');
   }
-  
-  // Fallback: return empty array - we'll extract team members from project issues
-  return [];
+
+  return allUsers;
 } 
