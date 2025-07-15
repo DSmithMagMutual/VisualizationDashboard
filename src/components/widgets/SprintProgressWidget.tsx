@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, Box, LinearProgress, Chip, Stack, CircularProgress } from '@mui/material';
-import { getProjectIssues, getProjectData } from '@/lib/jira-proxy';
+import { getAllProjectIssues, getProjectData } from '@/lib/jira-proxy';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useBoard } from '../MinimalistDashboard';
 
@@ -36,18 +36,17 @@ const ProjectProgressWidget: React.FC<ProjectProgressWidgetProps> = ({
         const projectData = await getProjectData(projectKey);
         console.log('Project data:', projectData);
         
-        const issuesData = await getProjectIssues(projectKey);
-        console.log('Issues data:', issuesData);
+        const issues = await getAllProjectIssues(projectKey);
+        console.log('Issues data:', issues);
         
         clearTimeout(timeoutId);
         
-        if (!issuesData.issues) {
+        if (!issues) {
           throw new Error('No issues found');
         }
-        const issues = issuesData.issues;
         const total = issues.length;
         const completed = issues.filter((issue: any) => 
-          issue.fields.status?.statusCategory?.key === 'done'
+          issue.fields.status && issue.fields.status.name === 'Done'
         ).length;
         setTotalIssues(total);
         setCompletedIssues(completed);
