@@ -7,6 +7,9 @@ interface TeamUtilizationWidgetProps {
   title?: string;
 }
 
+const teamUtilizationCache: { [key: string]: { data: { teamMembers: any[]; assigneeCounts: Record<string, number> }; timestamp: number } } = {};
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({ 
   title = "Team Utilization" 
 }) => {
@@ -29,6 +32,14 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
       try {
         setLoading(true);
         setError(null);
+        const now = Date.now();
+        if (activeBoard && activeBoard.name && teamUtilizationCache[activeBoard.name] && (now - teamUtilizationCache[activeBoard.name].timestamp < CACHE_DURATION)) {
+          // Use cached data
+          setTeamMembers(teamUtilizationCache[activeBoard.name].data.teamMembers);
+          setAssigneeCounts(teamUtilizationCache[activeBoard.name].data.assigneeCounts);
+          setLoading(false);
+          return;
+        }
         
         // Add timeout to prevent infinite loading
         const timeoutId = setTimeout(() => {
@@ -75,6 +86,10 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
         });
         setTeamMembers(finalTeamMembers);
         setAssigneeCounts(assigneeCount);
+        // Cache the result
+        if (activeBoard && activeBoard.name) {
+          teamUtilizationCache[activeBoard.name] = { data: { teamMembers: finalTeamMembers, assigneeCounts }, timestamp: Date.now() };
+        }
       } catch (err) {
         console.error('TeamUtilizationWidget error:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch team data');

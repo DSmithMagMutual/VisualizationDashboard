@@ -7,6 +7,9 @@ interface IssueStatusWidgetProps {
   title?: string;
 }
 
+const featureStatusCache: { [key: string]: { data: any; timestamp: number } } = {};
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 const IssueStatusWidget: React.FC<IssueStatusWidgetProps> = ({ 
   title = "Issue Status" 
 }) => {
@@ -20,6 +23,13 @@ const IssueStatusWidget: React.FC<IssueStatusWidgetProps> = ({
       try {
         setLoading(true);
         setError(null);
+        const now = Date.now();
+        if (activeBoard && activeBoard.name && featureStatusCache[activeBoard.name] && (now - featureStatusCache[activeBoard.name].timestamp < CACHE_DURATION)) {
+          // Use cached data
+          setStatusCounts(featureStatusCache[activeBoard.name].data);
+          setLoading(false);
+          return;
+        }
         
         // Add timeout to prevent infinite loading
         const timeoutId = setTimeout(() => {
@@ -44,6 +54,11 @@ const IssueStatusWidget: React.FC<IssueStatusWidgetProps> = ({
           statusCount[status] = (statusCount[status] || 0) + 1;
         });
         setStatusCounts(statusCount);
+        // Cache the result
+        if (activeBoard && activeBoard.name) {
+          featureStatusCache[activeBoard.name] = { data: statusCount, timestamp: Date.now() };
+        }
+        setLoading(false);
       } catch (err) {
         console.error('IssueStatusWidget error:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch issue data');

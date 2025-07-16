@@ -7,6 +7,9 @@ interface ProjectMetricsWidgetProps {
   title?: string;
 }
 
+const sprintVelocityCache: { [key: string]: { data: any; timestamp: number } } = {};
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({ 
   title = "Project Metrics" 
 }) => {
@@ -26,6 +29,13 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
       try {
         setLoading(true);
         setError(null);
+        const now = Date.now();
+        if (activeBoard && activeBoard.name && sprintVelocityCache[activeBoard.name] && (now - sprintVelocityCache[activeBoard.name].timestamp < CACHE_DURATION)) {
+          // Use cached data
+          setMetrics(sprintVelocityCache[activeBoard.name].data);
+          setLoading(false);
+          return;
+        }
         
         // Add timeout to prevent infinite loading
         const timeoutId = setTimeout(() => {
@@ -66,6 +76,10 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
           openIssues: open,
           averagePriority
         });
+        // Cache the result
+        if (activeBoard && activeBoard.name) {
+          sprintVelocityCache[activeBoard.name] = { data: { totalIssues: total, completedIssues: completed, inProgressIssues: inProgress, openIssues: open, averagePriority }, timestamp: Date.now() };
+        }
       } catch (err) {
         console.error('ProjectMetricsWidget error:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch project metrics');
