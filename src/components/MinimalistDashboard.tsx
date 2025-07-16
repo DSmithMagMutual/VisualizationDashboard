@@ -27,6 +27,8 @@ import TeamUtilizationWidget from './widgets/TeamUtilizationWidget';
 import ProjectMetricsWidget from './widgets/SprintVelocityWidget';
 import DeliveryMetricsWidget from './widgets/DeliveryMetricsWidget';
 import SurveyCell from './widgets/SurveyCell';
+import IssueStatusScatterChart from './widgets/IssueStatusScatterChart';
+import { getAllProjectIssues } from '@/lib/jira-proxy';
 
 
 interface DashboardData {
@@ -312,6 +314,9 @@ const MinimalistDashboard = () => {
   const [configOpen, setConfigOpen] = useState(false);
   const [editTargets, setEditTargets] = useState(targets);
   const { activeBoard } = useBoard();
+  const [scatterData, setScatterData] = useState<any[]>([]);
+  const [scatterLoading, setScatterLoading] = useState(false);
+  const [scatterError, setScatterError] = useState<string | null>(null);
 
   useEffect(() => {
     setEditTargets(targets);
@@ -358,6 +363,41 @@ const MinimalistDashboard = () => {
     }
   };
 
+  useEffect(() => {
+    if (!activeBoard || !activeBoard.name) return;
+    setScatterLoading(true);
+    setScatterError(null);
+    getAllProjectIssues(activeBoard.name)
+      .then((issues) => {
+        // For each issue, find the current status and how long it's been in that status
+        const now = Date.now();
+        const scatter = issues.map((issue: any) => {
+          let lastStatus = issue.fields.status?.name || 'Unknown';
+          let lastStatusTime = new Date(issue.fields.created).getTime();
+          const changelog = issue.changelog?.histories || [];
+          for (const history of changelog) {
+            for (const item of history.items) {
+              if (item.field === 'status') {
+                if (item.toString) {
+                  lastStatus = item.toString;
+                  lastStatusTime = new Date(history.created).getTime();
+                }
+              }
+            }
+          }
+          const daysInStatus = (now - lastStatusTime) / (1000 * 60 * 60 * 24);
+          return {
+            key: issue.key,
+            status: lastStatus,
+            daysInStatus: Math.round(daysInStatus * 10) / 10,
+          };
+        });
+        setScatterData(scatter);
+      })
+      .catch(err => setScatterError(err.message))
+      .finally(() => setScatterLoading(false));
+  }, [activeBoard]);
+
   // Tab labels
   const tabLabels = ['Overview', 'Team Performance', 'Delivery Metrics'];
 
@@ -402,6 +442,22 @@ const MinimalistDashboard = () => {
               <Stack spacing={3}>
                 <ProjectProgressWidget />
                 <IssueStatusWidget />
+                {/* Add the scatter chart below the IssueStatusWidget */}
+                {scatterLoading ? (
+                  <Card sx={{ mb: 2, maxWidth: 800, mx: 'auto', borderRadius: 3, bgcolor: '#23293A', color: '#fff' }}>
+                    <CardContent>
+                      <Typography>Loading scatter chart…</Typography>
+                    </CardContent>
+                  </Card>
+                ) : scatterError ? (
+                  <Card sx={{ mb: 2, maxWidth: 800, mx: 'auto', borderRadius: 3, bgcolor: '#23293A', color: '#fff' }}>
+                    <CardContent>
+                      <Typography>Error loading scatter chart: {scatterError}</Typography>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <IssueStatusScatterChart data={scatterData} />
+                )}
               </Stack>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
