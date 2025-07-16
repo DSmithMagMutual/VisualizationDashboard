@@ -84,4 +84,27 @@ export async function getTeamMembers(projectKey: string) {
   }
 
   return allUsers;
+}
+
+export async function getFeaturesWithStories(projectKey: string) {
+  // Fetch Features and Stories separately to ensure we get both
+  const featuresJql = `project = ${projectKey} AND issuetype = Feature ORDER BY rank ASC`;
+  const storiesJql = `project = ${projectKey} AND issuetype = Story ORDER BY rank ASC`;
+  
+  const [featuresRes, storiesRes] = await Promise.all([
+    fetch(`/api/jira?endpoint=search&jql=${encodeURIComponent(featuresJql)}&maxResults=500&fields=summary,status,issuetype,parent,customfield_10014,assignee`),
+    fetch(`/api/jira?endpoint=search&jql=${encodeURIComponent(storiesJql)}&maxResults=500&fields=summary,status,issuetype,parent,customfield_10014,assignee`)
+  ]);
+  
+  if (!featuresRes.ok) throw new Error('Failed to fetch features');
+  if (!storiesRes.ok) throw new Error('Failed to fetch stories');
+  
+  const featuresData = await featuresRes.json();
+  const storiesData = await storiesRes.json();
+  
+  // Combine the results
+  return {
+    issues: [...featuresData.issues, ...storiesData.issues],
+    total: featuresData.total + storiesData.total
+  };
 } 
