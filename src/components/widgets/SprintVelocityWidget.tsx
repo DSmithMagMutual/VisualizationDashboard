@@ -31,7 +31,7 @@ const ProjectMetricsWidget: React.FC<ProjectMetricsWidgetProps> = ({
         const timeoutId = setTimeout(() => {
           setError('Request timed out. Please check your Jira configuration.');
           setLoading(false);
-        }, 10000); // 10 second timeout
+        }, 30000); // 30 second timeout
 
         const projectKey = activeBoard.name;
         console.log('Fetching project metrics for project:', projectKey);
