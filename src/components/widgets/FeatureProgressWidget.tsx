@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Card, CardContent, Typography, LinearProgress, IconButton, Collapse, Avatar, Tooltip, CircularProgress, Alert, FormControlLabel, Switch, Button, MenuItem, Select } from '@mui/material';
 import { ExpandMore, ExpandLess, CheckCircle, AccessTime, ErrorOutline, UnfoldMore, UnfoldLess } from '@mui/icons-material';
 import { getFeaturesWithStories } from '@/lib/jira-proxy';
-import { useBoard } from '../MinimalistDashboard';
+import { useBoard } from '@/components/BoardContext';
 
 interface Story {
   id: string;
@@ -17,6 +17,7 @@ interface Story {
 
 interface Feature {
   id: string;
+  originalId?: string;
   key: string;
   summary: string;
   status: string;
@@ -57,7 +58,7 @@ const featureProgressCache: { [key: string]: { data: Feature[]; timestamp: numbe
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export default function FeatureProgressWidget() {
-  const { activeBoard } = useBoard();
+  const { selectedBoards, activeBoard } = useBoard();
   const [features, setFeatures] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -72,49 +73,77 @@ export default function FeatureProgressWidget() {
       try {
         setLoading(true);
         setError(null);
-        const now = Date.now();
-        if (activeBoard && activeBoard.name && featureProgressCache[activeBoard.name] && (now - featureProgressCache[activeBoard.name].timestamp < CACHE_DURATION)) {
-          // Use cached data
-          setFeatures(featureProgressCache[activeBoard.name].data);
+        
+        if (selectedBoards.length === 0) {
+          setError('No boards selected');
           setLoading(false);
           return;
         }
-        
+
         // Add timeout to prevent infinite loading
         const timeoutId = setTimeout(() => {
           setError('Request timed out. Please check your Jira configuration.');
           setLoading(false);
         }, 30000); // 30 second timeout
 
-        const projectKey = activeBoard.name;
-        console.log('Fetching feature progress for project:', projectKey);
+        // Fetch data for all selected boards
+        const allFeatures: Feature[] = [];
+        let combinedRawData: any = { issues: [] };
         
-        const data = await getFeaturesWithStories(projectKey);
-        setRawData(data); // Save raw API data for debug panel
-        console.log('Feature progress data:', data);
-        
-        clearTimeout(timeoutId);
-        
-        if (!data.issues) {
-          throw new Error('No issues found');
-        }
-        
-        // Parse Features and Stories
-        const features = data.issues.filter((i: any) => i.fields.issuetype.name === 'Feature');
-        const stories = data.issues.filter((i: any) => i.fields.issuetype.name === 'Story');
-        console.log('Found features:', features.length, 'stories:', stories.length);
-        console.log('Features:', features.map((f: any) => ({ key: f.key, summary: f.fields.summary })));
-        console.log('Sample stories with parents:', stories.slice(0, 3).map((s: any) => ({ 
-          key: s.key, 
-          parent: s.fields.parent?.key, 
-          parentId: s.fields.parent?.id 
-        })));
-        
-        // Map stories to features
+        for (const board of selectedBoards) {
+          const now = Date.now();
+          const cacheKey = `${board.projectKey}-${board.id}`;
+          
+          // Check cache first
+          if (featureProgressCache[cacheKey] && (now - featureProgressCache[cacheKey].timestamp < CACHE_DURATION)) {
+            allFeatures.push(...featureProgressCache[cacheKey].data);
+            continue;
+          }
+          
+          console.log('Fetching feature progress for board:', board.name, 'project:', board.projectKey);
+          
+          try {
+            const data = await getFeaturesWithStories(board.projectKey);
+            
+            // Combine raw data for debug panel
+            if (data.issues) {
+              combinedRawData.issues.push(...data.issues);
+            }
+            
+            if (!data.issues) {
+              console.warn(`No issues found for board: ${board.name}`);
+              continue;
+            }
+            
+            // Parse Features and Stories
+            const features = data.issues.filter((i: any) => i.fields.issuetype.name === 'Feature');
+            const stories = data.issues.filter((i: any) => i.fields.issuetype.name === 'Story');
+            
+            // Debug: Log all unique issue type names to see what's available
+            const allIssueTypes = Array.from(new Set(data.issues.map((i: any) => i.fields.issuetype.name)));
+            console.log(`Board ${board.name}: All available issue types:`, allIssueTypes);
+            console.log(`Board ${board.name}: Found features:`, features.length, 'stories:', stories.length);
+            console.log(`Board ${board.name}: Sample features:`, features.slice(0, 2).map(f => ({ key: f.key, summary: f.fields.summary })));
+            console.log(`Board ${board.name}: Sample stories with parents:`, stories.slice(0, 3).map(s => ({ 
+              key: s.key, 
+              parentKey: s.fields.parent?.key, 
+              parentId: s.fields.parent?.id 
+            })));
+            
+            // Debug: Check if we're finding any features at all
+            if (features.length === 0) {
+              console.warn(`Board ${board.name}: No features found! Available issue types:`, 
+                Array.from(new Set(data.issues.map((i: any) => i.fields.issuetype.name))));
+            }
+            
+                    // Map stories to features
         const featureMap: Record<string, Feature> = {};
         for (const feature of features) {
-          featureMap[feature.id] = {
-            id: feature.id,
+          // Use project key + feature id to ensure uniqueness across projects
+          const uniqueId = `${board.projectKey}-${feature.id}`;
+          featureMap[uniqueId] = {
+            id: uniqueId, // Use unique ID for React keys
+            originalId: feature.id, // Keep original ID for reference
             key: feature.key,
             summary: feature.fields.summary,
             status: feature.fields.status.name,
@@ -125,34 +154,77 @@ export default function FeatureProgressWidget() {
             progressPercentage: 0,
           };
         }
-        for (const story of stories) {
-          // Prioritize parent field over customfield_10014 since that's what we see in the data
-          const featureId = (story.fields.parent && story.fields.parent.id) || story.fields.customfield_10014;
-          if (featureId && featureMap[featureId]) {
-            featureMap[featureId].stories.push({
-              id: story.id,
-              key: story.key,
-              summary: story.fields.summary,
-              status: story.fields.status.name,
-              statusCategory: story.fields.status.statusCategory.key,
-              assignee: story.fields.assignee?.displayName || story.fields.assignee?.emailAddress,
-            });
+            
+            for (const story of stories) {
+              // Prioritize parent field over customfield_10014 since that's what we see in the data
+              const parentFeatureId = (story.fields.parent && story.fields.parent.id) || story.fields.customfield_10014;
+              if (parentFeatureId) {
+                // Find the feature by original ID
+                const feature = Object.values(featureMap).find(f => f.originalId === parentFeatureId);
+                if (feature) {
+                  feature.stories.push({
+                    id: story.id,
+                    key: story.key,
+                    summary: story.fields.summary,
+                    status: story.fields.status.name,
+                    statusCategory: story.fields.status.statusCategory.key,
+                    assignee: story.fields.assignee?.displayName || story.fields.assignee?.emailAddress,
+                  });
+                }
+              }
+            }
+            
+            // Calculate progress
+            for (const feature of Object.values(featureMap)) {
+              feature.totalStories = feature.stories.length;
+              feature.completedStories = feature.stories.filter(s => s.statusCategory === 'done').length;
+              feature.progressPercentage = feature.totalStories > 0 ? Math.round((feature.completedStories / feature.totalStories) * 100) : 0;
+            }
+            
+            const boardFeatures = Object.values(featureMap);
+            allFeatures.push(...boardFeatures);
+            
+            // Cache the result
+            featureProgressCache[cacheKey] = { data: boardFeatures, timestamp: Date.now() };
+            
+          } catch (err) {
+            console.error(`Error fetching data for board ${board.name}:`, err);
+            // Continue with other boards even if one fails
           }
         }
-        // Calculate progress
-        for (const feature of Object.values(featureMap)) {
-          feature.totalStories = feature.stories.length;
-          feature.completedStories = feature.stories.filter(s => s.statusCategory === 'done').length;
-          feature.progressPercentage = feature.totalStories > 0 ? Math.round((feature.completedStories / feature.totalStories) * 100) : 0;
-        }
-        // Sort by progress ascending
-        const sorted = Object.values(featureMap).sort((a, b) => a.progressPercentage - b.progressPercentage);
-        setFeatures(sorted);
         
-        // Cache the result
-        if (activeBoard && activeBoard.name) {
-          featureProgressCache[activeBoard.name] = { data: sorted, timestamp: Date.now() };
-        }
+        clearTimeout(timeoutId);
+        
+        setRawData(combinedRawData); // Save combined raw API data for debug panel
+        console.log('Combined feature progress data:', combinedRawData);
+        
+        // Deduplicate features based on original ID to avoid duplicates from multiple boards in same project
+        const uniqueFeatures = allFeatures.reduce((acc, feature) => {
+          const existingFeature = acc.find(f => f.originalId === feature.originalId);
+          if (existingFeature) {
+            // Merge stories from duplicate features
+            existingFeature.stories.push(...feature.stories);
+            // Recalculate progress
+            existingFeature.totalStories = existingFeature.stories.length;
+            existingFeature.completedStories = existingFeature.stories.filter(s => s.statusCategory === 'done').length;
+            existingFeature.progressPercentage = existingFeature.totalStories > 0 ? Math.round((existingFeature.completedStories / existingFeature.totalStories) * 100) : 0;
+          } else {
+            acc.push(feature);
+          }
+          return acc;
+        }, [] as Feature[]);
+
+        // Sort by progress ascending
+        const sorted = uniqueFeatures.sort((a, b) => a.progressPercentage - b.progressPercentage);
+        console.log('Final processed features (after deduplication):', sorted.length);
+        console.log('Sample features:', sorted.slice(0, 3).map(f => ({
+          id: f.id,
+          key: f.key,
+          summary: f.summary,
+          storiesCount: f.stories.length,
+          progress: f.progressPercentage
+        })));
+        setFeatures(sorted);
         
         setLoading(false);
       } catch (err) {
@@ -162,13 +234,8 @@ export default function FeatureProgressWidget() {
       }
     };
     
-    if (activeBoard && activeBoard.name) {
-      fetchData();
-    } else {
-      setError('No active board selected');
-      setLoading(false);
-    }
-  }, [activeBoard]);
+    fetchData();
+  }, [selectedBoards]);
 
   const handleExpandAll = () => {
     const all: Record<string, boolean> = {};
@@ -188,7 +255,7 @@ export default function FeatureProgressWidget() {
             Loading feature progress…
           </Typography>
           <Typography variant="caption" sx={{ mt: 1, color: '#6c757d' }}>
-            Project: {activeBoard?.name || 'Unknown'}
+            Boards: {selectedBoards.map(b => `${b.name} (${b.projectKey})`).join(', ') || 'None selected'}
           </Typography>
         </CardContent>
       </Card>
@@ -231,7 +298,12 @@ export default function FeatureProgressWidget() {
           boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
         }}>
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#212529' }}>Feature Progress</Typography>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: '#212529' }}>Feature Progress</Typography>
+              <Typography variant="caption" sx={{ color: '#6c757d', fontWeight: 500 }}>
+                Boards: {selectedBoards.map(b => `${b.name} (${b.projectKey})`).join(', ')}
+              </Typography>
+            </Box>
             <Box display="flex" alignItems="center" gap={2}>
               <FormControlLabel
                 control={<Switch checked={hideCompleted} onChange={e => setHideCompleted(e.target.checked)} />}
