@@ -13,6 +13,7 @@ interface Story {
   status: string;
   statusCategory: string;
   assignee?: string;
+  team?: string;
 }
 
 interface Feature {
@@ -26,6 +27,7 @@ interface Feature {
   completedStories: number;
   totalStories: number;
   progressPercentage: number;
+  team?: string;
 }
 
 const progressColor = (pct: number) => {
@@ -57,7 +59,13 @@ const getJiraIssueUrl = (issueKey: string) => {
 const featureProgressCache: { [key: string]: { data: Feature[]; timestamp: number } } = {};
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-export default function FeatureProgressWidget() {
+// Add props for team filtering and callback
+interface FeatureProgressWidgetProps {
+  onTeamsUpdate?: (teams: string[]) => void;
+  selectedTeams?: string[];
+}
+
+export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: FeatureProgressWidgetProps) {
   const { selectedBoards, activeBoard } = useBoard();
   const [features, setFeatures] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,6 +75,41 @@ export default function FeatureProgressWidget() {
   const [hideEmptyFeatures, setHideEmptyFeatures] = useState(false);
   const [debugOpen, setDebugOpen] = useState(false);
   const [rawData, setRawData] = useState<any>(null);
+  const [allTeams, setAllTeams] = useState<string[]>([]);
+
+  // Color map and color function (copy from BoardSwitcher)
+  const teamColorMap: Record<string, string> = {
+    'OG Team': '#6C63FF',
+    // Add more known teams and colors as needed
+  };
+  function getColorForTeam(team: string) {
+    if (teamColorMap[team]) return teamColorMap[team];
+    // Simple hash to color
+    let hash = 0;
+    for (let i = 0; i < team.length; i++) {
+      hash = team.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const c = (hash & 0x00FFFFFF)
+      .toString(16)
+      .toUpperCase();
+    return '#' + '00000'.substring(0, 6 - c.length) + c;
+  }
+
+  // Helper to get all boards associated with a feature (by originalId)
+  function getBoardsForFeature(originalId: string | undefined) {
+    if (!originalId) return [] as { name: string; id: number; projectKey: string }[];
+    // For now, all selectedBoards are relevant
+    return selectedBoards;
+  }
+
+  // Helper to get all unique teams for a feature (including its stories)
+  function getTeamsForFeature(feature: Feature) {
+    const teams = new Set<string>();
+    if (feature.team) teams.add(feature.team);
+    feature.stories.forEach(story => { if (story.team) teams.add(story.team); });
+    if (teams.size === 0) teams.add('Other');
+    return Array.from(teams);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -136,6 +179,16 @@ export default function FeatureProgressWidget() {
                 Array.from(new Set(data.issues.map((i: any) => i.fields.issuetype.name))));
             }
             
+            // Debug: Log customfield_10001 structure for first few issues
+            console.log(`Board ${board.name}: Sample customfield_10001 values:`, 
+              data.issues.slice(0, 5).map(issue => ({
+                key: issue.key,
+                customfield_10001: issue.fields.customfield_10001,
+                customfield_10001_type: typeof issue.fields.customfield_10001,
+                customfield_10001_keys: issue.fields.customfield_10001 ? Object.keys(issue.fields.customfield_10001) : []
+              }))
+            );
+            
                     // Map stories to features
         const featureMap: Record<string, Feature> = {};
         for (const feature of features) {
@@ -152,6 +205,16 @@ export default function FeatureProgressWidget() {
             completedStories: 0,
             totalStories: 0,
             progressPercentage: 0,
+            team: (() => {
+              const field = feature.fields.customfield_10001;
+              if (typeof field === 'object' && field?.name) {
+                return field.name;
+              } else if (typeof field === 'string' && field) {
+                return field;
+              } else {
+                return 'Other';
+              }
+            })(),
           };
         }
             
@@ -169,6 +232,16 @@ export default function FeatureProgressWidget() {
                     status: story.fields.status.name,
                     statusCategory: story.fields.status.statusCategory.key,
                     assignee: story.fields.assignee?.displayName || story.fields.assignee?.emailAddress,
+                    team: (() => {
+                      const field = story.fields.customfield_10001;
+                      if (typeof field === 'object' && field?.name) {
+                        return field.name;
+                      } else if (typeof field === 'string' && field) {
+                        return field;
+                      } else {
+                        return (feature.team || 'Other');
+                      }
+                    })(),
                   });
                 }
               }
@@ -237,6 +310,25 @@ export default function FeatureProgressWidget() {
     fetchData();
   }, [selectedBoards]);
 
+  useEffect(() => {
+    // Aggregate all unique teams from features and stories
+    const teams = new Set<string>();
+    features.forEach(feature => {
+      if (feature.team) teams.add(feature.team);
+      feature.stories.forEach(story => {
+        if (story.team) teams.add(story.team);
+      });
+    });
+    if (teams.size === 0) teams.add('Other');
+    const teamArr = Array.from(teams);
+    setAllTeams(teamArr);
+    if (onTeamsUpdate) onTeamsUpdate(teamArr);
+    // Debug log
+    console.log('DEBUG: Aggregated teams:', teamArr);
+    console.log('DEBUG: Features:', features);
+    console.log('DEBUG: Raw Jira data:', rawData);
+  }, [features, onTeamsUpdate]);
+
   const handleExpandAll = () => {
     const all: Record<string, boolean> = {};
     features.forEach(f => { all[f.id] = true; });
@@ -280,9 +372,18 @@ export default function FeatureProgressWidget() {
     );
   }
 
+  // Filter features and stories by selectedTeams if provided
   let filteredFeatures = features;
   if (hideCompleted) filteredFeatures = filteredFeatures.filter(f => f.progressPercentage < 100);
   if (hideEmptyFeatures) filteredFeatures = filteredFeatures.filter(f => f.totalStories > 0);
+  if (selectedTeams && selectedTeams.length > 0) {
+    filteredFeatures = filteredFeatures.filter(f =>
+      getTeamsForFeature(f).some(team => selectedTeams.includes(team))
+    ).map(f => ({
+      ...f,
+      stories: f.stories.filter(s => selectedTeams.includes(s.team || 'Other'))
+    }));
+  }
 
   const overallPct = features.length > 0 ? Math.round((features.filter(f => f.progressPercentage === 100).length / features.length) * 100) : 0;
 
@@ -344,6 +445,23 @@ export default function FeatureProgressWidget() {
                 Collapse All
               </Button>
             </Box>
+          </Box>
+          <Box display="flex" alignItems="center" gap={2} mb={2}>
+            {allTeams.map(team => (
+              <Box key={team} display="flex" alignItems="center" gap={0.5}>
+                <span style={{
+                  display: 'inline-block',
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  background: getColorForTeam(team),
+                  border: '1.5px solid #fff',
+                  boxShadow: '0 0 0 1px #dee2e6',
+                  marginRight: 2
+                }} />
+                <Typography variant="caption">{team}</Typography>
+              </Box>
+            ))}
           </Box>
           <Box>
             <Typography variant="body2" sx={{ mb: 1, color: '#212529', fontWeight: 500 }}>Overall: {overallPct}% of features complete</Typography>
@@ -445,6 +563,23 @@ export default function FeatureProgressWidget() {
                   </Box>
                   
                   <Box display="flex" alignItems="center" gap={1} mb={1}>
+                    {getTeamsForFeature(feature).map(team => (
+                      <Tooltip key={team} title={team} placement="top">
+                        <span style={{
+                          display: 'inline-block',
+                          width: 12,
+                          height: 12,
+                          borderRadius: '50%',
+                          background: getColorForTeam(team || 'Other'),
+                          border: '1.5px solid #fff',
+                          boxShadow: '0 0 0 1px #dee2e6',
+                          marginRight: 2
+                        }} />
+                      </Tooltip>
+                    ))}
+                  </Box>
+                  
+                  <Box display="flex" alignItems="center" gap={1} mb={1}>
                     <LinearProgress
                       variant="determinate"
                       value={feature.progressPercentage}
@@ -472,8 +607,22 @@ export default function FeatureProgressWidget() {
                           No stories linked to this feature.
                         </Typography>
                       ) : (
-                        feature.stories.map(story => (
-                          <Box key={story.id} display="flex" alignItems="center" gap={1} mb={0.5}>
+                        feature.stories.map((story, idx) => (
+                          <Box key={`${feature.id}-${story.id}-${idx}`} display="flex" alignItems="center" gap={1} mb={0.5}>
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <Tooltip key={story.team || 'Other'} title={story.team || 'Other'} placement="top">
+                                <span style={{
+                                  display: 'inline-block',
+                                  width: 10,
+                                  height: 10,
+                                  borderRadius: '50%',
+                                  background: getColorForTeam(story.team || 'Other'),
+                                  border: '1.5px solid #fff',
+                                  boxShadow: '0 0 0 1px #dee2e6',
+                                  marginRight: 1
+                                }} />
+                              </Tooltip>
+                            </Box>
                             <Typography variant="body2" fontWeight={500} sx={{ fontSize: '0.75rem' }}>
                               <a 
                                 href={getJiraIssueUrl(story.key)} 

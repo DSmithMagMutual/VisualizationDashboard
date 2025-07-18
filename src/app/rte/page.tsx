@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, MenuItem, Select, Checkbox, ListItemText, OutlinedInput } from '@mui/material';
 import FeatureProgressWidget from '@/components/widgets/FeatureProgressWidget';
 import { useBoard, BoardProvider } from '@/components/BoardContext';
 
@@ -11,7 +11,26 @@ function BoardSwitcher() {
   const [newName, setNewName] = React.useState('');
   const [newId, setNewId] = React.useState('');
   const [newProjectKey, setNewProjectKey] = React.useState('');
-  
+
+  // Color map for known board IDs
+  const colorMap: Record<number, string> = {
+    1070: '#6C63FF', // Hogwarts Express
+    1164: '#00B894', // Feature Freight
+    1069: '#0984E3', // CAD
+    // Add more known board IDs and colors as needed
+  };
+  // Fallback color generator for unknown board IDs
+  function getColorForBoardId(id: number) {
+    if (colorMap[id]) return colorMap[id];
+    // Simple hash to color
+    let hash = id;
+    hash = ((hash << 5) - hash) + 12345;
+    const c = (hash & 0x00FFFFFF)
+      .toString(16)
+      .toUpperCase();
+    return '#' + '00000'.substring(0, 6 - c.length) + c;
+  }
+
   return (
     <Box display="flex" alignItems="center" gap={2} mb={3}>
       <Typography variant="h6" sx={{ color: '#212529', fontWeight: 700 }}>
@@ -20,6 +39,7 @@ function BoardSwitcher() {
       <Box display="flex" flexWrap="wrap" gap={1}>
         {boards.map(board => {
           const isSelected = selectedBoards.some(b => b.id === board.id);
+          const outlineColor = getColorForBoardId(board.id);
           return (
             <button
               key={board.id}
@@ -27,12 +47,14 @@ function BoardSwitcher() {
               style={{ 
                 padding: '6px 12px', 
                 borderRadius: 8, 
-                background: isSelected ? '#6C63FF' : '#ffffff',
+                background: isSelected ? outlineColor : '#ffffff',
                 color: isSelected ? '#ffffff' : '#212529',
-                border: `1px solid ${isSelected ? '#6C63FF' : '#dee2e6'}`,
+                border: `2.5px solid ${outlineColor}`,
                 fontWeight: 600, 
                 cursor: 'pointer',
-                fontSize: 14
+                fontSize: 14,
+                boxShadow: isSelected ? `0 0 0 2px ${outlineColor}55` : undefined,
+                transition: 'box-shadow 0.2s, border 0.2s',
               }}
               aria-label={`${isSelected ? 'Deselect' : 'Select'} ${board.name}`}
             >
@@ -165,6 +187,44 @@ function BoardSwitcher() {
 }
 
 function FeatureProgressDashboardContent() {
+  // Add state for team filtering
+  const [allTeams, setAllTeams] = React.useState<string[]>([]);
+  const [selectedTeams, setSelectedTeams] = React.useState<string[]>([]);
+
+  // Callback to receive teams from FeatureProgressWidget
+  const handleTeamsUpdate = React.useCallback((teams: string[]) => {
+    setAllTeams(teams);
+  }, []);
+
+  // Ensure selectedTeams is set to allTeams on first load or when allTeams changes and selectedTeams is empty
+  React.useEffect(() => {
+    if (allTeams.length > 0 && selectedTeams.length === 0) {
+      setSelectedTeams(allTeams);
+    }
+  }, [allTeams, selectedTeams.length]);
+
+  // Team multiselect UI
+  const teamSelect = (
+    <Box mt={2} mb={3}>
+      <Typography variant="subtitle1" sx={{ color: '#212529', fontWeight: 600, mb: 1 }}>Teams:</Typography>
+      <Select
+        multiple
+        value={selectedTeams}
+        onChange={e => setSelectedTeams(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+        input={<OutlinedInput label="Teams" />}
+        renderValue={selected => selected.join(', ')}
+        sx={{ minWidth: 240, background: '#fff', borderRadius: 2 }}
+      >
+        {allTeams.map(team => (
+          <MenuItem key={team} value={team}>
+            <Checkbox checked={selectedTeams.indexOf(team) > -1} />
+            <ListItemText primary={team} />
+          </MenuItem>
+        ))}
+      </Select>
+    </Box>
+  );
+
   return (
     <main style={{ padding: 32, backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
       <Box maxWidth="1350" mx="auto">
@@ -175,7 +235,8 @@ function FeatureProgressDashboardContent() {
           Track the progress of features (Epics/Features) based on the completion of their associated stories.
         </Typography>
         <BoardSwitcher />
-        <FeatureProgressWidget />
+        {teamSelect}
+        <FeatureProgressWidget onTeamsUpdate={handleTeamsUpdate} selectedTeams={selectedTeams} />
       </Box>
     </main>
   );

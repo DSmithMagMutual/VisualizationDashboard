@@ -92,8 +92,8 @@ export async function getFeaturesWithStories(projectKey: string) {
   const storiesJql = `project = ${projectKey} AND issuetype = Story ORDER BY rank ASC`;
   
   const [featuresRes, storiesRes] = await Promise.all([
-    fetch(`/api/jira?endpoint=search&jql=${encodeURIComponent(featuresJql)}&maxResults=500&fields=summary,status,issuetype,parent,customfield_10014,assignee`),
-    fetch(`/api/jira?endpoint=search&jql=${encodeURIComponent(storiesJql)}&maxResults=500&fields=summary,status,issuetype,parent,customfield_10014,assignee`)
+    fetch(`/api/jira?endpoint=search&jql=${encodeURIComponent(featuresJql)}&maxResults=500&fields=summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001`),
+    fetch(`/api/jira?endpoint=search&jql=${encodeURIComponent(storiesJql)}&maxResults=500&fields=summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001`)
   ]);
   
   if (!featuresRes.ok) throw new Error('Failed to fetch features');

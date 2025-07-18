@@ -24,12 +24,14 @@ export function useBoard() {
 
 // BoardProvider component (updated for multiselect with compatibility)
 export function BoardProvider({ children }: { children: React.ReactNode }) {
-  const [boards, setBoards] = useState<Array<{ name: string; id: number; projectKey: string }>>([
+  // Remove 'Other' from defaultBoards and selectedBoards
+  const defaultBoards = [
     { name: 'Hogwarts Express', id: 1070, projectKey: 'ADVICE' },
     { name: 'Feature Freight', id: 1164, projectKey: 'ADVICE' },
     { name: 'CAD', id: 1069, projectKey: 'ADVICE' }
-  ]);
-  const [selectedBoards, setSelectedBoards] = useState<Array<{ name: string; id: number; projectKey: string }>>([
+  ];
+  const [boards, setBoards] = useState(defaultBoards);
+  const [selectedBoards, setSelectedBoards] = useState([
     { name: 'Hogwarts Express', id: 1070, projectKey: 'ADVICE' }
   ]);
 
