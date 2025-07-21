@@ -204,6 +204,21 @@ function FeatureProgressDashboardContent() {
   }, [allTeams, selectedTeams.length]);
 
   // Team multiselect UI
+  function getColorForTeam(team: string) {
+    // Use the same color logic as in FeatureProgressWidget
+    const teamColorMap: Record<string, string> = {
+      'OG Team': '#6C63FF',
+      // Add more known teams and colors as needed
+    };
+    if (teamColorMap[team]) return teamColorMap[team];
+    let hash = 0;
+    for (let i = 0; i < team.length; i++) {
+      hash = team.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+    return '#' + '00000'.substring(0, 6 - c.length) + c;
+  }
+
   const teamSelect = (
     <Box mt={2} mb={3}>
       <Typography variant="subtitle1" sx={{ color: '#212529', fontWeight: 600, mb: 1 }}>Teams:</Typography>
@@ -212,7 +227,25 @@ function FeatureProgressDashboardContent() {
         value={selectedTeams}
         onChange={e => setSelectedTeams(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
         input={<OutlinedInput label="Teams" />}
-        renderValue={selected => selected.join(', ')}
+        renderValue={(selected: string[]) => (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {selected.map((team: string) => (
+              <Box key={team} display="flex" alignItems="center" gap={0.5} sx={{ px: 1, py: 0.5, borderRadius: 2, bgcolor: '#f3f4f6' }}>
+                <span style={{
+                  display: 'inline-block',
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  background: getColorForTeam(team),
+                  border: '1.5px solid #fff',
+                  boxShadow: '0 0 0 1px #dee2e6',
+                  marginRight: 4
+                }} />
+                <Typography variant="caption" sx={{ color: '#212529', fontWeight: 500 }}>{team}</Typography>
+              </Box>
+            ))}
+          </Box>
+        )}
         sx={{ minWidth: 240, background: '#fff', borderRadius: 2 }}
       >
         {allTeams.map(team => (

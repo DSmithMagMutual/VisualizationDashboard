@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Box, Card, CardContent, Typography, LinearProgress, IconButton, Collapse, Avatar, Tooltip, CircularProgress, Alert, FormControlLabel, Switch, Button, MenuItem, Select } from '@mui/material';
+import { Box, Card, CardContent, Typography, LinearProgress, IconButton, Collapse, Avatar, Tooltip, CircularProgress, Alert, FormControlLabel, Switch, Button, MenuItem, Select, Chip } from '@mui/material';
 import { ExpandMore, ExpandLess, CheckCircle, AccessTime, ErrorOutline, UnfoldMore, UnfoldLess } from '@mui/icons-material';
 import { getFeaturesWithStories } from '@/lib/jira-proxy';
 import { useBoard } from '@/components/BoardContext';
@@ -112,6 +112,14 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
   }
 
   useEffect(() => {
+    // Clear cache for boards that are no longer selected
+    const selectedCacheKeys = new Set(selectedBoards.map(b => `${b.projectKey}-${b.id}`));
+    Object.keys(featureProgressCache).forEach(key => {
+      if (!selectedCacheKeys.has(key)) {
+        delete featureProgressCache[key];
+      }
+    });
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -272,20 +280,13 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
         console.log('Combined feature progress data:', combinedRawData);
         
         // Deduplicate features based on original ID to avoid duplicates from multiple boards in same project
-        const uniqueFeatures = allFeatures.reduce((acc, feature) => {
-          const existingFeature = acc.find(f => f.originalId === feature.originalId);
-          if (existingFeature) {
-            // Merge stories from duplicate features
-            existingFeature.stories.push(...feature.stories);
-            // Recalculate progress
-            existingFeature.totalStories = existingFeature.stories.length;
-            existingFeature.completedStories = existingFeature.stories.filter(s => s.statusCategory === 'done').length;
-            existingFeature.progressPercentage = existingFeature.totalStories > 0 ? Math.round((existingFeature.completedStories / existingFeature.totalStories) * 100) : 0;
-          } else {
-            acc.push(feature);
-          }
-          return acc;
-        }, [] as Feature[]);
+        // Instead of merging, just keep the first occurrence (latest data for selected boards)
+        const seen = new Set<string>();
+        const uniqueFeatures = allFeatures.filter(feature => {
+          if (feature.originalId && seen.has(feature.originalId)) return false;
+          if (feature.originalId) seen.add(feature.originalId);
+          return true;
+        });
 
         // Sort by progress ascending
         const sorted = uniqueFeatures.sort((a, b) => a.progressPercentage - b.progressPercentage);
@@ -446,21 +447,31 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
               </Button>
             </Box>
           </Box>
-          <Box display="flex" alignItems="center" gap={2} mb={2}>
+          <Box display="flex" alignItems="center" gap={2} mb={2} sx={{ flexWrap: 'wrap', rowGap: 1 }}>
+            <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mr: 1, mb: 0.5 }}>Teams:</Typography>
             {allTeams.map(team => (
-              <Box key={team} display="flex" alignItems="center" gap={0.5}>
-                <span style={{
+              <Chip
+                key={team}
+                label={team}
+                avatar={<span style={{
                   display: 'inline-block',
-                  width: 12,
-                  height: 12,
+                  width: 16,
+                  height: 16,
                   borderRadius: '50%',
                   background: getColorForTeam(team),
                   border: '1.5px solid #fff',
                   boxShadow: '0 0 0 1px #dee2e6',
-                  marginRight: 2
-                }} />
-                <Typography variant="caption">{team}</Typography>
-              </Box>
+                }} />}
+                sx={{
+                  bgcolor: '#f3f4f6',
+                  color: '#212529',
+                  fontWeight: 500,
+                  fontSize: '0.95em',
+                  mr: 1,
+                  mb: 0.5,
+                  height: 28
+                }}
+              />
             ))}
           </Box>
           <Box>
