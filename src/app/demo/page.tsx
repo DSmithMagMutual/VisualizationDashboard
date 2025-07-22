@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton } from '@mui/material';
-import { Close, Refresh } from '@mui/icons-material';
+import { Close, Refresh, ExpandMore, ExpandLess } from '@mui/icons-material';
 
 const ITERATIONS = [
   { key: "4.1", label: "2025 Iteration 4.1", range: "July 9 - July 22" },
@@ -28,14 +28,34 @@ function getColorForTeam(team: string) {
   return '#' + '00000'.substring(0, 6 - c.length) + c;
 }
 
-function DemoCard({ card, onDelete, onReload }: { card: any; onDelete: () => void; onReload: () => void }) {
+function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize }: { 
+  card: any; 
+  onDelete: () => void; 
+  onReload: () => void;
+  isMinimized: boolean;
+  onToggleMinimize: () => void;
+}) {
   const doneCount = card.stories?.filter((s: any) => s.statusCategory === 'done').length || 0;
   const totalCount = card.stories?.length || 0;
   const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
   const team = card.team || 'Other';
   return (
-    <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 3, boxShadow: 1, mb: 2, position: 'relative' }}>
-      <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 0.5 }}>
+    <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, mb: 2, position: 'relative' }}>
+      <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 0.5, zIndex: 1 }}>
+        <Tooltip title={isMinimized ? "Expand card" : "Minimize card"}>
+          <IconButton
+            size="small"
+            onClick={onToggleMinimize}
+            sx={{ 
+              color: '#6c757d', 
+              bgcolor: 'rgba(108, 117, 125, 0.1)',
+              borderRadius: 1,
+              '&:hover': { bgcolor: 'rgba(108, 117, 125, 0.2)' }
+            }}
+          >
+            {isMinimized ? <ExpandMore fontSize="small" /> : <ExpandLess fontSize="small" />}
+          </IconButton>
+        </Tooltip>
         <Tooltip title="Refresh card data">
           <IconButton
             size="small"
@@ -43,6 +63,7 @@ function DemoCard({ card, onDelete, onReload }: { card: any; onDelete: () => voi
             sx={{ 
               color: '#0d6efd', 
               bgcolor: 'rgba(13, 110, 253, 0.1)',
+              borderRadius: 1,
               '&:hover': { bgcolor: 'rgba(13, 110, 253, 0.2)' }
             }}
           >
@@ -56,6 +77,7 @@ function DemoCard({ card, onDelete, onReload }: { card: any; onDelete: () => voi
             sx={{ 
               color: '#dc3545', 
               bgcolor: 'rgba(220, 53, 69, 0.1)',
+              borderRadius: 1,
               '&:hover': { bgcolor: 'rgba(220, 53, 69, 0.2)' }
             }}
           >
@@ -63,13 +85,15 @@ function DemoCard({ card, onDelete, onReload }: { card: any; onDelete: () => voi
           </IconButton>
         </Tooltip>
       </Box>
-      <CardContent sx={{ p: 2, pr: 6 }}>
-        <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-          <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#0d6efd' }}>
+      <CardContent sx={{ p: 2, pr: isMinimized ? 8 : 6 }}>
+        <Box display="flex" alignItems="center" gap={1} mb={1}>
+          <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#0d6efd', flex: 1, minWidth: 0 }}>
             {card.key ? (
               <a href={card.url} target="_blank" rel="noopener noreferrer" style={{ color: '#0d6efd', textDecoration: 'none', fontWeight: 600 }}>{card.key}</a>
             ) : card.name}
           </Typography>
+        </Box>
+        <Box display="flex" alignItems="center" gap={1} mb={1} sx={{ flexWrap: 'wrap' }}>
           <Tooltip title={team} placement="top">
             <span style={{
               display: 'inline-block',
@@ -79,48 +103,53 @@ function DemoCard({ card, onDelete, onReload }: { card: any; onDelete: () => voi
               background: getColorForTeam(team),
               border: '1.5px solid #fff',
               boxShadow: '0 0 0 1px #dee2e6',
-              marginRight: 4
+              flexShrink: 0
             }} />
           </Tooltip>
-          <Typography variant="caption" sx={{ color: '#212529', fontWeight: 500 }}>{team}</Typography>
+          <Typography variant="caption" sx={{ color: '#212529', fontWeight: 500, flexShrink: 0 }}>{team}</Typography>
         </Box>
-        <Box display="flex" alignItems="center" gap={1} mb={1}>
-          <Chip label={card.status} size="small" sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500 }} />
+        <Box display="flex" alignItems="center" gap={1} mb={isMinimized ? 0 : 1}>
+          <Chip label={card.status} size="small" sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500, borderRadius: 1 }} />
         </Box>
-        <Typography variant="body2" sx={{ color: '#495057', fontSize: '0.95em', mb: 1 }}>
-          {card.summary || 'Card subtitle or description'}
-        </Typography>
-        <Box display="flex" alignItems="center" gap={1} mb={1}>
-          <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#495057', fontWeight: 500 }}>{doneCount}/{totalCount}</Typography>
-          <span style={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: 18, verticalAlign: 'middle' }}>{pct === 100 ? '✔️' : pct > 0 ? '⏳' : '⚠️'}</span>
-          <Typography variant="body2" fontWeight={600} sx={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: '0.875rem' }}>{pct}%</Typography>
-        </Box>
-        <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 4, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545' } }} />
-        {card.stories && card.stories.length > 0 && (
-          <Box mt={2}>
-            <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mb: 1 }}>Child work items</Typography>
-            <Box component="ul" sx={{ pl: 2, m: 0 }}>
-              {card.stories.map((story: any) => (
-                <li key={story.key} style={{ marginBottom: 4 }}>
-                  <span style={{ fontWeight: 600, color: '#0d6efd', marginRight: 8 }}>{story.key}</span>
-                  <span style={{ color: '#495057', marginRight: 8 }}>{story.summary}</span>
-                  <Tooltip title={story.team} placement="top">
-                    <span style={{
-                      display: 'inline-block',
-                      width: 12,
-                      height: 12,
-                      borderRadius: '50%',
-                      background: getColorForTeam(story.team),
-                      border: '1px solid #fff',
-                      boxShadow: '0 0 0 1px #dee2e6',
-                      marginRight: 4
-                    }} />
-                  </Tooltip>
-                  <Chip label={story.status} size="small" sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500 }} />
-                </li>
-              ))}
+        
+        {!isMinimized && (
+          <>
+            <Typography variant="body2" sx={{ color: '#495057', fontSize: '0.95em', mb: 1 }}>
+              {card.summary || 'Card subtitle or description'}
+            </Typography>
+            <Box display="flex" alignItems="center" gap={1} mb={1}>
+              <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#495057', fontWeight: 500 }}>{doneCount}/{totalCount}</Typography>
+              <span style={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: 18, verticalAlign: 'middle' }}>{pct === 100 ? '✔️' : pct > 0 ? '⏳' : '⚠️'}</span>
+              <Typography variant="body2" fontWeight={600} sx={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: '0.875rem' }}>{pct}%</Typography>
             </Box>
-          </Box>
+            <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545' } }} />
+            {card.stories && card.stories.length > 0 && (
+              <Box mt={2}>
+                <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mb: 1 }}>Child work items</Typography>
+                <Box component="ul" sx={{ pl: 2, m: 0 }}>
+                  {card.stories.map((story: any) => (
+                    <li key={story.key} style={{ marginBottom: 4 }}>
+                      <span style={{ fontWeight: 600, color: '#0d6efd', marginRight: 8 }}>{story.key}</span>
+                      <span style={{ color: '#495057', marginRight: 8 }}>{story.summary}</span>
+                      <Tooltip title={story.team} placement="top">
+                        <span style={{
+                          display: 'inline-block',
+                          width: 12,
+                          height: 12,
+                          borderRadius: '50%',
+                          background: getColorForTeam(story.team),
+                          border: '1px solid #fff',
+                          boxShadow: '0 0 0 1px #dee2e6',
+                          marginRight: 4
+                        }} />
+                      </Tooltip>
+                      <Chip label={story.status} size="small" sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500, borderRadius: 1 }} />
+                    </li>
+                  ))}
+                </Box>
+              </Box>
+            )}
+          </>
         )}
       </CardContent>
     </Card>
@@ -212,6 +241,7 @@ export default function DemoKanban() {
   );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [minimizedCards, setMinimizedCards] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const loadSavedState = async () => {
@@ -267,11 +297,22 @@ export default function DemoKanban() {
   };
 
   const handleDeleteCard = async (colKey: string, cardIndex: number) => {
+    const card = columns[colKey][cardIndex];
+    const cardId = `${colKey}-${card.key}-${cardIndex}`;
+    
     const newColumns = {
       ...columns,
       [colKey]: columns[colKey].filter((_, index) => index !== cardIndex)
     };
     setColumns(newColumns);
+    
+    // Remove from minimized cards if it was minimized
+    setMinimizedCards(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(cardId);
+      return newSet;
+    });
+    
     await saveBoardState(newColumns);
   };
 
@@ -294,6 +335,21 @@ export default function DemoKanban() {
     await saveBoardState(newColumns);
   };
 
+  const handleToggleMinimize = (colKey: string, cardIndex: number) => {
+    const card = columns[colKey][cardIndex];
+    const cardId = `${colKey}-${card.key}-${cardIndex}`;
+    
+    setMinimizedCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(cardId)) {
+        newSet.delete(cardId);
+      } else {
+        newSet.add(cardId);
+      }
+      return newSet;
+    });
+  };
+
   if (loading) {
     return (
       <Box sx={{ background: '#f8f9fa', minHeight: '100vh', p: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -309,26 +365,80 @@ export default function DemoKanban() {
 
   return (
     <Box sx={{ background: '#f8f9fa', minHeight: '100vh', p: 4 }}>
-      <Typography variant="h4" fontWeight={700} sx={{ color: '#212529', mb: 4 }}>
-        Demo Iteration Board
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+        <Typography variant="h4" fontWeight={700} sx={{ color: '#212529' }}>
+          Demo Iteration Board
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setMinimizedCards(new Set())}
+            sx={{ 
+              color: '#0d6efd',
+              borderColor: '#0d6efd',
+              fontWeight: 500,
+              borderRadius: 1,
+              '&:hover': {
+                backgroundColor: '#0d6efd',
+                color: '#ffffff',
+                borderColor: '#0d6efd'
+              }
+            }}
+          >
+            Expand All
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => {
+              const allCardIds = new Set<string>();
+              Object.entries(columns).forEach(([colKey, cards]) => {
+                cards.forEach((card, idx) => {
+                  allCardIds.add(`${colKey}-${card.key}-${idx}`);
+                });
+              });
+              setMinimizedCards(allCardIds);
+            }}
+            sx={{ 
+              color: '#6c757d',
+              borderColor: '#6c757d',
+              fontWeight: 500,
+              borderRadius: 1,
+              '&:hover': {
+                backgroundColor: '#6c757d',
+                color: '#ffffff',
+                borderColor: '#6c757d'
+              }
+            }}
+          >
+            Minimize All
+          </Button>
+        </Box>
+      </Box>
       {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
       <Box sx={{ display: 'flex', gap: 3, overflowX: 'auto', minWidth: 1200 }}>
         {ITERATIONS.map(iter => (
-          <Box key={iter.key} sx={{ minWidth: 320, background: '#fff', border: '1px solid #e9ecef', borderRadius: 3, p: 2, display: 'flex', flexDirection: 'column', minHeight: 600 }}>
+          <Box key={iter.key} sx={{ minWidth: 320, background: '#fff', border: '1px solid #e9ecef', borderRadius: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 600 }}>
             <Box mb={2}>
               <Typography variant="h6" fontWeight={600} sx={{ color: '#212529' }}>{iter.label}</Typography>
               <Typography variant="caption" sx={{ color: '#6c757d' }}>{iter.range}</Typography>
             </Box>
             <Box flex={1} mb={2}>
-              {columns[iter.key].map((card, idx) => (
-                <DemoCard 
-                  key={idx} 
-                  card={card} 
-                  onDelete={() => handleDeleteCard(iter.key, idx)}
-                  onReload={() => handleReloadCard(iter.key, idx)}
-                />
-              ))}
+              {columns[iter.key].map((card, idx) => {
+                const cardId = `${iter.key}-${card.key}-${idx}`;
+                const isMinimized = minimizedCards.has(cardId);
+                return (
+                  <DemoCard 
+                    key={idx} 
+                    card={card} 
+                    onDelete={() => handleDeleteCard(iter.key, idx)}
+                    onReload={() => handleReloadCard(iter.key, idx)}
+                    isMinimized={isMinimized}
+                    onToggleMinimize={() => handleToggleMinimize(iter.key, idx)}
+                  />
+                );
+              })}
             </Box>
             <Box mt="auto" pt={2}>
               <TextField
@@ -341,7 +451,7 @@ export default function DemoKanban() {
                 onKeyDown={e => {
                   if (e.key === "Enter") handleAddCard(iter.key);
                 }}
-                sx={{ mb: 1, background: '#fff' }}
+                sx={{ mb: 1, background: '#fff', borderRadius: 1 }}
                 inputProps={{ style: { color: '#212529' } }}
               />
               <Button
@@ -349,7 +459,7 @@ export default function DemoKanban() {
                 color="primary"
                 fullWidth
                 onClick={() => handleAddCard(iter.key)}
-                sx={{ fontWeight: 600 }}
+                sx={{ fontWeight: 600, borderRadius: 1 }}
               >
                 Add
               </Button>
