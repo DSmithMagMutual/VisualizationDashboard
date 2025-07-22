@@ -156,20 +156,20 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize }: {
   );
 }
 
-async function saveBoardState(columns: Record<string, any[]>) {
+async function saveBoardState(columns: Record<string, any[]>, title?: string) {
   await fetch('/api/board-save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ columns }),
+    body: JSON.stringify({ columns, title }),
   });
 }
 
-async function loadBoardState(): Promise<Record<string, any[]> | null> {
+async function loadBoardState(): Promise<{ columns: Record<string, any[]>; title?: string } | null> {
   try {
     const response = await fetch('/api/board-save');
     if (response.ok) {
       const data = await response.json();
-      return data.columns || null;
+      return data || null;
     }
   } catch (error) {
     console.error('Error loading board state:', error);
@@ -242,16 +242,22 @@ export default function DemoKanban() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [minimizedCards, setMinimizedCards] = useState<Set<string>>(new Set());
+  const [boardTitle, setBoardTitle] = useState("Demo Iteration Board");
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
 
   useEffect(() => {
     const loadSavedState = async () => {
       try {
         setLoading(true);
-        const savedColumns = await loadBoardState();
-        if (savedColumns) {
+        const savedData = await loadBoardState();
+        if (savedData) {
+          // Load board title
+          if (savedData.title) {
+            setBoardTitle(savedData.title);
+          }
           // Ensure all iteration keys are present in the loaded state
           const initializedColumns = ITERATIONS.reduce((acc, iter) => {
-            acc[iter.key] = savedColumns[iter.key] || [];
+            acc[iter.key] = savedData.columns?.[iter.key] || [];
             return acc;
           }, {} as Record<string, any[]>);
           setColumns(initializedColumns);
@@ -293,7 +299,7 @@ export default function DemoKanban() {
     };
     setColumns(newColumns);
     setInputs(inputs => ({ ...inputs, [colKey]: "" }));
-    await saveBoardState(newColumns);
+    await saveBoardState(newColumns, boardTitle);
   };
 
   const handleDeleteCard = async (colKey: string, cardIndex: number) => {
@@ -313,7 +319,7 @@ export default function DemoKanban() {
       return newSet;
     });
     
-    await saveBoardState(newColumns);
+    await saveBoardState(newColumns, boardTitle);
   };
 
   const handleReloadCard = async (colKey: string, cardIndex: number) => {
@@ -332,7 +338,7 @@ export default function DemoKanban() {
       [colKey]: columns[colKey].map((c, index) => index === cardIndex ? updatedCard : c)
     };
     setColumns(newColumns);
-    await saveBoardState(newColumns);
+    await saveBoardState(newColumns, boardTitle);
   };
 
   const handleToggleMinimize = (colKey: string, cardIndex: number) => {
@@ -348,6 +354,12 @@ export default function DemoKanban() {
       }
       return newSet;
     });
+  };
+
+  const handleTitleChange = async (newTitle: string) => {
+    setBoardTitle(newTitle);
+    setIsEditingTitle(false);
+    await saveBoardState(columns, newTitle);
   };
 
   if (loading) {
@@ -366,9 +378,50 @@ export default function DemoKanban() {
   return (
     <Box sx={{ background: '#f8f9fa', minHeight: '100vh', p: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
-        <Typography variant="h4" fontWeight={700} sx={{ color: '#212529' }}>
-          Demo Iteration Board
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {isEditingTitle ? (
+            <TextField
+              value={boardTitle}
+              onChange={(e) => setBoardTitle(e.target.value)}
+              onBlur={() => handleTitleChange(boardTitle)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleTitleChange(boardTitle);
+                } else if (e.key === 'Escape') {
+                  setIsEditingTitle(false);
+                }
+              }}
+              variant="standard"
+              sx={{
+                '& .MuiInput-root': {
+                  fontSize: '2rem',
+                  fontWeight: 700,
+                  color: '#212529',
+                  '&:before': { borderBottom: 'none' },
+                  '&:after': { borderBottom: 'none' },
+                  '&:hover:before': { borderBottom: 'none' }
+                }
+              }}
+              autoFocus
+            />
+          ) : (
+            <Typography 
+              variant="h4" 
+              fontWeight={700} 
+              sx={{ 
+                color: '#212529', 
+                cursor: 'pointer',
+                '&:hover': { 
+                  textDecoration: 'underline',
+                  textDecorationColor: '#0d6efd'
+                }
+              }}
+              onClick={() => setIsEditingTitle(true)}
+            >
+              {boardTitle}
+            </Typography>
+          )}
+        </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
             variant="outlined"
