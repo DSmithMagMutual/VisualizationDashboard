@@ -1,11 +1,11 @@
 'use client'
 
 import React from 'react';
-import { Box, Typography, MenuItem, Select, Checkbox, ListItemText, OutlinedInput } from '@mui/material';
+import { Box, Typography, MenuItem, Select, Checkbox, ListItemText, OutlinedInput, Button } from '@mui/material';
 import FeatureProgressWidget from '@/components/widgets/FeatureProgressWidget';
 import { useBoard, BoardProvider } from '@/components/BoardContext';
 
-function BoardSwitcher() {
+function BoardSwitcher({ onManualRefresh, refreshing }: { onManualRefresh?: () => void, refreshing?: boolean }) {
   const { boards, selectedBoards, toggleBoard, addBoard } = useBoard();
   const [open, setOpen] = React.useState(false);
   const [newName, setNewName] = React.useState('');
@@ -79,6 +79,26 @@ function BoardSwitcher() {
       >
         + Add Board
       </button>
+      {onManualRefresh && (
+        <button
+          onClick={onManualRefresh}
+          disabled={refreshing}
+          style={{
+            marginLeft: 8,
+            padding: '6px 16px',
+            borderRadius: 8,
+            background: '#0d6efd',
+            color: '#fff',
+            border: 'none',
+            fontWeight: 600,
+            cursor: refreshing ? 'not-allowed' : 'pointer',
+            opacity: refreshing ? 0.6 : 1
+          }}
+          aria-label="Manual Refresh"
+        >
+          {refreshing ? 'Refreshing...' : 'Manual Refresh'}
+        </button>
+      )}
       {open && (
         <div role="dialog" aria-modal="true" style={{ 
           background: '#ffffff', 
@@ -277,26 +297,7 @@ function FeatureProgressDashboardContent() {
         <Typography variant="body1" sx={{ color: '#6c757d', mb: 4 }}>
           Track the progress of features (Epics/Features) based on the completion of their associated stories.
         </Typography>
-        <Box display="flex" alignItems="center" gap={2} mb={2}>
-          <BoardSwitcher />
-          <button
-            onClick={handleManualRefresh}
-            disabled={refreshing}
-            style={{
-              padding: '6px 16px',
-              borderRadius: 8,
-              background: '#0d6efd',
-              color: '#fff',
-              border: 'none',
-              fontWeight: 600,
-              cursor: refreshing ? 'not-allowed' : 'pointer',
-              opacity: refreshing ? 0.6 : 1
-            }}
-            aria-label="Manual Refresh"
-          >
-            {refreshing ? 'Refreshing...' : 'Manual Refresh'}
-          </button>
-        </Box>
+        <BoardSwitcher onManualRefresh={handleManualRefresh} refreshing={refreshing} />
         {teamSelect}
         {useCache && <FeatureProgressWidget onTeamsUpdate={handleTeamsUpdate} selectedTeams={selectedTeams} />}
         {!useCache && null}

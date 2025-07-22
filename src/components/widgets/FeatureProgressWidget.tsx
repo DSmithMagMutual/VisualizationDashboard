@@ -1,10 +1,13 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Box, Card, CardContent, Typography, LinearProgress, IconButton, Collapse, Avatar, Tooltip, CircularProgress, Alert, FormControlLabel, Switch, Button, MenuItem, Select, Chip, Checkbox, ListItemText, OutlinedInput } from '@mui/material';
+import { Box, Card, CardContent, Typography, LinearProgress, IconButton, Collapse, Avatar, Tooltip, CircularProgress, Alert, FormControlLabel, Switch, Button, MenuItem, Select, Chip, Checkbox, ListItemText, OutlinedInput, Tabs, Tab } from '@mui/material';
 import { ExpandMore, ExpandLess, CheckCircle, AccessTime, ErrorOutline, UnfoldMore, UnfoldLess } from '@mui/icons-material';
 import { getAllIssuesWithFields } from '@/lib/jira-proxy';
 import { useBoard } from '@/components/BoardContext';
+import ReactFlow, { Background, Controls, MiniMap } from 'reactflow';
+import 'reactflow/dist/style.css';
+import type { Node, Edge } from 'reactflow';
 
 interface Story {
   id: string;
@@ -80,6 +83,7 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
   const [allTeams, setAllTeams] = useState<string[]>([]);
   const [allIssueTypes, setAllIssueTypes] = useState<string[]>([]);
   const [selectedIssueTypes, setSelectedIssueTypes] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<'feature' | 'dependency'>('feature');
 
   // Color map and color function (copy from BoardSwitcher)
   const teamColorMap: Record<string, string> = {
@@ -414,289 +418,300 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
   return (
     <Card sx={{ mb: 4, p: 2, maxWidth: 1350, mx: 'auto', bgcolor: '#f8f9fa', border: '1px solid #e9ecef' }}>
       <CardContent>
-        <Box sx={{ 
-          bgcolor: '#ffffff', 
-          borderRadius: 2, 
-          p: 2, 
-          mb: 3,
-          border: '1px solid #dee2e6',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#212529' }}>Feature Progress</Typography>
-              <Typography variant="caption" sx={{ color: '#6c757d', fontWeight: 500 }}>
-                Boards: {selectedBoards.map(b => `${b.name} (${b.projectKey})`).join(', ')}
-              </Typography>
-            </Box>
-            <Box display="flex" alignItems="center" gap={2}>
-              <FormControlLabel
-                control={<Switch checked={hideCompleted} onChange={e => setHideCompleted(e.target.checked)} />}
-                label={<Typography sx={{ color: '#212529', fontWeight: 500 }}>Hide Completed</Typography>}
-              />
-              <FormControlLabel
-                control={<Switch checked={hideEmptyFeatures} onChange={e => setHideEmptyFeatures(e.target.checked)} />}
-                label={<Typography sx={{ color: '#212529', fontWeight: 500 }}>Hide Empty Features</Typography>}
-              />
-              <Button 
-                onClick={handleExpandAll} 
-                startIcon={<UnfoldMore />} 
-                sx={{ 
-                  color: '#0d6efd', 
-                  fontWeight: 500,
-                  border: '1px solid #0d6efd',
-                  '&:hover': { 
-                    backgroundColor: '#0d6efd', 
-                    color: '#ffffff' 
-                  }
-                }}
-              >
-                Expand All
-              </Button>
-              <Button 
-                onClick={handleCollapseAll} 
-                startIcon={<UnfoldLess />} 
-                sx={{ 
-                  color: '#0d6efd', 
-                  fontWeight: 500,
-                  border: '1px solid #0d6efd',
-                  '&:hover': { 
-                    backgroundColor: '#0d6efd', 
-                    color: '#ffffff' 
-                  }
-                }}
-              >
-                Collapse All
-              </Button>
-            </Box>
-          </Box>
-          {issueTypeSelect}
-          <Box display="flex" alignItems="center" gap={2} mb={2} sx={{ flexWrap: 'wrap', rowGap: 1 }}>
-            <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mr: 1, mb: 0.5 }}>Teams:</Typography>
-            {allTeams.map(team => (
-              <Chip
-                key={team}
-                label={team}
-                avatar={<span style={{
-                  display: 'inline-block',
-                  width: 16,
-                  height: 16,
-                  borderRadius: '50%',
-                  background: getColorForTeam(team),
-                  border: '1.5px solid #fff',
-                  boxShadow: '0 0 0 1px #dee2e6',
-                }} />}
-                sx={{
-                  bgcolor: '#f3f4f6',
-                  color: '#212529',
-                  fontWeight: 500,
-                  fontSize: '0.95em',
-                  mr: 1,
-                  mb: 0.5,
-                  height: 28
-                }}
-              />
-            ))}
-          </Box>
-          <Box>
-            <Typography variant="body2" sx={{ mb: 1, color: '#212529', fontWeight: 500 }}>Overall: {overallPct}% of features complete</Typography>
-            <LinearProgress
-              variant="determinate"
-              value={overallPct}
-              sx={{ height: 12, borderRadius: 6, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: progressColor(overallPct) } }}
-              aria-label={`Overall feature progress: ${overallPct}% complete`}
-            />
-          </Box>
+        <Box sx={{ mb: 2 }}>
+          <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} aria-label="Widget Tabs">
+            <Tab label="Feature Progress" value="feature" />
+            <Tab label="Dependency Graph" value="dependency" />
+          </Tabs>
         </Box>
-        {filteredFeatures.length === 0 ? (
-          <Typography variant="body2" sx={{ textAlign: 'center', py: 4, color: '#6c757d', fontWeight: 500 }}>
-            {hideCompleted && hideEmptyFeatures ? 'No incomplete features with stories found.' :
-             hideCompleted ? 'No incomplete features found.' :
-             hideEmptyFeatures ? 'No features with stories found.' :
-             'No features found in this project.'}
-          </Typography>
-        ) : (
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(3, 1fr)', 
-            gap: 3,
-            maxWidth: '100%',
-            '@media (max-width: 1400px)': {
-              gridTemplateColumns: 'repeat(2, 1fr)',
-            },
-            '@media (max-width: 900px)': {
-              gridTemplateColumns: '1fr',
-            }
-          }}>
-            {filteredFeatures.map(feature => (
-              <Card key={feature.id} sx={{ 
-                bgcolor: feature.ghost ? '#fbeee6' : '#ffffff', 
-                border: feature.ghost ? '2px dashed #f4a261' : '1px solid #dee2e6',
-                '&:hover': { borderColor: feature.ghost ? '#f4a261' : '#adb5bd', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+        {activeTab === 'feature' ? (
+          <>
+            <Box sx={{ 
+              bgcolor: '#ffffff', 
+              borderRadius: 2, 
+              p: 2, 
+              mb: 3,
+              border: '1px solid #dee2e6',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+            }}>
+              <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#212529' }}>Feature Progress</Typography>
+                  <Typography variant="caption" sx={{ color: '#6c757d', fontWeight: 500 }}>
+                    Boards: {selectedBoards.map(b => `${b.name} (${b.projectKey})`).join(', ')}
+                  </Typography>
+                </Box>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <FormControlLabel
+                    control={<Switch checked={hideCompleted} onChange={e => setHideCompleted(e.target.checked)} />}
+                    label={<Typography sx={{ color: '#212529', fontWeight: 500 }}>Hide Completed</Typography>}
+                  />
+                  <FormControlLabel
+                    control={<Switch checked={hideEmptyFeatures} onChange={e => setHideEmptyFeatures(e.target.checked)} />}
+                    label={<Typography sx={{ color: '#212529', fontWeight: 500 }}>Hide Empty Features</Typography>}
+                  />
+                  <Button 
+                    onClick={handleExpandAll} 
+                    startIcon={<UnfoldMore />} 
+                    sx={{ 
+                      color: '#0d6efd', 
+                      fontWeight: 500,
+                      border: '1px solid #0d6efd',
+                      '&:hover': { 
+                        backgroundColor: '#0d6efd', 
+                        color: '#ffffff' 
+                      }
+                    }}
+                  >
+                    Expand All
+                  </Button>
+                  <Button 
+                    onClick={handleCollapseAll} 
+                    startIcon={<UnfoldLess />} 
+                    sx={{ 
+                      color: '#0d6efd', 
+                      fontWeight: 500,
+                      border: '1px solid #0d6efd',
+                      '&:hover': { 
+                        backgroundColor: '#0d6efd', 
+                        color: '#ffffff' 
+                      }
+                    }}
+                  >
+                    Collapse All
+                  </Button>
+                </Box>
+              </Box>
+              {issueTypeSelect}
+              <Box display="flex" alignItems="center" gap={2} mb={2} sx={{ flexWrap: 'wrap', rowGap: 1 }}>
+                <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mr: 1, mb: 0.5 }}>Teams:</Typography>
+                {allTeams.map(team => (
+                  <Chip
+                    key={team}
+                    label={team}
+                    avatar={<span style={{
+                      display: 'inline-block',
+                      width: 16,
+                      height: 16,
+                      borderRadius: '50%',
+                      background: getColorForTeam(team),
+                      border: '1.5px solid #fff',
+                      boxShadow: '0 0 0 1px #dee2e6',
+                    }} />}
+                    sx={{
+                      bgcolor: '#f3f4f6',
+                      color: '#212529',
+                      fontWeight: 500,
+                      fontSize: '0.95em',
+                      mr: 1,
+                      mb: 0.5,
+                      height: 28
+                    }}
+                  />
+                ))}
+              </Box>
+              <Box>
+                <Typography variant="body2" sx={{ mb: 1, color: '#212529', fontWeight: 500 }}>Overall: {overallPct}% of features complete</Typography>
+                <LinearProgress
+                  variant="determinate"
+                  value={overallPct}
+                  sx={{ height: 12, borderRadius: 6, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: progressColor(overallPct) } }}
+                  aria-label={`Overall feature progress: ${overallPct}% complete`}
+                />
+              </Box>
+            </Box>
+            {filteredFeatures.length === 0 ? (
+              <Typography variant="body2" sx={{ textAlign: 'center', py: 4, color: '#6c757d', fontWeight: 500 }}>
+                {hideCompleted && hideEmptyFeatures ? 'No incomplete features with stories found.' :
+                 hideCompleted ? 'No incomplete features found.' :
+                 hideEmptyFeatures ? 'No features with stories found.' :
+                 'No features found in this project.'}
+              </Typography>
+            ) : (
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(3, 1fr)', 
+                gap: 3,
+                maxWidth: '100%',
+                '@media (max-width: 1400px)': {
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                },
+                '@media (max-width: 900px)': {
+                  gridTemplateColumns: '1fr',
+                }
               }}>
-                <CardContent sx={{ p: 2 }}>
-                  <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={1}>
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 0.5 }}>
-                        <a 
-                          href={getJiraIssueUrl(feature.key)} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          style={{ color: '#0d6efd', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}
-                          onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                          onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                {filteredFeatures.map(feature => (
+                  <Card key={feature.id} sx={{ 
+                    bgcolor: feature.ghost ? '#fbeee6' : '#ffffff', 
+                    border: feature.ghost ? '2px dashed #f4a261' : '1px solid #dee2e6',
+                    '&:hover': { borderColor: feature.ghost ? '#f4a261' : '#adb5bd', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+                  }}>
+                    <CardContent sx={{ p: 2 }}>
+                      <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={1}>
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 0.5 }}>
+                            <a 
+                              href={getJiraIssueUrl(feature.key)} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              style={{ color: '#0d6efd', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}
+                              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                            >
+                              {feature.key} {feature.ghost && <span style={{ color: '#f4a261', fontWeight: 700, marginLeft: 6 }}>(ghost)</span>}
+                            </a>
+                          </Typography>
+                          <Typography variant="body2" sx={{ 
+                            fontSize: '0.875rem',
+                            lineHeight: 1.3,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            color: '#495057',
+                            fontWeight: 400
+                          }}>
+                            {feature.summary}
+                          </Typography>
+                        </Box>
+                        <IconButton
+                          aria-label={expanded[feature.id] ? 'Collapse feature details' : 'Expand feature details'}
+                          onClick={() => setExpanded(e => ({ ...e, [feature.id]: !e[feature.id] }))}
+                          size="small"
+                          sx={{ 
+                            ml: 1, 
+                            flexShrink: 0,
+                            color: '#0d6efd',
+                            '&:hover': {
+                              backgroundColor: 'rgba(13, 110, 253, 0.1)'
+                            }
+                          }}
                         >
-                          {feature.key} {feature.ghost && <span style={{ color: '#f4a261', fontWeight: 700, marginLeft: 6 }}>(ghost)</span>}
-                        </a>
-                      </Typography>
-                      <Typography variant="body2" sx={{ 
-                        fontSize: '0.875rem',
-                        lineHeight: 1.3,
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        color: '#495057',
-                        fontWeight: 400
-                      }}>
-                        {feature.summary}
-                      </Typography>
-                    </Box>
-                    <IconButton
-                      aria-label={expanded[feature.id] ? 'Collapse feature details' : 'Expand feature details'}
-                      onClick={() => setExpanded(e => ({ ...e, [feature.id]: !e[feature.id] }))}
-                      size="small"
-                      sx={{ 
-                        ml: 1, 
-                        flexShrink: 0,
-                        color: '#0d6efd',
-                        '&:hover': {
-                          backgroundColor: 'rgba(13, 110, 253, 0.1)'
-                        }
-                      }}
-                    >
-                      {expanded[feature.id] ? <ExpandLess /> : <ExpandMore />}
-                    </IconButton>
-                  </Box>
-                  
-                  <Box display="flex" alignItems="center" gap={1} mb={1}>
-                    <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#495057', fontWeight: 500 }}>
-                      {feature.completedStories}/{feature.totalStories}
-                    </Typography>
-                    <Tooltip title={statusLabel(feature.statusCategory)}>
-                      {statusIcon(feature.statusCategory)}
-                    </Tooltip>
-                    <Typography variant="body2" fontWeight={600} sx={{ 
-                      minWidth: 40, 
-                      textAlign: 'right', 
-                      color: progressColor(feature.progressPercentage),
-                      fontSize: '0.875rem'
-                    }}>
-                      {feature.progressPercentage}%
-                    </Typography>
-                  </Box>
-                  
-                  <Box display="flex" alignItems="center" gap={1} mb={1}>
-                    {getTeamsForFeature(feature).map(team => (
-                      <Tooltip key={team} title={team} placement="top">
-                        <span style={{
-                          display: 'inline-block',
-                          width: 12,
-                          height: 12,
-                          borderRadius: '50%',
-                          background: getColorForTeam(team || 'Other'),
-                          border: '1.5px solid #fff',
-                          boxShadow: '0 0 0 1px #dee2e6',
-                          marginRight: 2
-                        }} />
-                      </Tooltip>
-                    ))}
-                  </Box>
-                  
-                  <Box display="flex" alignItems="center" gap={1} mb={1}>
-                    <LinearProgress
-                      variant="determinate"
-                      value={feature.progressPercentage}
-                      sx={{ 
-                        height: 8, 
-                        borderRadius: 4, 
-                        background: '#e9ecef', 
-                        flex: 1, 
-                        '& .MuiLinearProgress-bar': { background: progressColor(feature.progressPercentage) } 
-                      }}
-                      aria-label={`Feature ${feature.key} progress: ${feature.progressPercentage}% complete`}
-                    />
-                  </Box>
-                  
-                  <Collapse in={!!expanded[feature.id]} timeout="auto" unmountOnExit>
-                    <Box sx={{ 
-                      mt: 1, 
-                      pt: 1, 
-                      borderTop: '1px solid #dee2e6',
-                      maxHeight: 200,
-                      overflow: 'auto'
-                    }}>
-                      {feature.stories.length === 0 ? (
-                        <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#6c757d', fontWeight: 400 }}>
-                          No stories linked to this feature.
+                          {expanded[feature.id] ? <ExpandLess /> : <ExpandMore />}
+                        </IconButton>
+                      </Box>
+                      <Box display="flex" alignItems="center" gap={1} mb={1}>
+                        <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#495057', fontWeight: 500 }}>
+                          {feature.completedStories}/{feature.totalStories}
                         </Typography>
-                      ) : (
-                        feature.stories.map((story, idx) => (
-                          <Box key={`${feature.id}-${story.id}-${idx}`} display="flex" alignItems="center" gap={1} mb={0.5}>
-                            <Box display="flex" alignItems="center" gap={1}>
-                              <Tooltip key={story.team || 'Other'} title={story.team || 'Other'} placement="top">
-                                <span style={{
-                                  display: 'inline-block',
-                                  width: 10,
-                                  height: 10,
-                                  borderRadius: '50%',
-                                  background: getColorForTeam(story.team || 'Other'),
-                                  border: '1.5px solid #fff',
-                                  boxShadow: '0 0 0 1px #dee2e6',
-                                  marginRight: 1
-                                }} />
-                              </Tooltip>
-                            </Box>
-                            <Typography variant="body2" fontWeight={500} sx={{ fontSize: '0.75rem' }}>
-                              <a 
-                                href={getJiraIssueUrl(story.key)} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                style={{ color: '#0d6efd', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}
-                                onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                                onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
-                              >
-                                {story.key}
-                              </a>
+                        <Tooltip title={statusLabel(feature.statusCategory)}>
+                          {statusIcon(feature.statusCategory)}
+                        </Tooltip>
+                        <Typography variant="body2" fontWeight={600} sx={{ 
+                          minWidth: 40, 
+                          textAlign: 'right', 
+                          color: progressColor(feature.progressPercentage),
+                          fontSize: '0.875rem'
+                        }}>
+                          {feature.progressPercentage}%
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" gap={1} mb={1}>
+                        {getTeamsForFeature(feature).map(team => (
+                          <Tooltip key={team} title={team} placement="top">
+                            <span style={{
+                              display: 'inline-block',
+                              width: 12,
+                              height: 12,
+                              borderRadius: '50%',
+                              background: getColorForTeam(team || 'Other'),
+                              border: '1.5px solid #fff',
+                              boxShadow: '0 0 0 1px #dee2e6',
+                              marginRight: 2
+                            }} />
+                          </Tooltip>
+                        ))}
+                      </Box>
+                      <Box display="flex" alignItems="center" gap={1} mb={1}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={feature.progressPercentage}
+                          sx={{ 
+                            height: 8, 
+                            borderRadius: 4, 
+                            background: '#e9ecef', 
+                            flex: 1, 
+                            '& .MuiLinearProgress-bar': { background: progressColor(feature.progressPercentage) } 
+                          }}
+                          aria-label={`Feature ${feature.key} progress: ${feature.progressPercentage}% complete`}
+                        />
+                      </Box>
+                      <Collapse in={!!expanded[feature.id]} timeout="auto" unmountOnExit>
+                        <Box sx={{ 
+                          mt: 1, 
+                          pt: 1, 
+                          borderTop: '1px solid #dee2e6',
+                          maxHeight: 200,
+                          overflow: 'auto'
+                        }}>
+                          {feature.stories.length === 0 ? (
+                            <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#6c757d', fontWeight: 400 }}>
+                              No stories linked to this feature.
                             </Typography>
-                            <Typography variant="body2" sx={{ 
-                              fontSize: '0.75rem',
-                              flex: 1,
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              color: '#495057',
-                              fontWeight: 400
-                            }}>
-                              {story.summary}
-                            </Typography>
-                            <Tooltip title={statusLabel(story.statusCategory)}>
-                              {statusIcon(story.statusCategory)}
-                            </Tooltip>
-                            {story.assignee && (
-                              <Avatar sx={{ width: 16, height: 16, fontSize: 10 }}>
-                                {story.assignee[0]}
-                              </Avatar>
-                            )}
-                          </Box>
-                        ))
-                      )}
-                    </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
-            ))}
+                          ) : (
+                            feature.stories.map((story, idx) => (
+                              <Box key={`${feature.id}-${story.id}-${idx}`} display="flex" alignItems="center" gap={1} mb={0.5}>
+                                <Box display="flex" alignItems="center" gap={1}>
+                                  <Tooltip key={story.team || 'Other'} title={story.team || 'Other'} placement="top">
+                                    <span style={{
+                                      display: 'inline-block',
+                                      width: 10,
+                                      height: 10,
+                                      borderRadius: '50%',
+                                      background: getColorForTeam(story.team || 'Other'),
+                                      border: '1.5px solid #fff',
+                                      boxShadow: '0 0 0 1px #dee2e6',
+                                      marginRight: 1
+                                    }} />
+                                  </Tooltip>
+                                </Box>
+                                <Typography variant="body2" fontWeight={500} sx={{ fontSize: '0.75rem' }}>
+                                  <a 
+                                    href={getJiraIssueUrl(story.key)} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    style={{ color: '#0d6efd', textDecoration: 'none', cursor: 'pointer', fontWeight: 600 }}
+                                    onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                                    onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                                  >
+                                    {story.key}
+                                  </a>
+                                </Typography>
+                                <Typography variant="body2" sx={{ 
+                                  fontSize: '0.75rem',
+                                  flex: 1,
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                  color: '#495057',
+                                  fontWeight: 400
+                                }}>
+                                  {story.summary}
+                                </Typography>
+                                <Tooltip title={statusLabel(story.statusCategory)}>
+                                  {statusIcon(story.statusCategory)}
+                                </Tooltip>
+                                {story.assignee && (
+                                  <Avatar sx={{ width: 16, height: 16, fontSize: 10 }}>
+                                    {story.assignee[0]}
+                                  </Avatar>
+                                )}
+                              </Box>
+                            ))
+                          )}
+                        </Box>
+                      </Collapse>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
+            )}
+          </>
+        ) : (
+          <Box sx={{ p: 2, minHeight: 500 }}>
+            <Typography variant="h5" sx={{ color: '#0d6efd', fontWeight: 700, mb: 2 }}>Dependency Graph</Typography>
+            <DependencyGraph features={features} />
           </Box>
         )}
       </CardContent>
@@ -728,5 +743,62 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
         </Box>
       )}
     </Card>
+  );
+} 
+
+// DependencyGraph component
+function DependencyGraph({ features }: { features: Feature[] }) {
+  // Build nodes and edges from features and their stories
+  const nodes: Node[] = [];
+  const edges: Edge[] = [];
+  const nodeIds = new Set();
+  let x = 0;
+  let y = 0;
+  const yStep = 120;
+  features.forEach((feature, i) => {
+    // Add parent node
+    nodes.push({
+      id: feature.id,
+      data: { label: `${feature.key}: ${feature.summary}` },
+      position: { x, y: y + i * yStep },
+      style: { minWidth: 220, background: feature.ghost ? '#fbeee6' : '#fff', border: feature.ghost ? '2px dashed #f4a261' : '1px solid #dee2e6', fontWeight: 600 },
+    });
+    nodeIds.add(feature.id);
+    // Add child nodes and edges
+    feature.stories.forEach((story, j) => {
+      const childId = story.id;
+      if (!nodeIds.has(childId)) {
+        nodes.push({
+          id: childId,
+          data: { label: `${story.key}: ${story.summary}` },
+          position: { x: x + 300, y: y + i * yStep + j * 40 },
+          style: { minWidth: 220, background: '#f3f4f6', border: '1px solid #dee2e6' },
+        });
+        nodeIds.add(childId);
+      }
+      edges.push({ id: `${feature.id}->${childId}`, source: feature.id, target: childId, animated: false });
+    });
+  });
+  return (
+    <Box sx={{ width: '100%', height: 600, background: '#f8f9fa', borderRadius: 2, border: '1px solid #dee2e6' }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        fitView
+        panOnDrag
+        zoomOnScroll
+        zoomOnPinch
+        panOnScroll
+        elementsSelectable={false}
+        nodesDraggable={false}
+        nodesConnectable={false}
+        edgesFocusable={false}
+        proOptions={{ hideAttribution: true }}
+      >
+        <Background color="#e9ecef" gap={32} />
+        <MiniMap nodeColor={() => '#6C63FF'} nodeStrokeWidth={3} zoomable pannable />
+        <Controls showInteractive={true} />
+      </ReactFlow>
+    </Box>
   );
 } 
