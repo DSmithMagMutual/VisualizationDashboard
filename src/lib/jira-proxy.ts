@@ -1,110 +1,66 @@
-export async function getBoards() {
-  const res = await fetch('/api/jira?endpoint=board');
-  if (!res.ok) throw new Error('Failed to fetch boards');
-  return res.json();
-}
+import fs from 'fs';
+import path from 'path';
 
-export async function getActiveSprint(boardId: number) {
-  const res = await fetch(`/api/jira?endpoint=board/${boardId}/sprint&state=active`);
-  if (!res.ok) throw new Error('Failed to fetch active sprint');
-  return res.json();
-}
+// Remove all fs/path/cache logic from this file. Only keep Jira fetch logic.
 
-export async function getSprintIssues(sprintId: number) {
-  const res = await fetch(`/api/jira?endpoint=sprint/${sprintId}/issue`);
-  if (!res.ok) throw new Error('Failed to fetch sprint issues');
-  return res.json();
-}
-
-export async function getProjectIssues(projectKey: string) {
-  const res = await fetch(`/api/jira?endpoint=search&jql=project=${projectKey}&maxResults=100`);
-  if (!res.ok) throw new Error('Failed to fetch project issues');
-  return res.json();
-}
-
-export async function getAllProjectIssues(projectKey: string) {
+async function fetchFromJiraDirectly(projectKey: string) {
   const maxResults = 1000;
-  const firstRes = await fetch(`/api/jira?endpoint=search&jql=project=${projectKey}&startAt=0&maxResults=${maxResults}`);
-  if (!firstRes.ok) throw new Error('Failed to fetch project issues');
-  const firstData = await firstRes.json();
-  let allIssues = firstData.issues;
-  const total = firstData.total;
-
-  if (total <= maxResults) return allIssues;
-
-  // Calculate how many more pages we need
-  const pages = [];
-  for (let startAt = maxResults; startAt < total; startAt += maxResults) {
-    pages.push(startAt);
-  }
-
-  // Fetch remaining pages in parallel, but limit concurrency
-  const concurrency = 3;
-  const results: any[] = [];
-  for (let i = 0; i < pages.length; i += concurrency) {
-    const batch = pages.slice(i, i + concurrency).map(startAt =>
-      fetch(`/api/jira?endpoint=search&jql=project=${projectKey}&startAt=${startAt}&maxResults=${maxResults}`)
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to fetch project issues');
-          return res.json();
-        })
-        .then(data => data.issues)
-    );
-    const batchResults = await Promise.all(batch);
-    results.push(...batchResults.flat());
-  }
-
-  return allIssues.concat(results);
-}
-
-export async function getProjectData(projectKey: string) {
-  const res = await fetch(`/api/jira?endpoint=project/${projectKey}`);
-  if (!res.ok) throw new Error('Failed to fetch project data');
-  return res.json();
-}
-
-export async function getTeamMembers(projectKey: string) {
-  let allUsers: any[] = [];
   let startAt = 0;
-  const maxResults = 1000;
-  let fetched = 0;
-
-  while (true) {
-    const res = await fetch(`/api/jira?endpoint=user/assignable/search&project=${projectKey}&startAt=${startAt}&maxResults=${maxResults}`);
-    if (!res.ok) throw new Error('Failed to fetch assignable users');
+  let allIssues: any[] = [];
+  let total = 0;
+  let parentKeys = new Set<string>();
+  // First pass: fetch all issues for the project
+  do {
+    const res = await fetch(`/api/jira?endpoint=search&jql=project=${projectKey} ORDER BY rank ASC&startAt=${startAt}&maxResults=${maxResults}&fields=summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001`);
+    if (!res.ok) throw new Error('Failed to fetch issues from Jira');
     const data = await res.json();
-    if (Array.isArray(data)) {
-      allUsers = allUsers.concat(data);
-      fetched = data.length;
-      if (fetched < maxResults) break; // last page
-      startAt += maxResults;
-    } else {
-      break; // Defensive: if Jira returns non-array, stop
+    if (data.issues) {
+      allIssues = allIssues.concat(data.issues);
+      // Collect parent keys from children
+      data.issues.forEach((issue: any) => {
+        const parentKey = issue.fields.parent?.key;
+        if (parentKey) parentKeys.add(parentKey);
+      });
+    }
+    total = data.total || 0;
+    startAt += maxResults;
+  } while (allIssues.length < total);
+  // Second pass: fetch any missing parents
+  const existingKeys = new Set(allIssues.map(i => i.key));
+  const missingParentKeys = Array.from(parentKeys).filter(k => !existingKeys.has(k));
+  if (missingParentKeys.length > 0) {
+    // Fetch missing parents in batches of 50 (Jira JQL limit)
+    for (let i = 0; i < missingParentKeys.length; i += 50) {
+      const batch = missingParentKeys.slice(i, i + 50);
+      const jql = `key in (${batch.map(k => `'${k}'`).join(',')})`;
+      const res = await fetch(`/api/jira?endpoint=search&jql=${encodeURIComponent(jql)}&fields=summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.issues) {
+        allIssues = allIssues.concat(data.issues);
+      }
     }
   }
-
-  return allUsers;
+  return { issues: allIssues, total: allIssues.length };
 }
 
-export async function getFeaturesWithStories(projectKey: string) {
-  // Fetch Features and Stories separately to ensure we get both
-  const featuresJql = `project = ${projectKey} AND issuetype = Feature ORDER BY rank ASC`;
-  const storiesJql = `project = ${projectKey} AND issuetype = Story ORDER BY rank ASC`;
-  
-  const [featuresRes, storiesRes] = await Promise.all([
-    fetch(`/api/jira?endpoint=search&jql=${encodeURIComponent(featuresJql)}&maxResults=500&fields=summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001`),
-    fetch(`/api/jira?endpoint=search&jql=${encodeURIComponent(storiesJql)}&maxResults=500&fields=summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001`)
-  ]);
-  
-  if (!featuresRes.ok) throw new Error('Failed to fetch features');
-  if (!storiesRes.ok) throw new Error('Failed to fetch stories');
-  
-  const featuresData = await featuresRes.json();
-  const storiesData = await storiesRes.json();
-  
-  // Combine the results
-  return {
-    issues: [...featuresData.issues, ...storiesData.issues],
-    total: featuresData.total + storiesData.total
-  };
+export async function getAllIssuesWithFields(projectKey: string, useCache = true, onBatch?: (batch: any[]) => void) {
+  const res = await fetch(`/api/jira-cache?projectKey=${projectKey}&useCache=${useCache ? '1' : '0'}`);
+  if (res.ok) {
+    const data = await res.json();
+    if (onBatch && Array.isArray(data.issues)) onBatch(data.issues);
+    return data;
+  }
+  if (res.status === 404) {
+    // Cache miss: fetch from Jira, then POST to cache
+    const jiraData = await fetchFromJiraDirectly(projectKey);
+    await fetch('/api/jira-cache', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ issues: jiraData.issues }),
+    });
+    if (onBatch && Array.isArray(jiraData.issues)) onBatch(jiraData.issues);
+    return jiraData;
+  }
+  throw new Error('Failed to fetch issues (cache API)');
 } 

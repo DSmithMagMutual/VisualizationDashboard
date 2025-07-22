@@ -75,3 +75,4 @@ coverage/
 test-results/
 junit.xml
 *.gz
+jira-issues-cache.json

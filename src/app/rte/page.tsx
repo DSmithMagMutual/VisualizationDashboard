@@ -190,6 +190,8 @@ function FeatureProgressDashboardContent() {
   // Add state for team filtering
   const [allTeams, setAllTeams] = React.useState<string[]>([]);
   const [selectedTeams, setSelectedTeams] = React.useState<string[]>([]);
+  const [useCache, setUseCache] = React.useState(true);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   // Callback to receive teams from FeatureProgressWidget
   const handleTeamsUpdate = React.useCallback((teams: string[]) => {
@@ -218,6 +220,14 @@ function FeatureProgressDashboardContent() {
     const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
     return '#' + '00000'.substring(0, 6 - c.length) + c;
   }
+
+  const handleManualRefresh = async () => {
+    setRefreshing(true);
+    await fetch('/api/jira-cache', { method: 'DELETE' }); // clear cache via API
+    setUseCache(false); // force re-fetch
+    setTimeout(() => setUseCache(true), 100); // allow widget to re-mount and re-fetch
+    setRefreshing(false);
+  };
 
   const teamSelect = (
     <Box mt={2} mb={3}>
@@ -267,9 +277,29 @@ function FeatureProgressDashboardContent() {
         <Typography variant="body1" sx={{ color: '#6c757d', mb: 4 }}>
           Track the progress of features (Epics/Features) based on the completion of their associated stories.
         </Typography>
-        <BoardSwitcher />
+        <Box display="flex" alignItems="center" gap={2} mb={2}>
+          <BoardSwitcher />
+          <button
+            onClick={handleManualRefresh}
+            disabled={refreshing}
+            style={{
+              padding: '6px 16px',
+              borderRadius: 8,
+              background: '#0d6efd',
+              color: '#fff',
+              border: 'none',
+              fontWeight: 600,
+              cursor: refreshing ? 'not-allowed' : 'pointer',
+              opacity: refreshing ? 0.6 : 1
+            }}
+            aria-label="Manual Refresh"
+          >
+            {refreshing ? 'Refreshing...' : 'Manual Refresh'}
+          </button>
+        </Box>
         {teamSelect}
-        <FeatureProgressWidget onTeamsUpdate={handleTeamsUpdate} selectedTeams={selectedTeams} />
+        {useCache && <FeatureProgressWidget onTeamsUpdate={handleTeamsUpdate} selectedTeams={selectedTeams} />}
+        {!useCache && null}
       </Box>
     </main>
   );

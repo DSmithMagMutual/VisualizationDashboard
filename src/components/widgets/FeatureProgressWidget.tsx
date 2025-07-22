@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Box, Card, CardContent, Typography, LinearProgress, IconButton, Collapse, Avatar, Tooltip, CircularProgress, Alert, FormControlLabel, Switch, Button, MenuItem, Select, Chip } from '@mui/material';
+import { Box, Card, CardContent, Typography, LinearProgress, IconButton, Collapse, Avatar, Tooltip, CircularProgress, Alert, FormControlLabel, Switch, Button, MenuItem, Select, Chip, Checkbox, ListItemText, OutlinedInput } from '@mui/material';
 import { ExpandMore, ExpandLess, CheckCircle, AccessTime, ErrorOutline, UnfoldMore, UnfoldLess } from '@mui/icons-material';
-import { getFeaturesWithStories } from '@/lib/jira-proxy';
+import { getAllIssuesWithFields } from '@/lib/jira-proxy';
 import { useBoard } from '@/components/BoardContext';
 
 interface Story {
@@ -28,6 +28,8 @@ interface Feature {
   totalStories: number;
   progressPercentage: number;
   team?: string;
+  issuetype: string; // Added issuetype
+  ghost?: boolean; // Added ghost property
 }
 
 const progressColor = (pct: number) => {
@@ -76,6 +78,8 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
   const [debugOpen, setDebugOpen] = useState(false);
   const [rawData, setRawData] = useState<any>(null);
   const [allTeams, setAllTeams] = useState<string[]>([]);
+  const [allIssueTypes, setAllIssueTypes] = useState<string[]>([]);
+  const [selectedIssueTypes, setSelectedIssueTypes] = useState<string[]>([]);
 
   // Color map and color function (copy from BoardSwitcher)
   const teamColorMap: Record<string, string> = {
@@ -140,6 +144,7 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
         // Fetch data for all selected boards
         const allFeatures: Feature[] = [];
         let combinedRawData: any = { issues: [] };
+        let allTypesSet = new Set<string>();
         
         for (const board of selectedBoards) {
           const now = Date.now();
@@ -154,11 +159,12 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
           console.log('Fetching feature progress for board:', board.name, 'project:', board.projectKey);
           
           try {
-            const data = await getFeaturesWithStories(board.projectKey);
+            const data = await getAllIssuesWithFields(board.projectKey);
             
             // Combine raw data for debug panel
             if (data.issues) {
               combinedRawData.issues.push(...data.issues);
+              data.issues.forEach((i: any) => allTypesSet.add(i.fields.issuetype.name));
             }
             
             if (!data.issues) {
@@ -166,107 +172,101 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
               continue;
             }
             
-            // Parse Features and Stories
-            const features = data.issues.filter((i: any) => i.fields.issuetype.name === 'Feature');
-            const stories = data.issues.filter((i: any) => i.fields.issuetype.name === 'Story');
-            
-            // Debug: Log all unique issue type names to see what's available
-            const allIssueTypes = Array.from(new Set(data.issues.map((i: any) => i.fields.issuetype.name)));
-            console.log(`Board ${board.name}: All available issue types:`, allIssueTypes);
-            console.log(`Board ${board.name}: Found features:`, features.length, 'stories:', stories.length);
-            console.log(`Board ${board.name}: Sample features:`, features.slice(0, 2).map(f => ({ key: f.key, summary: f.fields.summary })));
-            console.log(`Board ${board.name}: Sample stories with parents:`, stories.slice(0, 3).map(s => ({ 
-              key: s.key, 
-              parentKey: s.fields.parent?.key, 
-              parentId: s.fields.parent?.id 
-            })));
-            
-            // Debug: Check if we're finding any features at all
-            if (features.length === 0) {
-              console.warn(`Board ${board.name}: No features found! Available issue types:`, 
-                Array.from(new Set(data.issues.map((i: any) => i.fields.issuetype.name))));
-            }
-            
-            // Debug: Log customfield_10001 structure for first few issues
-            console.log(`Board ${board.name}: Sample customfield_10001 values:`, 
-              data.issues.slice(0, 5).map(issue => ({
+            // Map all issues by id
+            const issueMap: Record<string, any> = {};
+            data.issues.forEach((issue: any) => {
+              issueMap[issue.id] = issue;
+            });
+            // Group issues: top-level (no parent) and children (with parent)
+            const topLevelIssues: Feature[] = [];
+            const childrenMap: Record<string, Story[]> = {};
+            const parentIdToParentObj: Record<string, any> = {};
+            data.issues.forEach((issue: any) => {
+              const parentId = issue.fields.parent?.id || issue.fields.customfield_10014;
+              if (parentId && issue.fields.parent) {
+                parentIdToParentObj[parentId] = issue.fields.parent;
+              }
+              const storyObj: Story = {
+                id: issue.id,
                 key: issue.key,
-                customfield_10001: issue.fields.customfield_10001,
-                customfield_10001_type: typeof issue.fields.customfield_10001,
-                customfield_10001_keys: issue.fields.customfield_10001 ? Object.keys(issue.fields.customfield_10001) : []
-              }))
-            );
-            
-                    // Map stories to features
-        const featureMap: Record<string, Feature> = {};
-        for (const feature of features) {
-          // Use project key + feature id to ensure uniqueness across projects
-          const uniqueId = `${board.projectKey}-${feature.id}`;
-          featureMap[uniqueId] = {
-            id: uniqueId, // Use unique ID for React keys
-            originalId: feature.id, // Keep original ID for reference
-            key: feature.key,
-            summary: feature.fields.summary,
-            status: feature.fields.status.name,
-            statusCategory: feature.fields.status.statusCategory.key,
-            stories: [],
-            completedStories: 0,
-            totalStories: 0,
-            progressPercentage: 0,
-            team: (() => {
-              const field = feature.fields.customfield_10001;
-              if (typeof field === 'object' && field?.name) {
-                return field.name;
-              } else if (typeof field === 'string' && field) {
-                return field;
+                summary: issue.fields.summary,
+                status: issue.fields.status.name,
+                statusCategory: issue.fields.status.statusCategory.key,
+                assignee: issue.fields.assignee?.displayName || issue.fields.assignee?.emailAddress,
+                team: (() => {
+                  const field = issue.fields.customfield_10001;
+                  if (typeof field === 'object' && field?.name) {
+                    return field.name;
+                  } else if (typeof field === 'string' && field) {
+                    return field;
+                  } else {
+                    return 'Other';
+                  }
+                })(),
+              };
+              // If parentId exists and parent is present, treat as child; otherwise, treat as top-level
+              if (parentId && issueMap[parentId]) {
+                if (!childrenMap[parentId]) childrenMap[parentId] = [];
+                childrenMap[parentId].push(storyObj);
               } else {
-                return 'Other';
+                // Top-level issue (feature) if no parent, or parent is missing
+                topLevelIssues.push({
+                  id: issue.id,
+                  originalId: issue.id,
+                  key: issue.key,
+                  summary: issue.fields.summary,
+                  status: issue.fields.status.name,
+                  statusCategory: issue.fields.status.statusCategory.key,
+                  stories: [], // will fill below
+                  completedStories: 0,
+                  totalStories: 0,
+                  progressPercentage: 0,
+                  team: (() => {
+                    const field = issue.fields.customfield_10001;
+                    if (typeof field === 'object' && field?.name) {
+                      return field.name;
+                    } else if (typeof field === 'string' && field) {
+                      return field;
+                    } else {
+                      return 'Other';
+                    }
+                  })(),
+                  issuetype: issue.fields.issuetype.name,
+                  ghost: false,
+                });
               }
-            })(),
-          };
-        }
-            
-            for (const story of stories) {
-              // Prioritize parent field over customfield_10014 since that's what we see in the data
-              const parentFeatureId = (story.fields.parent && story.fields.parent.id) || story.fields.customfield_10014;
-              if (parentFeatureId) {
-                // Find the feature by original ID
-                const feature = Object.values(featureMap).find(f => f.originalId === parentFeatureId);
-                if (feature) {
-                  feature.stories.push({
-                    id: story.id,
-                    key: story.key,
-                    summary: story.fields.summary,
-                    status: story.fields.status.name,
-                    statusCategory: story.fields.status.statusCategory.key,
-                    assignee: story.fields.assignee?.displayName || story.fields.assignee?.emailAddress,
-                    team: (() => {
-                      const field = story.fields.customfield_10001;
-                      if (typeof field === 'object' && field?.name) {
-                        return field.name;
-                      } else if (typeof field === 'string' && field) {
-                        return field;
-                      } else {
-                        return (feature.team || 'Other');
-                      }
-                    })(),
-                  });
-                }
+            });
+            // Synthesize ghost cards for any parent referenced but not present
+            Object.entries(parentIdToParentObj).forEach(([parentId, parentObj]) => {
+              if (!issueMap[parentId] && !topLevelIssues.some(f => f.id === parentId)) {
+                topLevelIssues.push({
+                  id: parentId,
+                  originalId: parentId,
+                  key: parentObj.key,
+                  summary: parentObj.fields?.summary || '(No summary)',
+                  status: parentObj.fields?.status?.name || 'Unknown',
+                  statusCategory: parentObj.fields?.status?.statusCategory?.key || 'indeterminate',
+                  stories: childrenMap[parentId] || [],
+                  completedStories: (childrenMap[parentId] || []).filter(s => s.statusCategory === 'done').length,
+                  totalStories: (childrenMap[parentId] || []).length,
+                  progressPercentage: (childrenMap[parentId] && childrenMap[parentId].length > 0)
+                    ? Math.round((childrenMap[parentId].filter(s => s.statusCategory === 'done').length / childrenMap[parentId].length) * 100)
+                    : 0,
+                  team: 'Other',
+                  issuetype: parentObj.fields?.issuetype?.name || 'Unknown',
+                  ghost: true,
+                });
               }
-            }
-            
-            // Calculate progress
-            for (const feature of Object.values(featureMap)) {
+            });
+            // Attach children to their parent
+            topLevelIssues.forEach(feature => {
+              feature.stories = childrenMap[feature.id] || feature.stories || [];
               feature.totalStories = feature.stories.length;
               feature.completedStories = feature.stories.filter(s => s.statusCategory === 'done').length;
               feature.progressPercentage = feature.totalStories > 0 ? Math.round((feature.completedStories / feature.totalStories) * 100) : 0;
-            }
-            
-            const boardFeatures = Object.values(featureMap);
-            allFeatures.push(...boardFeatures);
-            
-            // Cache the result
-            featureProgressCache[cacheKey] = { data: boardFeatures, timestamp: Date.now() };
+            });
+            allFeatures.push(...topLevelIssues);
+            featureProgressCache[`${board.projectKey}-${board.id}`] = { data: topLevelIssues, timestamp: Date.now() };
             
           } catch (err) {
             console.error(`Error fetching data for board ${board.name}:`, err);
@@ -276,28 +276,18 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
         
         clearTimeout(timeoutId);
         
-        setRawData(combinedRawData); // Save combined raw API data for debug panel
-        console.log('Combined feature progress data:', combinedRawData);
-        
-        // Deduplicate features based on original ID to avoid duplicates from multiple boards in same project
-        // Instead of merging, just keep the first occurrence (latest data for selected boards)
+        setAllIssueTypes(Array.from(allTypesSet));
+        setSelectedIssueTypes(Array.from(allTypesSet)); // default: all selected
+        setRawData(combinedRawData);
+        // Deduplicate features based on original ID
         const seen = new Set<string>();
         const uniqueFeatures = allFeatures.filter(feature => {
           if (feature.originalId && seen.has(feature.originalId)) return false;
           if (feature.originalId) seen.add(feature.originalId);
           return true;
         });
-
         // Sort by progress ascending
         const sorted = uniqueFeatures.sort((a, b) => a.progressPercentage - b.progressPercentage);
-        console.log('Final processed features (after deduplication):', sorted.length);
-        console.log('Sample features:', sorted.slice(0, 3).map(f => ({
-          id: f.id,
-          key: f.key,
-          summary: f.summary,
-          storiesCount: f.stories.length,
-          progress: f.progressPercentage
-        })));
         setFeatures(sorted);
         
         setLoading(false);
@@ -386,7 +376,40 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
     }));
   }
 
+  // Filter features by selected issue types
+  if (selectedIssueTypes.length > 0) {
+    filteredFeatures = filteredFeatures.filter(f => selectedIssueTypes.includes(f.issuetype));
+  }
+
   const overallPct = features.length > 0 ? Math.round((features.filter(f => f.progressPercentage === 100).length / features.length) * 100) : 0;
+
+  // Add issue type filter UI
+  const issueTypeSelect = (
+    <Box mt={2} mb={3}>
+      <Typography variant="subtitle1" sx={{ color: '#212529', fontWeight: 600, mb: 1 }}>Issue Types:</Typography>
+      <Select
+        multiple
+        value={selectedIssueTypes}
+        onChange={e => setSelectedIssueTypes(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+        input={<OutlinedInput label="Issue Types" />}
+        renderValue={(selected: string[]) => (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {selected.map((type: string) => (
+              <Chip key={type} label={type} />
+            ))}
+          </Box>
+        )}
+        sx={{ minWidth: 240, background: '#fff', borderRadius: 2 }}
+      >
+        {allIssueTypes.map(type => (
+          <MenuItem key={type} value={type}>
+            <Checkbox checked={selectedIssueTypes.indexOf(type) > -1} />
+            <ListItemText primary={type} />
+          </MenuItem>
+        ))}
+      </Select>
+    </Box>
+  );
 
   return (
     <Card sx={{ mb: 4, p: 2, maxWidth: 1350, mx: 'auto', bgcolor: '#f8f9fa', border: '1px solid #e9ecef' }}>
@@ -447,6 +470,7 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
               </Button>
             </Box>
           </Box>
+          {issueTypeSelect}
           <Box display="flex" alignItems="center" gap={2} mb={2} sx={{ flexWrap: 'wrap', rowGap: 1 }}>
             <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mr: 1, mb: 0.5 }}>Teams:</Typography>
             {allTeams.map(team => (
@@ -506,9 +530,9 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
           }}>
             {filteredFeatures.map(feature => (
               <Card key={feature.id} sx={{ 
-                bgcolor: '#ffffff', 
-                border: '1px solid #dee2e6',
-                '&:hover': { borderColor: '#adb5bd', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
+                bgcolor: feature.ghost ? '#fbeee6' : '#ffffff', 
+                border: feature.ghost ? '2px dashed #f4a261' : '1px solid #dee2e6',
+                '&:hover': { borderColor: feature.ghost ? '#f4a261' : '#adb5bd', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }
               }}>
                 <CardContent sx={{ p: 2 }}>
                   <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={1}>
@@ -522,7 +546,7 @@ export default function FeatureProgressWidget({ onTeamsUpdate, selectedTeams }: 
                           onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
                           onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
                         >
-                          {feature.key}
+                          {feature.key} {feature.ghost && <span style={{ color: '#f4a261', fontWeight: 700, marginLeft: 6 }}>(ghost)</span>}
                         </a>
                       </Typography>
                       <Typography variant="body2" sx={{ 
