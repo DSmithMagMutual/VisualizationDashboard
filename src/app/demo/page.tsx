@@ -978,6 +978,228 @@ export default function DemoKanban() {
       </Box>
       <StatusChart columns={columns} />
       <TimeInStatusWidget columns={columns} />
+      <Box sx={{ mt: 6 }}>
+        <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: '#212529' }}>Team Insights</Typography>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 4 }}>
+          {/* 1. Team Throughput Trend */}
+          <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3, mb: 4 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#212529' }}>Team Throughput Trend</Typography>
+            <BarChart
+              xAxis={[{ data: ITERATIONS.map(i => i.label), scaleType: 'band', label: 'Iteration' }]}
+              yAxis={[{ label: 'Completed Stories' }]}
+              series={(() => {
+                const teamSet = new Set<string>();
+                ITERATIONS.forEach(iter => {
+                  (columns[iter.key] || []).forEach(card => {
+                    (card.stories || []).forEach((story: any) => {
+                      if (story.team) teamSet.add(story.team);
+                    });
+                  });
+                });
+                const teams = Array.from(teamSet);
+                return teams.map(team => ({
+                  label: team,
+                  data: ITERATIONS.map(iter => {
+                    let count = 0;
+                    (columns[iter.key] || []).forEach(card => {
+                      (card.stories || []).forEach((story: any) => {
+                        if (story.team === team && getStatusCategory(story.status) === 'Done') count++;
+                      });
+                    });
+                    return count;
+                  }),
+                  color: getColorForTeam(team)
+                }));
+              })()}
+              height={250}
+              sx={{ maxWidth: '100%', bgcolor: '#fff', borderRadius: 1, border: '1px solid #dee2e6', p: 1 }}
+            />
+          </Card>
+          {/* 2. Bottleneck Status Heatmap */}
+          <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3, mb: 4 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#212529' }}>Bottleneck Status Heatmap</Typography>
+            {(() => {
+              const statusList = ['Ready', 'Creating', 'Validating', 'Done'];
+              const teamSet = new Set<string>();
+              ITERATIONS.forEach(iter => {
+                (columns[iter.key] || []).forEach(card => {
+                  (card.stories || []).forEach((story: any) => {
+                    if (story.team) teamSet.add(story.team);
+                  });
+                });
+              });
+              const teams = Array.from(teamSet);
+              const matrix = teams.map(team =>
+                statusList.map(status => {
+                  let count = 0;
+                  ITERATIONS.forEach(iter => {
+                    (columns[iter.key] || []).forEach(card => {
+                      (card.stories || []).forEach((story: any) => {
+                        if (story.team === team && getStatusCategory(story.status) === status) count++;
+                      });
+                    });
+                  });
+                  return count;
+                })
+              );
+              return (
+                <Box sx={{ overflowX: 'auto', borderRadius: 1, border: '1px solid #dee2e6', bgcolor: '#f8f9fa', mt: 1 }}>
+                  <Box sx={{ display: 'table', width: '100%', borderCollapse: 'collapse' }}>
+                    <Box sx={{ display: 'table-row' }}>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529' }}></Box>
+                      {statusList.map(status => (
+                        <Box key={status} sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>{status}</Box>
+                      ))}
+                    </Box>
+                    {teams.map((team, i) => (
+                      <Box key={team} sx={{ display: 'table-row', '&:hover': { bgcolor: '#f3f4f6' } }}>
+                        <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: getColorForTeam(team), borderBottom: '1px solid #dee2e6' }}>{team}</Box>
+                        {matrix[i].map((count, j) => (
+                          <Box key={statusList[j]} sx={{ display: 'table-cell', p: 1, textAlign: 'center', bgcolor: count > 0 ? '#ffe5e5' : '#fff', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{count}</Box>
+                        ))}
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              );
+            })()}
+          </Card>
+          {/* 3. Aging Work Items */}
+          <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3, mb: 4 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#212529' }}>Aging Work Items</Typography>
+            {(() => {
+              const teamStories: Record<string, any[]> = {};
+              ITERATIONS.forEach(iter => {
+                (columns[iter.key] || []).forEach(card => {
+                  (card.stories || []).forEach((story: any) => {
+                    if (!teamStories[story.team]) teamStories[story.team] = [];
+                    if (getStatusCategory(story.status) !== 'Done') {
+                      teamStories[story.team].push({ ...story, daysOpen: Math.floor(Math.random() * 30) + 1 });
+                    }
+                  });
+                });
+              });
+              return (
+                <Box sx={{ overflowX: 'auto', borderRadius: 1, border: '1px solid #dee2e6', bgcolor: '#f8f9fa', mt: 1 }}>
+                  <Box sx={{ display: 'table', width: '100%', borderCollapse: 'collapse' }}>
+                    <Box sx={{ display: 'table-row', bgcolor: '#f3f4f6' }}>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Team</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Key</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Summary</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Status</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Days Open</Box>
+                    </Box>
+                    {Object.entries(teamStories).map(([team, stories]) =>
+                      stories
+                        .sort((a, b) => b.daysOpen - a.daysOpen)
+                        .slice(0, 2)
+                        .map(story => (
+                          <Box key={story.key} sx={{ display: 'table-row', '&:hover': { bgcolor: '#f3f4f6' } }}>
+                            <Box sx={{ display: 'table-cell', p: 1, color: getColorForTeam(team), fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{team}</Box>
+                            <Box sx={{ display: 'table-cell', p: 1, borderBottom: '1px solid #dee2e6' }}><a href={(process.env.NEXT_PUBLIC_JIRA_BASE_URL || 'https://magmutual.atlassian.net') + '/browse/' + story.key} target="_blank" rel="noopener noreferrer" style={{ color: '#0d6efd', fontWeight: 600 }}>{story.key}</a></Box>
+                            <Box sx={{ display: 'table-cell', p: 1, borderBottom: '1px solid #dee2e6' }}>{story.summary}</Box>
+                            <Box sx={{ display: 'table-cell', p: 1, borderBottom: '1px solid #dee2e6' }}>{story.status}</Box>
+                            <Box sx={{ display: 'table-cell', p: 1, color: story.daysOpen > 14 ? '#dc3545' : '#212529', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{story.daysOpen}</Box>
+                          </Box>
+                        ))
+                    )}
+                  </Box>
+                </Box>
+              );
+            })()}
+          </Card>
+          {/* 4. Team Focus Breakdown */}
+          <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3, mb: 4 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#212529' }}>Team Focus Breakdown</Typography>
+            <BarChart
+              xAxis={[{ data: (() => {
+                const teamSet = new Set<string>();
+                ITERATIONS.forEach(iter => {
+                  (columns[iter.key] || []).forEach(card => {
+                    (card.stories || []).forEach((story: any) => {
+                      if (story.team) teamSet.add(story.team);
+                    });
+                  });
+                });
+                return Array.from(teamSet);
+              })(), scaleType: 'band', label: 'Team' }]}
+              yAxis={[{ label: 'Count' }]}
+              series={(() => {
+                const typeSet = new Set<string>();
+                ITERATIONS.forEach(iter => {
+                  (columns[iter.key] || []).forEach(card => {
+                    (card.stories || []).forEach((story: any) => {
+                      if (story.issuetype) typeSet.add(story.issuetype);
+                    });
+                  });
+                });
+                const types = Array.from(typeSet);
+                const teamList = (() => {
+                  const teamSet = new Set<string>();
+                  ITERATIONS.forEach(iter => {
+                    (columns[iter.key] || []).forEach(card => {
+                      (card.stories || []).forEach((story: any) => {
+                        if (story.team) teamSet.add(story.team);
+                      });
+                    });
+                  });
+                  return Array.from(teamSet);
+                })();
+                return types.map(type => ({
+                  label: type,
+                  data: teamList.map(team => {
+                    let count = 0;
+                    ITERATIONS.forEach(iter => {
+                      (columns[iter.key] || []).forEach(card => {
+                        (card.stories || []).forEach((story: any) => {
+                          if (story.team === team && story.issuetype === type) count++;
+                        });
+                      });
+                    });
+                    return count;
+                  }),
+                }));
+              })()}
+              height={250}
+              sx={{ maxWidth: '100%', bgcolor: '#fff', borderRadius: 1, border: '1px solid #dee2e6', p: 1 }}
+            />
+          </Card>
+          {/* 5. WIP Limits */}
+          <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3, mb: 4 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#212529' }}>WIP (Work In Progress) Limits</Typography>
+            {(() => {
+              const WIP_LIMIT = 5;
+              const teamWip: Record<string, number> = {};
+              ITERATIONS.forEach(iter => {
+                (columns[iter.key] || []).forEach(card => {
+                  (card.stories || []).forEach((story: any) => {
+                    if (!teamWip[story.team]) teamWip[story.team] = 0;
+                    if (getStatusCategory(story.status) === 'In Progress') teamWip[story.team]++;
+                  });
+                });
+              });
+              return (
+                <Box sx={{ overflowX: 'auto', borderRadius: 1, border: '1px solid #dee2e6', bgcolor: '#f8f9fa', mt: 1 }}>
+                  <Box sx={{ display: 'table', width: '100%', borderCollapse: 'collapse' }}>
+                    <Box sx={{ display: 'table-row', bgcolor: '#f3f4f6' }}>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Team</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>In Progress</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Limit</Box>
+                    </Box>
+                    {Object.entries(teamWip).map(([team, wip]) => (
+                      <Box key={team} sx={{ display: 'table-row', '&:hover': { bgcolor: '#f3f4f6' } }}>
+                        <Box sx={{ display: 'table-cell', p: 1, color: getColorForTeam(team), fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{team}</Box>
+                        <Box sx={{ display: 'table-cell', p: 1, color: wip > WIP_LIMIT ? '#dc3545' : '#212529', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{wip}</Box>
+                        <Box sx={{ display: 'table-cell', p: 1, borderBottom: '1px solid #dee2e6' }}>{WIP_LIMIT}</Box>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              );
+            })()}
+          </Card>
+        </Box>
+      </Box>
     </Box>
   );
 } 
