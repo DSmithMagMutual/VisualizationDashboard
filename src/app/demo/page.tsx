@@ -412,15 +412,23 @@ const teams = Array.from(new Set(timeData.map(item => item.team)));
   );
 }
 
-function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize }: { 
+function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, teamFilter }: { 
   card: any; 
   onDelete: () => void; 
   onReload: () => void;
   isMinimized: boolean;
   onToggleMinimize: () => void;
+  teamFilter?: string[];
 }) {
-  const doneCount = card.stories?.filter((s: any) => s.statusCategory === 'done').length || 0;
-  const totalCount = card.stories?.length || 0;
+  // Filter child stories by teamFilter if provided
+  const filteredStories = React.useMemo(() => {
+    if (!Array.isArray(card.stories)) return [];
+    if (!teamFilter || teamFilter.length === 0) return card.stories;
+    return card.stories.filter((story: any) => teamFilter.includes(story.team));
+  }, [card.stories, teamFilter]);
+
+  const doneCount = filteredStories.filter((s: any) => s.statusCategory === 'done').length || 0;
+  const totalCount = filteredStories.length || 0;
   const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
   const team = card.team || 'Other';
   return (
@@ -509,11 +517,11 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize }: {
             <Typography variant="body2" sx={{ color: '#495057', fontSize: '0.95em', mb: 1, mt: 1 }}>
               {card.summary || 'Card subtitle or description'}
             </Typography>
-            {card.stories && card.stories.length > 0 && (
+            {filteredStories && filteredStories.length > 0 && (
               <Box mt={2}>
                 <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mb: 1 }}>Child work items</Typography>
                 <Box component="ul" sx={{ pl: 2, m: 0 }}>
-                  {card.stories.map((story: any) => (
+                  {filteredStories.map((story: any) => (
                     <li key={story.key} style={{ marginBottom: 4 }}>
                       <a 
                         href={(process.env.NEXT_PUBLIC_JIRA_BASE_URL || 'https://magmutual.atlassian.net') + '/browse/' + story.key}
@@ -936,6 +944,7 @@ export default function DemoKanban() {
                     onReload={() => handleReloadCard(iter.key, idx)}
                     isMinimized={isMinimized}
                     onToggleMinimize={() => handleToggleMinimize(iter.key, idx)}
+                    teamFilter={teamFilter}
                   />
                 );
               })}
