@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton } from '@mui/material';
 import { Close, Refresh, ExpandMore, ExpandLess } from '@mui/icons-material';
+import { BarChart } from '@mui/x-charts/BarChart';
 
 const ITERATIONS = [
   { key: "4.1", label: "2025 Iteration 4.1", range: "July 9 - July 22" },
@@ -17,6 +18,59 @@ const teamColorMap: Record<string, string> = {
   'OG Team': '#6C63FF',
   // Add more known teams and colors as needed
 };
+
+const statusColors: Record<string, string> = {
+  'To Do': '#dc3545',
+  'In Progress': '#fd7e14', 
+  'Done': '#198754',
+  'Ready': '#6c757d',
+  'Ready for Release': '#6c757d',
+  'Creating': '#fd7e14',
+  'Validating': '#0d6efd',
+  'UAT': '#fd7e14',
+  'default': '#6c757d'
+};
+
+function getStatusCategory(status: string): string {
+  const statusLower = status.toLowerCase();
+  
+  // Done statuses
+  if (statusLower.includes('done') || 
+      statusLower.includes('complete') || 
+      statusLower.includes('closed') ||
+      statusLower.includes('resolved')) {
+    return 'Done';
+  } 
+  
+  // In Progress statuses
+  else if (statusLower.includes('progress') || 
+           statusLower.includes('creating') || 
+           statusLower.includes('uat') || 
+           statusLower.includes('validating') ||
+           statusLower.includes('testing') ||
+           statusLower.includes('review') ||
+           statusLower.includes('development') ||
+           statusLower.includes('in development')) {
+    return 'In Progress';
+  } 
+  
+  // To Do statuses (including Ready statuses that haven't started)
+  else if (statusLower.includes('ready') ||
+           statusLower.includes('to do') ||
+           statusLower.includes('open') ||
+           statusLower.includes('new') ||
+           statusLower.includes('backlog') ||
+           statusLower.includes('selected for development') ||
+           statusLower.includes('ready for development')) {
+    return 'To Do';
+  } 
+  
+  // Default to To Do for any unrecognized status
+  else {
+    return 'To Do';
+  }
+}
+
 function getColorForTeam(team: string) {
   if (!team) return '#6c757d'; // Default gray color for undefined/null teams
   if (teamColorMap[team]) return teamColorMap[team];
@@ -26,6 +80,336 @@ function getColorForTeam(team: string) {
   }
   const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
   return '#' + '00000'.substring(0, 6 - c.length) + c;
+}
+
+function StatusChart({ columns }: { columns: Record<string, any[]> }) {
+  const statusCategories = ['To Do', 'In Progress', 'Done'];
+  
+  // Calculate data for each iteration
+  const chartData = ITERATIONS.map(iter => {
+    const cards = columns[iter.key] || [];
+    const statusCounts: Record<string, number> = { 'To Do': 0, 'In Progress': 0, 'Done': 0 };
+    
+    cards.forEach(card => {
+      // Count child stories instead of parent stories
+      if (card.stories && card.stories.length > 0) {
+        card.stories.forEach((story: any) => {
+          const statusCategory = getStatusCategory(story.status);
+          if (statusCounts.hasOwnProperty(statusCategory)) {
+            statusCounts[statusCategory]++;
+          }
+        });
+      } else {
+        // If no child stories, count the parent story itself
+        const statusCategory = getStatusCategory(card.status);
+        if (statusCounts.hasOwnProperty(statusCategory)) {
+          statusCounts[statusCategory]++;
+        }
+      }
+    });
+    
+    return {
+      iteration: iter.label,
+      key: iter.key,
+      'To Do': statusCounts['To Do'],
+      'In Progress': statusCounts['In Progress'],
+      'Done': statusCounts['Done']
+    };
+  });
+
+  // Prepare data for MUI X Charts
+  const xAxisData = chartData.map(d => d.iteration);
+  const series = statusCategories.map(status => ({
+    data: chartData.map(d => d[status as keyof typeof d] as number),
+    color: statusColors[status] || statusColors.default
+  }));
+
+  return (
+    <Card sx={{ 
+      bgcolor: '#fff', 
+      border: '1px solid #dee2e6', 
+      borderRadius: 1, 
+      boxShadow: 1, 
+      mb: 4,
+      maxWidth: '50%',
+      mx: 'auto'
+    }}>
+      <CardContent sx={{ p: 3 }}>
+        <Typography variant="h6" fontWeight={600} sx={{ color: '#212529', mb: 3 }}>
+          Child Stories Status Distribution by Iteration
+        </Typography>
+        
+        {/* MUI X Charts BarChart */}
+        <Box sx={{ mb: 3, height: 400 }}>
+          <BarChart
+            xAxis={[{ 
+              data: xAxisData,
+              scaleType: 'band',
+              categoryGapRatio: 0.3,
+              barGapRatio: 0.1,
+              label: 'Iterations',
+              tickLabelPlacement: 'middle'
+            }]}
+            yAxis={[{
+              label: 'Number of Stories'
+            }]}
+            series={series}
+            height={350}
+            barLabel={(item) => item.value?.toString() || ''}
+            margin={{ left: 80, right: 20, top: 20, bottom: 80 }}
+
+            sx={{
+              '& .MuiChartsBar-label': {
+                fill: '#212529',
+                fontSize: '0.75rem',
+                fontWeight: 600
+              }
+            }}
+          />
+        </Box>
+
+        {/* Summary Table */}
+        <Box sx={{ 
+          bgcolor: '#f8f9fa', 
+          borderRadius: 1, 
+          p: 2, 
+          border: '1px solid #e9ecef'
+        }}>
+          <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mb: 2 }}>
+            Summary by Status (Child Stories)
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+            {statusCategories.map(status => {
+              const total = chartData.reduce((sum, data) => sum + (data[status as keyof typeof data] as number), 0);
+              return (
+                <Box key={status} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box
+                    sx={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: 0.5,
+                      bgcolor: statusColors[status] || statusColors.default
+                    }}
+                  />
+                  <Typography variant="body2" sx={{ color: '#212529', fontWeight: 500 }}>
+                    {status}: {total}
+                  </Typography>
+                </Box>
+              );
+            })}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 'auto' }}>
+              <Typography variant="body2" sx={{ color: '#212529', fontWeight: 600 }}>
+                Total: {chartData.reduce((sum, data) => sum + data['To Do'] + data['In Progress'] + data['Done'], 0)}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
+function TimeInStatusWidget({ columns }: { columns: Record<string, any[]> }) {
+  // Calculate time in status data per iteration by team
+  const calculateTimeInStatus = () => {
+    const teams = new Set<string>();
+    const statuses = new Set<string>();
+    const timeData: Record<string, Record<string, Record<string, number[]>>> = {};
+    
+    // Collect all teams and statuses from each iteration
+    Object.entries(columns).forEach(([iteration, cards]) => {
+      cards.forEach(card => {
+        if (card.stories && card.stories.length > 0) {
+          card.stories.forEach((story: any) => {
+            const team = story.team || card.team || 'Other';
+            const status = story.status || 'Unknown';
+            teams.add(team);
+            statuses.add(status);
+            
+            if (!timeData[iteration]) {
+              timeData[iteration] = {};
+            }
+            if (!timeData[iteration][team]) {
+              timeData[iteration][team] = {};
+            }
+            if (!timeData[iteration][team][status]) {
+              timeData[iteration][team][status] = [];
+            }
+            
+            // Simulate time in status (in days) - in real implementation, this would come from Jira
+            const timeInStatus = Math.floor(Math.random() * 30) + 1; // 1-30 days for demo
+            timeData[iteration][team][status].push(timeInStatus);
+          });
+        }
+      });
+    });
+    
+      // Calculate averages per team across all iterations
+  const teamAverages: Record<string, Record<string, number>> = {};
+  
+  Object.entries(timeData).forEach(([iteration, teamData]) => {
+    Object.entries(teamData).forEach(([team, statusData]) => {
+      if (!teamAverages[team]) {
+        teamAverages[team] = {};
+      }
+      
+      Object.entries(statusData).forEach(([status, times]) => {
+        if (times.length > 0) {
+          const avgTime = times.reduce((sum, time) => sum + time, 0) / times.length;
+          if (!teamAverages[team][status]) {
+            teamAverages[team][status] = 0;
+          }
+          // Accumulate and average across iterations
+          teamAverages[team][status] = (teamAverages[team][status] + avgTime) / 2;
+        }
+      });
+    });
+  });
+  
+  // Convert to array format for display
+  const averages: Array<{
+    team: string;
+    done: number;
+    creating: number;
+    validating: number;
+    ready: number;
+  }> = [];
+  
+  Object.entries(teamAverages).forEach(([team, statusData]) => {
+    averages.push({
+      team,
+      done: Math.round((statusData['Done'] || 0) * 10) / 10,
+      creating: Math.round((statusData['Creating'] || 0) * 10) / 10,
+      validating: Math.round((statusData['Validating'] || 0) * 10) / 10,
+      ready: Math.round((statusData['Ready'] || 0) * 10) / 10,
+    });
+  });
+  
+  return averages;
+};
+
+const timeData = calculateTimeInStatus();
+const teams = Array.from(new Set(timeData.map(item => item.team)));
+  
+  // Get color for team - using the same function as the rest of the page
+  const getTeamColor = (team: string) => {
+    return getColorForTeam(team);
+  };
+  
+
+  
+  return (
+    <Card sx={{ 
+      bgcolor: '#fff', 
+      border: '1px solid #dee2e6', 
+      borderRadius: 1, 
+      boxShadow: 1, 
+      mb: 4,
+      maxWidth: '50%',
+      mx: 'auto'
+    }}>
+      <CardContent sx={{ p: 3 }}>
+        <Typography variant="h6" fontWeight={600} sx={{ color: '#212529', mb: 3 }}>
+          Flow Time by Team and Status
+        </Typography>
+        
+        {/* Table */}
+        <Box sx={{ overflowX: 'auto' }}>
+          <Box sx={{ 
+            display: 'table', 
+            width: '100%', 
+            borderCollapse: 'collapse',
+            border: '1px solid #dee2e6'
+          }}>
+            {/* Header */}
+            <Box sx={{ display: 'table-row', bgcolor: '#f8f9fa' }}>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, color: '#212529' }}>
+                Team
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, textAlign: 'center', color: '#212529' }}>
+                Done
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, textAlign: 'center', color: '#212529' }}>
+                Creating
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, textAlign: 'center', color: '#212529' }}>
+                Validating
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, textAlign: 'center', color: '#212529' }}>
+                Ready
+              </Box>
+            </Box>
+            
+            {/* Data Rows */}
+            {timeData.map((item, index) => (
+              <Box key={index} sx={{ display: 'table-row' }}>
+                <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', color: '#212529' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box
+                      sx={{
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        bgcolor: getTeamColor(item.team)
+                      }}
+                    />
+                    {item.team}
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
+                  <Typography sx={{ color: statusColors['Done'], fontWeight: 500 }}>
+                    {item.done}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
+                  <Typography sx={{ color: statusColors['Creating'], fontWeight: 500 }}>
+                    {item.creating}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
+                  <Typography sx={{ color: statusColors['Validating'], fontWeight: 500 }}>
+                    {item.validating}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
+                  <Typography sx={{ color: statusColors['Ready'], fontWeight: 500 }}>
+                    {item.ready}
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+            
+            {/* Total Row */}
+            <Box sx={{ display: 'table-row', bgcolor: '#f8f9fa' }}>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, color: '#212529' }}>
+                Total (Time in Status - Average - Days)
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
+                <Typography sx={{ color: statusColors['Done'] }}>
+                  {Math.round((timeData.reduce((sum, item) => sum + item.done, 0) / timeData.length) * 10) / 10}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
+                <Typography sx={{ color: statusColors['Creating'] }}>
+                  {Math.round((timeData.reduce((sum, item) => sum + item.creating, 0) / timeData.length) * 10) / 10}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
+                <Typography sx={{ color: statusColors['Validating'] }}>
+                  {Math.round((timeData.reduce((sum, item) => sum + item.validating, 0) / timeData.length) * 10) / 10}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
+                <Typography sx={{ color: statusColors['Ready'] }}>
+                  {Math.round((timeData.reduce((sum, item) => sum + item.ready, 0) / timeData.length) * 10) / 10}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
 }
 
 function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize }: { 
@@ -108,28 +492,42 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize }: {
           </Tooltip>
           <Typography variant="caption" sx={{ color: '#212529', fontWeight: 500, flexShrink: 0 }}>{team}</Typography>
         </Box>
-        <Box display="flex" alignItems="center" gap={1} mb={isMinimized ? 0 : 1}>
+        <Box display="flex" alignItems="center" gap={1} mb={1}>
           <Chip label={card.status} size="small" sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500, borderRadius: 1 }} />
         </Box>
         
+        {/* Progress bar - always visible */}
+        <Box display="flex" alignItems="center" gap={1} mb={1}>
+          <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#495057', fontWeight: 500 }}>{doneCount}/{totalCount}</Typography>
+          <span style={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: 18, verticalAlign: 'middle' }}>{pct === 100 ? '✔️' : pct > 0 ? '⏳' : '⚠️'}</span>
+          <Typography variant="body2" fontWeight={600} sx={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: '0.875rem' }}>{pct}%</Typography>
+        </Box>
+        <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545' } }} />
+        
         {!isMinimized && (
           <>
-            <Typography variant="body2" sx={{ color: '#495057', fontSize: '0.95em', mb: 1 }}>
+            <Typography variant="body2" sx={{ color: '#495057', fontSize: '0.95em', mb: 1, mt: 1 }}>
               {card.summary || 'Card subtitle or description'}
             </Typography>
-            <Box display="flex" alignItems="center" gap={1} mb={1}>
-              <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#495057', fontWeight: 500 }}>{doneCount}/{totalCount}</Typography>
-              <span style={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: 18, verticalAlign: 'middle' }}>{pct === 100 ? '✔️' : pct > 0 ? '⏳' : '⚠️'}</span>
-              <Typography variant="body2" fontWeight={600} sx={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: '0.875rem' }}>{pct}%</Typography>
-            </Box>
-            <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545' } }} />
             {card.stories && card.stories.length > 0 && (
               <Box mt={2}>
                 <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mb: 1 }}>Child work items</Typography>
                 <Box component="ul" sx={{ pl: 2, m: 0 }}>
                   {card.stories.map((story: any) => (
                     <li key={story.key} style={{ marginBottom: 4 }}>
-                      <span style={{ fontWeight: 600, color: '#0d6efd', marginRight: 8 }}>{story.key}</span>
+                      <a 
+                        href={(process.env.NEXT_PUBLIC_JIRA_BASE_URL || 'https://magmutual.atlassian.net') + '/browse/' + story.key}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ 
+                          fontWeight: 600, 
+                          color: '#0d6efd', 
+                          marginRight: 8,
+                          textDecoration: 'none'
+                        }}
+                      >
+                        {story.key}
+                      </a>
                       <span style={{ color: '#495057', marginRight: 8 }}>{story.summary}</span>
                       <Tooltip title={story.team} placement="top">
                         <span style={{
@@ -520,6 +918,8 @@ export default function DemoKanban() {
           </Box>
         ))}
       </Box>
+      <StatusChart columns={columns} />
+      <TimeInStatusWidget columns={columns} />
     </Box>
   );
 } 
