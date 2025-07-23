@@ -1081,18 +1081,8 @@ export default function DemoKanban() {
                 }));
               })()}
               height={250}
-              sx={{
-                maxWidth: '100%',
-                bgcolor: '#fff',
-                borderRadius: 1,
-                border: '1px solid #dee2e6',
-                p: 1,
-                '& .MuiChartsAxis-tickLabel, & .MuiChartsAxis-label, & .MuiChartsLegend-root, & .MuiChartsBar-label': {
-                  color: '#212529',
-                  fill: '#212529',
-                  fontWeight: 600
-                }
-              }}
+              sx={{ maxWidth: '100%', bgcolor: '#fff', borderRadius: 1, border: '1px solid #dee2e6', p: 1 }}
+              sx={{ '& .MuiChartsAxis-tickLabel, & .MuiChartsAxis-label, & .MuiChartsLegend-root, & .MuiChartsBar-label': { color: '#212529', fill: '#212529', fontWeight: 600 } }}
             />
           </Card>
           {/* 2. Bottleneck Status Heatmap */}

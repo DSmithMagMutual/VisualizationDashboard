@@ -76,8 +76,8 @@ const IssueStatusScatterChart: React.FC<IssueStatusScatterChartProps> = ({ data 
             min: -0.5,
             max: uniqueStatuses.length - 0.5,
             ticks: {
-              callback: function (tickValue: string | number, _index: number, _ticks: any[]) {
-                return uniqueStatuses[Number(tickValue)] || '';
+              callback: function (value: number) {
+                return uniqueStatuses[value] || '';
               },
               color: '#A259FF',
               font: { weight: 'bold' },
