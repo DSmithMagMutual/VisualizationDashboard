@@ -1013,6 +1013,7 @@ export default function DemoKanban() {
               })()}
               height={250}
               sx={{ maxWidth: '100%', bgcolor: '#fff', borderRadius: 1, border: '1px solid #dee2e6', p: 1 }}
+              sx={{ '& .MuiChartsAxis-tickLabel, & .MuiChartsAxis-label, & .MuiChartsLegend-root, & .MuiChartsBar-label': { color: '#212529', fill: '#212529', fontWeight: 600 } }}
             />
           </Card>
           {/* 2. Bottleneck Status Heatmap */}
@@ -1055,7 +1056,7 @@ export default function DemoKanban() {
                       <Box key={team} sx={{ display: 'table-row', '&:hover': { bgcolor: '#f3f4f6' } }}>
                         <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: getColorForTeam(team), borderBottom: '1px solid #dee2e6' }}>{team}</Box>
                         {matrix[i].map((count, j) => (
-                          <Box key={statusList[j]} sx={{ display: 'table-cell', p: 1, textAlign: 'center', bgcolor: count > 0 ? '#ffe5e5' : '#fff', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{count}</Box>
+                          <Box key={statusList[j]} sx={{ display: 'table-cell', p: 1, textAlign: 'center', color: '#212529', bgcolor: count > 0 ? '#ffe5e5' : '#fff', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{count}</Box>
                         ))}
                       </Box>
                     ))}
@@ -1097,8 +1098,8 @@ export default function DemoKanban() {
                           <Box key={story.key} sx={{ display: 'table-row', '&:hover': { bgcolor: '#f3f4f6' } }}>
                             <Box sx={{ display: 'table-cell', p: 1, color: getColorForTeam(team), fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{team}</Box>
                             <Box sx={{ display: 'table-cell', p: 1, borderBottom: '1px solid #dee2e6' }}><a href={(process.env.NEXT_PUBLIC_JIRA_BASE_URL || 'https://magmutual.atlassian.net') + '/browse/' + story.key} target="_blank" rel="noopener noreferrer" style={{ color: '#0d6efd', fontWeight: 600 }}>{story.key}</a></Box>
-                            <Box sx={{ display: 'table-cell', p: 1, borderBottom: '1px solid #dee2e6' }}>{story.summary}</Box>
-                            <Box sx={{ display: 'table-cell', p: 1, borderBottom: '1px solid #dee2e6' }}>{story.status}</Box>
+                            <Box sx={{ display: 'table-cell', p: 1, color: '#212529', borderBottom: '1px solid #dee2e6' }}>{story.summary}</Box>
+                            <Box sx={{ display: 'table-cell', p: 1, color: '#212529', borderBottom: '1px solid #dee2e6' }}>{story.status}</Box>
                             <Box sx={{ display: 'table-cell', p: 1, color: story.daysOpen > 14 ? '#dc3545' : '#212529', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{story.daysOpen}</Box>
                           </Box>
                         ))
@@ -1107,62 +1108,6 @@ export default function DemoKanban() {
                 </Box>
               );
             })()}
-          </Card>
-          {/* 4. Team Focus Breakdown */}
-          <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3, mb: 4 }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#212529' }}>Team Focus Breakdown</Typography>
-            <BarChart
-              xAxis={[{ data: (() => {
-                const teamSet = new Set<string>();
-                ITERATIONS.forEach(iter => {
-                  (columns[iter.key] || []).forEach(card => {
-                    (card.stories || []).forEach((story: any) => {
-                      if (story.team) teamSet.add(story.team);
-                    });
-                  });
-                });
-                return Array.from(teamSet);
-              })(), scaleType: 'band', label: 'Team' }]}
-              yAxis={[{ label: 'Count' }]}
-              series={(() => {
-                const typeSet = new Set<string>();
-                ITERATIONS.forEach(iter => {
-                  (columns[iter.key] || []).forEach(card => {
-                    (card.stories || []).forEach((story: any) => {
-                      if (story.issuetype) typeSet.add(story.issuetype);
-                    });
-                  });
-                });
-                const types = Array.from(typeSet);
-                const teamList = (() => {
-                  const teamSet = new Set<string>();
-                  ITERATIONS.forEach(iter => {
-                    (columns[iter.key] || []).forEach(card => {
-                      (card.stories || []).forEach((story: any) => {
-                        if (story.team) teamSet.add(story.team);
-                      });
-                    });
-                  });
-                  return Array.from(teamSet);
-                })();
-                return types.map(type => ({
-                  label: type,
-                  data: teamList.map(team => {
-                    let count = 0;
-                    ITERATIONS.forEach(iter => {
-                      (columns[iter.key] || []).forEach(card => {
-                        (card.stories || []).forEach((story: any) => {
-                          if (story.team === team && story.issuetype === type) count++;
-                        });
-                      });
-                    });
-                    return count;
-                  }),
-                }));
-              })()}
-              height={250}
-              sx={{ maxWidth: '100%', bgcolor: '#fff', borderRadius: 1, border: '1px solid #dee2e6', p: 1 }}
-            />
           </Card>
           {/* 5. WIP Limits */}
           <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3, mb: 4 }}>
@@ -1190,7 +1135,7 @@ export default function DemoKanban() {
                       <Box key={team} sx={{ display: 'table-row', '&:hover': { bgcolor: '#f3f4f6' } }}>
                         <Box sx={{ display: 'table-cell', p: 1, color: getColorForTeam(team), fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{team}</Box>
                         <Box sx={{ display: 'table-cell', p: 1, color: wip > WIP_LIMIT ? '#dc3545' : '#212529', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{wip}</Box>
-                        <Box sx={{ display: 'table-cell', p: 1, borderBottom: '1px solid #dee2e6' }}>{WIP_LIMIT}</Box>
+                        <Box sx={{ display: 'table-cell', p: 1, color: '#212529', borderBottom: '1px solid #dee2e6' }}>{WIP_LIMIT}</Box>
                       </Box>
                     ))}
                   </Box>
