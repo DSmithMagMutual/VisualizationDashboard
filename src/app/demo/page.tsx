@@ -924,6 +924,51 @@ export default function DemoKanban() {
           </Select>
         </FormControl>
       </Box>
+      {/* PI Status Summary Box */}
+      <Box sx={{ mb: 4, maxWidth: 600, bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3 }}>
+        {(() => {
+          // Gather all child stories across all iterations, filtered by team if filter is applied
+          const allStories = Object.values(columns).flat().flatMap(card => {
+            if (!card.stories) return [];
+            if (!teamFilter || teamFilter.length === 0) return card.stories;
+            return card.stories.filter((story: any) => teamFilter.includes(story.team));
+          });
+          const total = allStories.length;
+          const done = allStories.filter((s: any) => getStatusCategory(s.status) === 'Done').length;
+          const inProgress = allStories.filter((s: any) => getStatusCategory(s.status) === 'In Progress').length;
+          const notStarted = allStories.filter((s: any) => getStatusCategory(s.status) === 'To Do').length;
+          const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+          let barColor = '#e9ecef';
+          if (pct === 100 && total > 0) barColor = '#198754';
+          else if (pct > 0) barColor = '#fd7e14';
+          else if (total > 0) barColor = '#dc3545';
+          let statusMsg = 'On Track';
+          if (pct < 50) statusMsg = 'Behind';
+          else if (pct < 80) statusMsg = 'At Risk';
+          return (
+            <>
+              <Typography variant="h6" fontWeight={700} sx={{ color: '#212529', mb: 2 }}>PI Status Summary</Typography>
+              <Box display="flex" alignItems="center" gap={2} mb={2}>
+                <Box flex={1}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={pct}
+                    sx={{ height: 12, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: barColor } }}
+                  />
+                </Box>
+                <Typography variant="h6" fontWeight={700} sx={{ color: barColor, minWidth: 72, textAlign: 'right' }}>{pct}% Done</Typography>
+              </Box>
+              <Box display="flex" gap={4} mb={2}>
+                <Typography variant="body1" sx={{ color: '#212529' }}>Total: <b>{total}</b></Typography>
+                <Typography variant="body1" sx={{ color: '#198754' }}>Done: <b>{done}</b></Typography>
+                <Typography variant="body1" sx={{ color: '#fd7e14' }}>In Progress: <b>{inProgress}</b></Typography>
+                <Typography variant="body1" sx={{ color: '#6c757d' }}>Not Started: <b>{notStarted}</b></Typography>
+              </Box>
+              <Typography variant="subtitle1" fontWeight={600} sx={{ color: barColor }}>{statusMsg}</Typography>
+            </>
+          );
+        })()}
+      </Box>
       {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
       <Box sx={{ display: 'flex', gap: 3, overflowX: 'auto', minWidth: 1200 }}>
         {ITERATIONS.map(iter => (
@@ -932,6 +977,30 @@ export default function DemoKanban() {
               <Typography variant="h6" fontWeight={600} sx={{ color: '#212529' }}>{iter.label}</Typography>
               <Typography variant="caption" sx={{ color: '#6c757d' }}>{iter.range}</Typography>
             </Box>
+            {(() => {
+              // Gather all child stories for this iteration
+              const cards = columns[iter.key] || [];
+              const allStories = cards.flatMap(card => card.stories || []);
+              const total = allStories.length;
+              const done = allStories.filter((s: any) => getStatusCategory(s.status) === 'Done').length;
+              const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+              let barColor = '#e9ecef';
+              if (pct === 100 && total > 0) barColor = '#198754';
+              else if (pct > 0) barColor = '#fd7e14';
+              else if (total > 0) barColor = '#dc3545';
+              return (
+                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                  <Box flex={1}>
+                    <LinearProgress
+                      variant="determinate"
+                      value={pct}
+                      sx={{ height: 8, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: barColor } }}
+                    />
+                  </Box>
+                  <Typography variant="body2" fontWeight={600} sx={{ color: barColor, minWidth: 56, textAlign: 'right' }}>{pct}% Done</Typography>
+                </Box>
+              );
+            })()}
             <Box flex={1} mb={2}>
               {columns[iter.key].filter(cardMatchesTeamFilter).map((card, idx) => {
                 const cardId = `${iter.key}-${card.key}-${idx}`;
