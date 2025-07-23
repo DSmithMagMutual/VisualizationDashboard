@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from "react";
-import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton } from '@mui/material';
+import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText } from '@mui/material';
 import { Close, Refresh, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 
@@ -642,6 +642,33 @@ export default function DemoKanban() {
   const [minimizedCards, setMinimizedCards] = useState<Set<string>>(new Set());
   const [boardTitle, setBoardTitle] = useState("Demo Iteration Board");
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [teamFilter, setTeamFilter] = useState<string[]>([]);
+
+  // Collect all unique teams from current board data
+  const allTeams = React.useMemo(() => {
+    const teams = new Set<string>();
+    Object.values(columns).forEach(cards => {
+      cards.forEach(card => {
+        if (card.team) teams.add(card.team);
+        if (Array.isArray(card.stories)) {
+          card.stories.forEach((story: any) => {
+            if (story.team) teams.add(story.team);
+          });
+        }
+      });
+    });
+    return Array.from(teams).sort();
+  }, [columns]);
+
+  // Filtering logic: show card if parent or any child story matches selected team(s)
+  function cardMatchesTeamFilter(card: any) {
+    if (teamFilter.length === 0) return true;
+    if (card.team && teamFilter.includes(card.team)) return true;
+    if (Array.isArray(card.stories)) {
+      return card.stories.some((story: any) => teamFilter.includes(story.team));
+    }
+    return false;
+  }
 
   useEffect(() => {
     const loadSavedState = async () => {
@@ -775,7 +802,8 @@ export default function DemoKanban() {
 
   return (
     <Box sx={{ background: '#f8f9fa', minHeight: '100vh', p: 4 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+      {/* Board Title UI */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {isEditingTitle ? (
             <TextField
@@ -867,6 +895,27 @@ export default function DemoKanban() {
           </Button>
         </Box>
       </Box>
+      {/* Team Filter UI */}
+      <Box sx={{ mb: 2, maxWidth: 400 }}>
+        <FormControl fullWidth size="small">
+          <InputLabel id="team-filter-label">Filter by Team</InputLabel>
+          <Select
+            labelId="team-filter-label"
+            multiple
+            value={teamFilter}
+            onChange={e => setTeamFilter(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+            input={<OutlinedInput label="Filter by Team" />}
+            renderValue={(selected) => selected.length === 0 ? 'All Teams' : selected.join(', ')}
+          >
+            {allTeams.map(team => (
+              <MenuItem key={team} value={team}>
+                <Checkbox checked={teamFilter.indexOf(team) > -1} style={{ color: getColorForTeam(team) }} />
+                <ListItemText primary={team} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
       {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
       <Box sx={{ display: 'flex', gap: 3, overflowX: 'auto', minWidth: 1200 }}>
         {ITERATIONS.map(iter => (
@@ -876,7 +925,7 @@ export default function DemoKanban() {
               <Typography variant="caption" sx={{ color: '#6c757d' }}>{iter.range}</Typography>
             </Box>
             <Box flex={1} mb={2}>
-              {columns[iter.key].map((card, idx) => {
+              {columns[iter.key].filter(cardMatchesTeamFilter).map((card, idx) => {
                 const cardId = `${iter.key}-${card.key}-${idx}`;
                 const isMinimized = minimizedCards.has(cardId);
                 return (
