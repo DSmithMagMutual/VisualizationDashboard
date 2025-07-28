@@ -3,6 +3,11 @@ import { Card, CardContent, Typography, Box, Chip, CircularProgress, Stack, Swit
 import { getProjectIssues, getTeamMembers } from '@/lib/jira-proxy';
 import { useBoard } from '../MinimalistDashboard';
 
+interface TeamMember {
+  emailAddress: string;
+  displayName: string;
+}
+
 interface TeamUtilizationWidgetProps {
   title?: string;
 }
@@ -16,7 +21,7 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
   const { activeBoard } = useBoard();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [assigneeCounts, setAssigneeCounts] = useState<Record<string, number>>({});
   const [showMembersWithoutIssues, setShowMembersWithoutIssues] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -63,16 +68,16 @@ const TeamUtilizationWidget: React.FC<TeamUtilizationWidgetProps> = ({
         }
         const issues = issuesData.issues;
         // Handle both array format (assignable users) and values format (fallback)
-        let finalTeamMembers = Array.isArray(teamMembersData) ? teamMembersData : (teamMembersData.values || []);
+        let finalTeamMembers: TeamMember[] = Array.isArray(teamMembersData) ? teamMembersData : (teamMembersData.values || []);
         if (finalTeamMembers.length === 0 && issues) {
-          const assignees = new Set();
+          const assignees = new Set<string>();
           issues.forEach((issue: any) => {
             if (issue.fields.assignee) {
               const email = issue.fields.assignee.emailAddress;
               if (email) assignees.add(email);
             }
           });
-          finalTeamMembers = Array.from(assignees as Set<string>).map((email: string) => ({
+          finalTeamMembers = Array.from(assignees).map((email: string) => ({
             emailAddress: email,
             displayName: email ? email.split('@')[0] : 'Unknown',
           }));

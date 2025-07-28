@@ -5,6 +5,17 @@ import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, 
 import { Close, Refresh, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 
+// Import the demo data
+import demoData from '../../../board-save.json';
+import adviceData from '../../../board-saveAdvice.json';
+import pddData from '../../../board-savePDD.json';
+
+const dataSources = {
+  'board-save': demoData,
+  'board-saveAdvice': adviceData,
+  'board-savePDD': pddData
+};
+
 const ITERATIONS = [
   { key: "4.1", label: "2025 Iteration 4.1", range: "July 9 - July 22" },
   { key: "4.2", label: "2025 Iteration 4.2", range: "July 23 - August 5" },
@@ -633,6 +644,7 @@ async function fetchJiraIssueWithStories(key: string) {
 }
 
 export default function DemoKanban() {
+  const [selectedDataSource, setSelectedDataSource] = useState('board-save');
   const [columns, setColumns] = useState(() =>
     ITERATIONS.reduce((acc, iter) => {
       acc[iter.key] = [];
@@ -677,6 +689,25 @@ export default function DemoKanban() {
     }
     return false;
   }
+
+  // Function to load data from selected data source
+  const loadDataSourceData = (dataSourceKey: string) => {
+    const dataSource = dataSources[dataSourceKey as keyof typeof dataSources];
+    if (dataSource && dataSource.columns) {
+      // Ensure all iteration keys are present in the loaded state
+      const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+        acc[iter.key] = (dataSource.columns as Record<string, any[]>)?.[iter.key] || [];
+        return acc;
+      }, {} as Record<string, any[]>);
+      setColumns(initializedColumns);
+      setBoardTitle(`Demo Iteration Board - ${dataSourceKey}`);
+    }
+  };
+
+  // Effect to load data when data source changes
+  useEffect(() => {
+    loadDataSourceData(selectedDataSource);
+  }, [selectedDataSource]);
 
   useEffect(() => {
     const loadSavedState = async () => {
@@ -903,6 +934,23 @@ export default function DemoKanban() {
           </Button>
         </Box>
       </Box>
+      {/* Data Source Selector */}
+      <Box sx={{ mb: 2, maxWidth: 400 }}>
+        <FormControl fullWidth size="small">
+          <InputLabel id="data-source-label">Data Source</InputLabel>
+          <Select
+            labelId="data-source-label"
+            value={selectedDataSource}
+            label="Data Source"
+            onChange={(e) => setSelectedDataSource(e.target.value)}
+          >
+            <MenuItem value="board-save">Board Save (JPP)</MenuItem>
+            <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
+            <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+      
       {/* Team Filter UI */}
       <Box sx={{ mb: 2, maxWidth: 400 }}>
         <FormControl fullWidth size="small">
