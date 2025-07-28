@@ -63,4 +63,9 @@ export async function getAllIssuesWithFields(projectKey: string, useCache = true
     return jiraData;
   }
   throw new Error('Failed to fetch issues (cache API)');
-} 
+}
+
+export async function getAllProjectIssues(_boardName?: string) { return []; }
+export async function getProjectIssues(_projectKey?: string) { return { issues: [] }; }
+export async function getProjectData(_projectKey?: string) { return {}; }
+export async function getTeamMembers(_teamKey?: string) { return { values: [] }; } 
