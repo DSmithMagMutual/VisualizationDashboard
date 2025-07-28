@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standalone HTML Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Standalone HTML Test</h1>
+        <p>This page tests if the standalone HTML file is working correctly.</p>
+        
+        <h2>Test Results:</h2>
+        <div id="results">
+            <p>Testing JavaScript functionality...</p>
+        </div>
+        
+        <h2>Quick Actions:</h2>
+        <button class="test-button" onclick="testJavaScript()">Test JavaScript</button>
+        <button class="test-button" onclick="testLocalStorage()">Test Local Storage</button>
+        <button class="test-button" onclick="testFetch()">Test Fetch API</button>
+        <button class="test-button" onclick="openMainApp()">Open Main App</button>
+        
+        <h2>Instructions:</h2>
+        <ol>
+            <li>If you see this page, the standalone HTML is working!</li>
+            <li>Click the test buttons to verify functionality</li>
+            <li>Click "Open Main App" to test the main application</li>
+            <li>If everything works, you can distribute the standalone.html file</li>
+        </ol>
+    </div>
+
+    <script>
+        function testJavaScript() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p class="success">✅ JavaScript is working correctly!</p>';
+        }
+        
+        function testLocalStorage() {
+            try {
+                localStorage.setItem('test', 'value');
+                const value = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                
+                if (value === 'value') {
+                    document.getElementById('results').innerHTML = '<p class="success">✅ Local Storage is working correctly!</p>';
+                } else {
+                    document.getElementById('results').innerHTML = '<p class="error">❌ Local Storage test failed</p>';
+                }
+            } catch (error) {
+                document.getElementById('results').innerHTML = '<p class="error">❌ Local Storage is not available</p>';
+            }
+        }
+        
+        function testFetch() {
+            // Test if fetch is available (it should be in modern browsers)
+            if (typeof fetch !== 'undefined') {
+                document.getElementById('results').innerHTML = '<p class="success">✅ Fetch API is available!</p>';
+            } else {
+                document.getElementById('results').innerHTML = '<p class="error">❌ Fetch API is not available</p>';
+            }
+        }
+        
+        function openMainApp() {
+            try {
+                // Try to open the main standalone.html file
+                window.open('standalone.html', '_blank');
+                document.getElementById('results').innerHTML = '<p class="success">✅ Attempting to open main app...</p>';
+            } catch (error) {
+                document.getElementById('results').innerHTML = '<p class="error">❌ Could not open main app: ' + error.message + '</p>';
+            }
+        }
+        
+        // Auto-run basic test
+        window.onload = function() {
+            testJavaScript();
+        };
+    </script>
+</body>
+</html> 

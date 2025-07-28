@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 
+// Configure for static export
+export const dynamic = 'force-static'
+export const revalidate = false
+
 const CACHE_PATH = path.resolve(process.cwd(), 'jira-issues-cache.json');
 
 export async function GET(req: NextRequest) {

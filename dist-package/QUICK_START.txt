@@ -1,0 +1,35 @@
+🚀 JIRA DASHBOARD - QUICK START
+================================
+
+📦 WHAT'S INCLUDED:
+- standalone.html (1.5MB) - The complete application
+- README.md - Full documentation
+- INSTALL.md - Installation guide
+- LICENSE.md - License information
+- CHANGELOG.md - Version history
+
+🎯 HOW TO USE:
+1. Double-click "standalone.html" 
+   OR
+2. Double-click "Open Dashboard.bat" (Windows)
+   OR  
+3. Double-click "open-dashboard.sh" (Mac/Linux)
+
+✅ THAT'S IT! No installation needed.
+
+📱 WORKS ON:
+- Windows, Mac, Linux
+- Chrome, Firefox, Safari, Edge
+- Desktop, tablet, mobile
+
+⚠️  NOTES:
+- 1.5MB file size
+- Works offline (UI only)
+- Jira features need internet
+- Modern browser required
+
+📞 NEED HELP?
+- Read README.md for full details
+- Check INSTALL.md for troubleshooting
+
+🎉 ENJOY YOUR DASHBOARD! 

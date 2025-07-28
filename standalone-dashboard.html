@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Jira Dashboard - Standalone Version" />
+    <title>Jira Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚛️</text></svg>" />
+    
+    <!-- Material-UI CSS -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #181C24;
+            color: #fff;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background-color: #1e1e1e;
+            border-bottom: 1px solid #333;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #6C63FF;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav button {
+            background: none;
+            border: none;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .nav button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav button.active {
+            background-color: #6C63FF;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .column {
+            background-color: #23293A;
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 400px;
+        }
+        
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #333;
+        }
+        
+        .column-title {
+            font-weight: 600;
+            color: #6C63FF;
+        }
+        
+        .card {
+            background-color: #2d3748;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #6C63FF;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-key {
+            font-weight: 600;
+            color: #6C63FF;
+            font-size: 0.9rem;
+        }
+        
+        .card-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-todo { background-color: #dc3545; color: white; }
+        .status-progress { background-color: #fd7e14; color: white; }
+        .status-done { background-color: #198754; color: white; }
+        
+        .card-summary {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        
+        .card-team {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        .stories {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #444;
+        }
+        
+        .story {
+            background-color: #374151;
+            padding: 0.5rem;
+            margin-bottom: 0.25rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .story-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+        
+        .story-key {
+            color: #6C63FF;
+            font-weight: 500;
+        }
+        
+        .story-status {
+            padding: 0.125rem 0.25rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+        }
+        
+        .story-summary {
+            color: #ccc;
+            line-height: 1.3;
+        }
+        
+        .story-team {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 0.25rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: #23293A;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #6C63FF;
+        }
+        
+        .stat-label {
+            color: #888;
+            margin-top: 0.5rem;
+        }
+        
+        .dependency-graph {
+            background-color: #23293A;
+            border-radius: 8px;
+            padding: 2rem;
+            min-height: 600px;
+        }
+        
+        .graph-container {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .node {
+            position: absolute;
+            background-color: #6C63FF;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .connection {
+            position: absolute;
+            height: 2px;
+            background-color: #666;
+            transform-origin: left center;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.2rem;
+            color: #888;
+        }
+        
+        .spinner {
+            border: 4px solid #333;
+            border-top: 4px solid #6C63FF;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            background-color: #2d3748;
+            color: white;
+            border: 1px solid #444;
+            padding: 0.5rem;
+            border-radius: 4px;
+            min-width: 150px;
+        }
+        
+        .filter-select option {
+            background-color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Jira Dashboard</h1>
+        <nav class="nav">
+            <button class="nav-btn active" onclick="showPage('dashboard')">Dashboard</button>
+            <button class="nav-btn" onclick="showPage('demo')">Demo Board</button>
+            <button class="nav-btn" onclick="showPage('dependency')">Dependency Graph</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page active">
+            <h2>Dashboard Overview</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-issues">-</div>
+                    <div class="stat-label">Total Issues</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="in-progress">-</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completed">-</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="teams">-</div>
+                    <div class="stat-label">Active Teams</div>
+                </div>
+            </div>
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading dashboard data...
+            </div>
+        </div>
+
+        <!-- Demo Board Page -->
+        <div id="demo" class="page">
+            <h2>Demo Kanban Board</h2>
+            <div class="filters">
+                <select class="filter-select" id="data-source" onchange="loadDemoData()">
+                    <option value="board-save">Board Save (Default)</option>
+                    <option value="board-saveAdvice">Board Save Advice</option>
+                    <option value="board-savePDD">Board Save PDD</option>
+                </select>
+                <select class="filter-select" id="team-filter" onchange="filterByTeam()">
+                    <option value="">All Teams</option>
+                </select>
+            </div>
+            <div id="kanban-board" class="kanban-board">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading kanban board...
+                </div>
+            </div>
+        </div>
+
+        <!-- Dependency Graph Page -->
+        <div id="dependency" class="page">
+            <h2>Dependency Graph</h2>
+            <div class="dependency-graph">
+                <div class="graph-container" id="graph-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading dependency graph...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Embedded data
+        const demoData = {
+            "board-save": {
+                "columns": {
+                    "4.1": [
+                        {
+                            "key": "ADVICE-1157",
+                            "url": "https://magmutual.atlassian.net/browse/ADVICE-1157",
+                            "summary": "MOC for LC Content",
+                            "status": "Released",
+                            "statusCategory": "done",
+                            "stories": [
+                                {
+                                    "key": "ADVICE-1521",
+                                    "summary": "Add Hover for MOC to Content Library",
+                                    "status": "Done",
+                                    "statusCategory": "done",
+                                    "team": "OG Team"
+                                },
+                                {
+                                    "key": "ADVICE-1504",
+                                    "summary": "Add MOC disclosure within CME accreditation in CMS",
+                                    "status": "Done",
+                                    "statusCategory": "done",
+                                    "team": "Other"
+                                }
+                            ],
+                            "team": "OG Team"
+                        }
+                    ],
+                    "4.2": [
+                        {
+                            "key": "ADVICE-1169",
+                            "url": "https://magmutual.atlassian.net/browse/ADVICE-1169",
+                            "summary": "Content Library Enhancements",
+                            "status": "In Progress",
+                            "statusCategory": "indeterminate",
+                            "stories": [
+                                {
+                                    "key": "ADVICE-1533",
+                                    "summary": "Implement advanced search filters",
+                                    "status": "In Progress",
+                                    "statusCategory": "indeterminate",
+                                    "team": "OG Team"
+                                }
+                            ],
+                            "team": "OG Team"
+                        }
+                    ],
+                    "4.3": [
+                        {
+                            "key": "JPP-2641",
+                            "url": "https://magmutual.atlassian.net/browse/JPP-2641",
+                            "summary": "Policy Management System",
+                            "status": "To Do",
+                            "statusCategory": "new",
+                            "stories": [
+                                {
+                                    "key": "JPP-2642",
+                                    "summary": "Design policy workflow",
+                                    "status": "To Do",
+                                    "statusCategory": "new",
+                                    "team": "Data Divers"
+                                }
+                            ],
+                            "team": "Data Divers"
+                        }
+                    ]
+                }
+            },
+            "board-saveAdvice": {
+                "columns": {
+                    "4.1": [
+                        {
+                            "key": "ADVICE-2001",
+                            "summary": "Advice System Enhancement",
+                            "status": "Done",
+                            "stories": [
+                                {
+                                    "key": "ADVICE-2002",
+                                    "summary": "Implement advice tracking",
+                                    "status": "Done",
+                                    "team": "OG Team"
+                                }
+                            ],
+                            "team": "OG Team"
+                        }
+                    ]
+                }
+            },
+            "board-savePDD": {
+                "columns": {
+                    "4.1": [
+                        {
+                            "key": "PDD-1001",
+                            "summary": "Product Development Dashboard",
+                            "status": "In Progress",
+                            "stories": [
+                                {
+                                    "key": "PDD-1002",
+                                    "summary": "Create PDD metrics",
+                                    "status": "In Progress",
+                                    "team": "Product Team"
+                                }
+                            ],
+                            "team": "Product Team"
+                        }
+                    ]
+                }
+            }
+        };
+
+        // Navigation
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Load page-specific data
+            if (pageId === 'dashboard') {
+                loadDashboardData();
+            } else if (pageId === 'demo') {
+                loadDemoData();
+            } else if (pageId === 'dependency') {
+                loadDependencyGraph();
+            }
+        }
+
+        // Dashboard functions
+        function loadDashboardData() {
+            const data = demoData['board-save'];
+            const allIssues = [];
+            const teams = new Set();
+            
+            Object.values(data.columns).forEach(column => {
+                column.forEach(card => {
+                    allIssues.push(card);
+                    teams.add(card.team);
+                    if (card.stories) {
+                        card.stories.forEach(story => {
+                            allIssues.push(story);
+                            teams.add(story.team);
+                        });
+                    }
+                });
+            });
+            
+            const inProgress = allIssues.filter(issue => 
+                issue.status.toLowerCase().includes('progress') || 
+                issue.status.toLowerCase().includes('creating') ||
+                issue.status.toLowerCase().includes('validating')
+            ).length;
+            
+            const completed = allIssues.filter(issue => 
+                issue.status.toLowerCase().includes('done') || 
+                issue.status.toLowerCase().includes('released')
+            ).length;
+            
+            document.getElementById('total-issues').textContent = allIssues.length;
+            document.getElementById('in-progress').textContent = inProgress;
+            document.getElementById('completed').textContent = completed;
+            document.getElementById('teams').textContent = teams.size;
+            
+            // Hide loading
+            document.querySelector('#dashboard .loading').style.display = 'none';
+        }
+
+        // Demo board functions
+        function loadDemoData() {
+            const dataSource = document.getElementById('data-source').value;
+            const data = demoData[dataSource];
+            
+            if (!data) {
+                document.getElementById('kanban-board').innerHTML = '<div class="loading">No data available</div>';
+                return;
+            }
+            
+            const board = document.getElementById('kanban-board');
+            board.innerHTML = '';
+            
+            // Populate team filter
+            const teams = new Set();
+            Object.values(data.columns).forEach(column => {
+                column.forEach(card => {
+                    teams.add(card.team);
+                    if (card.stories) {
+                        card.stories.forEach(story => teams.add(story.team));
+                    }
+                });
+            });
+            
+            const teamFilter = document.getElementById('team-filter');
+            teamFilter.innerHTML = '<option value="">All Teams</option>';
+            teams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team;
+                option.textContent = team;
+                teamFilter.appendChild(option);
+            });
+            
+            // Create columns
+            Object.entries(data.columns).forEach(([iteration, cards]) => {
+                const column = createColumn(iteration, cards);
+                board.appendChild(column);
+            });
+        }
+
+        function createColumn(iteration, cards) {
+            const column = document.createElement('div');
+            column.className = 'column';
+            
+            const header = document.createElement('div');
+            header.className = 'column-header';
+            header.innerHTML = `
+                <div class="column-title">${iteration}</div>
+                <div>${cards.length}</div>
+            `;
+            column.appendChild(header);
+            
+            cards.forEach(card => {
+                const cardElement = createCard(card);
+                column.appendChild(cardElement);
+            });
+            
+            return column;
+        }
+
+        function createCard(card) {
+            const cardElement = document.createElement('div');
+            cardElement.className = 'card';
+            
+            const statusClass = getStatusClass(card.status);
+            
+            cardElement.innerHTML = `
+                <div class="card-header">
+                    <div class="card-key">${card.key}</div>
+                    <div class="card-status ${statusClass}">${card.status}</div>
+                </div>
+                <div class="card-summary">${card.summary}</div>
+                <div class="card-team">${card.team}</div>
+                ${card.stories ? createStoriesSection(card.stories) : ''}
+            `;
+            
+            return cardElement;
+        }
+
+        function createStoriesSection(stories) {
+            return `
+                <div class="stories">
+                    ${stories.map(story => `
+                        <div class="story">
+                            <div class="story-header">
+                                <div class="story-key">${story.key}</div>
+                                <div class="story-status ${getStatusClass(story.status)}">${story.status}</div>
+                            </div>
+                            <div class="story-summary">${story.summary}</div>
+                            <div class="story-team">${story.team}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function getStatusClass(status) {
+            const statusLower = status.toLowerCase();
+            if (statusLower.includes('done') || statusLower.includes('released')) {
+                return 'status-done';
+            } else if (statusLower.includes('progress') || statusLower.includes('creating') || statusLower.includes('validating')) {
+                return 'status-progress';
+            } else {
+                return 'status-todo';
+            }
+        }
+
+        function filterByTeam() {
+            const selectedTeam = document.getElementById('team-filter').value;
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const cardTeam = card.querySelector('.card-team').textContent;
+                const storyTeams = Array.from(card.querySelectorAll('.story-team')).map(story => story.textContent);
+                const allTeams = [cardTeam, ...storyTeams];
+                
+                if (!selectedTeam || allTeams.includes(selectedTeam)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Dependency graph functions
+        function loadDependencyGraph() {
+            const container = document.getElementById('graph-container');
+            container.innerHTML = '';
+            
+            // Create a simple dependency visualization
+            const data = demoData['board-save'];
+            const nodes = [];
+            const connections = [];
+            
+            // Extract nodes from data
+            Object.entries(data.columns).forEach(([iteration, cards]) => {
+                cards.forEach(card => {
+                    nodes.push({
+                        id: card.key,
+                        label: card.key,
+                        summary: card.summary,
+                        status: card.status,
+                        team: card.team,
+                        x: Math.random() * 400 + 50,
+                        y: Math.random() * 300 + 50
+                    });
+                    
+                    // Create connections to stories
+                    if (card.stories) {
+                        card.stories.forEach(story => {
+                            nodes.push({
+                                id: story.key,
+                                label: story.key,
+                                summary: story.summary,
+                                status: story.status,
+                                team: story.team,
+                                x: Math.random() * 400 + 50,
+                                y: Math.random() * 300 + 50
+                            });
+                            
+                            connections.push({
+                                from: card.key,
+                                to: story.key
+                            });
+                        });
+                    }
+                });
+            });
+            
+            // Draw connections
+            connections.forEach(conn => {
+                const fromNode = nodes.find(n => n.id === conn.from);
+                const toNode = nodes.find(n => n.id === conn.to);
+                
+                if (fromNode && toNode) {
+                    const connection = document.createElement('div');
+                    connection.className = 'connection';
+                    
+                    const dx = toNode.x - fromNode.x;
+                    const dy = toNode.y - fromNode.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                    
+                    connection.style.width = distance + 'px';
+                    connection.style.left = fromNode.x + 'px';
+                    connection.style.top = (fromNode.y + 20) + 'px';
+                    connection.style.transform = `rotate(${angle}deg)`;
+                    
+                    container.appendChild(connection);
+                }
+            });
+            
+            // Draw nodes
+            nodes.forEach(node => {
+                const nodeElement = document.createElement('div');
+                nodeElement.className = 'node';
+                nodeElement.style.left = node.x + 'px';
+                nodeElement.style.top = node.y + 'px';
+                nodeElement.innerHTML = `
+                    <div style="font-weight: bold;">${node.label}</div>
+                    <div style="font-size: 0.7rem; margin-top: 0.25rem;">${node.team}</div>
+                `;
+                nodeElement.title = `${node.label}: ${node.summary}`;
+                
+                container.appendChild(nodeElement);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+        });
+    </script>
+</body>
+</html> 

@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build-standalone": "npm run build && node build-standalone-nextjs.js --build-dir ./out",
+    "build-standalone-cra": "npm run build && node build-standalone.js",
+    "export": "next build",
+    "export-standalone": "npm run export && node build-standalone-nextjs.js --build-dir ./out",
+    "validate-standalone": "node validate-standalone.js standalone.html"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
+// Configure for static export
+export const dynamic = 'force-static'
+export const revalidate = false
+
 // Helper function to fetch and organize data for a project
 async function fetchProjectData(projectKey: string) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';

@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, readFile } from 'fs/promises';
 import path from 'path';
 
+// Configure for static export
+export const dynamic = 'force-static'
+export const revalidate = false
+
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();

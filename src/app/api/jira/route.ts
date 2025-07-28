@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Configure for static export
+export const dynamic = 'force-static'
+export const revalidate = false
+
 const JIRA_BASE_URL = process.env.JIRA_BASE_URL
 const JIRA_EMAIL = process.env.JIRA_EMAIL
 const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN
