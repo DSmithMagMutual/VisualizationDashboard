@@ -1,0 +1,2027 @@
+{
+  "columns": {
+    "4.1": [
+      {
+        "key": "ADVICE-1157",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1157",
+        "summary": "MOC for LC Content",
+        "status": "Ready for Release",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "ADVICE-1521",
+            "summary": "Add Hover for MOC to Content Library",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-1504",
+            "summary": "Add MOC disclosure within CME accreditation in CMS ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Other"
+          },
+          {
+            "key": "ADVICE-1454",
+            "summary": "Add hover over for MOC accreditation ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-1431",
+            "summary": "Test MOC for Content",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Other"
+          },
+          {
+            "key": "ADVICE-1248",
+            "summary": "Add MOC filtering to Content Library page",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-1247",
+            "summary": "Add moc reference in applicable content",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "OG Team"
+          }
+        ],
+        "team": "OG Team"
+      },
+      {
+        "key": "ADVICE-1167",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1167",
+        "summary": "CME Tracking for Content not in Learning Center",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1532",
+            "summary": "Train Solomon to use surveys in SF",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1531",
+            "summary": "Move Surveys into SF from SurveyMonkey",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Hogwarts Express"
+          }
+        ],
+        "team": "Hogwarts Express"
+      },
+      {
+        "key": "EN-531",
+        "url": "https://magmutual.atlassian.net/browse/EN-531",
+        "summary": "RBE Renewal Enhancements",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-715",
+            "summary": "Modify Pending Policy Premium Logic in RBE Renewal Report",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-693",
+            "summary": "Validate Renewal Rate Table in RBE Renewal Report for WIP Status Policies in Pending Status",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-660",
+            "summary": "Check into adding Surcharges and fees to RBE Renewal app - BI-7800",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "EN-529",
+        "url": "https://magmutual.atlassian.net/browse/EN-529",
+        "summary": "Company Wide Dashboard Enhancements",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-804",
+            "summary": "\"Withdrawn\" Closed Lost opportunities in the CRMA Pipeline",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-731",
+            "summary": "Company Wide Dashboard - Pipeline - Bug RE-Introduced",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-497",
+            "summary": "Identify Reason for Loss in Company Wide Dashboard",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-496",
+            "summary": "Company Wide Dashboard and AE Dashboard showing Withdrawn Opportunities SD-41618",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-470",
+            "summary": "Regional Quotas need to be update on Company Wide Dashboard SD-41616",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-262",
+            "summary": "Update Company Wide for Prospect Stewardship SD-41613",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      }
+    ],
+    "4.2": [
+      {
+        "key": "ADVICE-1045",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1045",
+        "summary": "MMM PO : Claims > Update Site Access Request ",
+        "status": "Validating",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "EN-696",
+            "summary": "UAT Change Request: List of permissions in Site Access Email(s)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-668",
+            "summary": "Failed test case: Emails",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-490",
+            "summary": "Research changes needed following JPP-1850 work",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-432",
+            "summary": "Updated Site Access Email(s)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "ADVICE-1564",
+            "summary": "Test Site Access Request Updates + MyMagMutual Account Access Updates",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Other"
+          },
+          {
+            "key": "ADVICE-1334",
+            "summary": "MMM > Admin Users > Should Have Access to Additional Portal Access Option if Manage Claims is not Assigned",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1230",
+            "summary": "MMM > Additional Portal Access Request Case Summary Page > Button Label and Action Incorrect: US-0004367",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1182",
+            "summary": "Add Manage Claims Check Box to Case Object - COPADO US-0004389",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1048",
+            "summary": "Update Site Access Case Screenflow in SF - US-0004410",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1047",
+            "summary": "Relabel \"File Claims\" to \"Report Claims\" in SF - COPADO US-0004379",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1046",
+            "summary": "Add Checkbox to Support Request Access Page: Copado US-0004393",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Hogwarts Express"
+          }
+        ],
+        "team": "Hogwarts Express"
+      },
+      {
+        "key": "ADVICE-57",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-57",
+        "summary": "MyMagMutual Defending",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1548",
+            "summary": "LC - Update Navigation for Single Secondary Feature",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-1319",
+            "summary": "ADVICE-1319: Defending File A Clime: Updated the Claim overview page for redirection from the Learning Center(ADVICE-57)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1298",
+            "summary": "Learning Center redirect wcv",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-1243",
+            "summary": "ADVICE-1243: Preparing an API that allows to check access to WCV(ADVICE-57)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-712",
+            "summary": "Defending: Add Claims Overview to Defending Menu on Agent Portal Navigation: US-0004174",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-711",
+            "summary": "Defending: Add Claims Overview link to Agent Portal Landing Page: US-0004174",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-709",
+            "summary": "Defending (Learning Center): Add Defending Menu to Customer Portal Navigation",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-707",
+            "summary": "Defending (Learning Center): Remove Online Claims Submission (OCS) link Under Servicing",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-666",
+            "summary": "Test MyMagMutual Defending",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Other"
+          },
+          {
+            "key": "ADVICE-665",
+            "summary": "Defending: Update Navigation for Single Secondary Feature: US-0004283",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-664",
+            "summary": "Defending: Remove Online Claims Submission (OCS) link Under Servicing: US-0004174",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-663",
+            "summary": "Defending: Add File a Claim Link to Agent Portal Landing Page: US-0004174",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-662",
+            "summary": "Defending: Admin to see Defending Link on Customer Portal Landing Page: US-0004174",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-661",
+            "summary": "Defending: Add Defending Menu to Agent Portal Navigation: US-0004174",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-660",
+            "summary": "Defending: Add Defending Menu to Customer Portal Navigation: US-0004174",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          }
+        ],
+        "team": "Feature Freight"
+      },
+      {
+        "key": "ADVICE-59",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-59",
+        "summary": "Updated Claim Submission",
+        "status": "UAT",
+        "statusCategory": "done",
+        "stories": [
+          {
+            "key": "ADVICE-1372",
+            "summary": "Updated Claim Submission",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-1369",
+            "summary": "Updated Claim Submission",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1256",
+            "summary": "ADVICE-1256: File a Claim: Updating of Insured/Provider Information form(ADVICE-59)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1142",
+            "summary": "WCV submission doesn't go to Claims Home page: US-0004367",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1141",
+            "summary": "WCV submission doesn't go to Claims List page: US-0004367",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1140",
+            "summary": "MPL submission doesn't go to Claims Home page: US-0004375",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1139",
+            "summary": "MPL submission doesn't go to Claims List page: US-0004375",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1129",
+            "summary": "Agent submitting a claim goes to My Cases page: US-0004376",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1127",
+            "summary": "ADVICE-1127: Modal form styling(ADVICE-59)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1124",
+            "summary": "Test Updated Claim Submission",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Other"
+          },
+          {
+            "key": "ADVICE-790",
+            "summary": "Claim Submission: Start Claim - Manage Claims Page: US-0004316",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-789",
+            "summary": "Claim Submission: Start Claim - Claims Overview Page: US-0004316",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-788",
+            "summary": "Claim Submission: Under Agent Landing Page",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-787",
+            "summary": "Claim Submission: Under PO Admin Landing Page: US-0004316",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-786",
+            "summary": "Claim Submission: Under Secondary Tab - Defending: US-0004316",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-785",
+            "summary": "Claim Submission: Create Modal: US-0004316",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          }
+        ],
+        "team": "Feature Freight"
+      },
+      {
+        "key": "ADVICE-58",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-58",
+        "summary": "Claims Homepage",
+        "status": "Ready for Release",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "ADVICE-1520",
+            "summary": "M3 Claims FAQs",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1415",
+            "summary": "ADVICE-1415: Overview: FAQ - remove Claim drop down(ADVICE-58)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1221",
+            "summary": "ADVICE-1221: Overview: Name Changes(ADVICE-58)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1161",
+            "summary": "Create Claims FAQ model inside of builder.io",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-1151",
+            "summary": "Test Claims Homepage",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Other"
+          },
+          {
+            "key": "ADVICE-750",
+            "summary": "Overview: Create new Claims Overview page in Agent Portal: US-0004248",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-749",
+            "summary": "Overview: Create Claims FAQs component: US-0004247",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-748",
+            "summary": "Overview: Create Policy Owners Programs component: US-0004247",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-747",
+            "summary": "Overview: Create Process Timeline component: US-0004247",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-746",
+            "summary": "Overview: Create Team Engagement component: US-0004247",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-745",
+            "summary": "Overview: Create new Claims Overview page in Customer Portal: US-0004248",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-744",
+            "summary": "Overview: Create hero section: US-0004247",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          }
+        ],
+        "team": "Feature Freight"
+      },
+      {
+        "key": "ADVICE-60",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-60",
+        "summary": "Manage Claims List",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1490",
+            "summary": "Test Manage Claims List",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Other"
+          },
+          {
+            "key": "ADVICE-1467",
+            "summary": "Manage Claims: Create New Field for Oasis Created Date",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1307",
+            "summary": "Manage Claims - 5 Years Worth of Oasis Data - Admin",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1306",
+            "summary": "Manage Claims - 5 Years Worth of Oasis Data",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1297",
+            "summary": "Manage Claims:  Update API to include 'multi-loss' (added to mag-claim-summary view)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1204",
+            "summary": "SPIKE - Verify that we have 5 years worth of data in the Claims List",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1130",
+            "summary": "Manage Claims: No Claims Listed: US-0004178",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1098",
+            "summary": "Manage Claims: Revise Manage Claims Links: US-0004178",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1066",
+            "summary": "Manage Claims - SPIKE - API Performance data comparison",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1043",
+            "summary": "Manage Claims: NEW API for List of Claims Fields",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-831",
+            "summary": "Manage Claims: Load List of Claims - Tablet and Mobile: US-0004178",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-673",
+            "summary": "Support Role Claim Visibility on Manage Claims Page: US-0004178",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-655",
+            "summary": "Manage Claims: Create a Manage Claims Page_Agent Portal",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-619",
+            "summary": "Manage Claims: Policy holder List for PP Admin Only: US-0004178 ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-617",
+            "summary": "ADVICE-617: Manage Claims: Custom Component to Load List of Claims Associated to User(ADVICE-60)",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-608",
+            "summary": "File a Claim Button visibility on Manage Claims Page: US-0004178",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-598",
+            "summary": "ADVICE-598: Manage Claims: Create a Manage Claims Page_Customer Portal(ADVICE-60)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-487",
+            "summary": "SPIKE - Research How to get the Info Buttons to work",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-486",
+            "summary": "SPIKE - Research multi-loss field in Oasis",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          }
+        ],
+        "team": "Feature Freight"
+      },
+      {
+        "key": "ADVICE-743",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-743",
+        "summary": "Automate Oasis no-insured-provider Claim Creation",
+        "status": "UAT",
+        "statusCategory": "done",
+        "stories": [
+          {
+            "key": "ADVICE-1492",
+            "summary": "Test Automate Oasis no-insured-provider Claim Creation",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Other"
+          },
+          {
+            "key": "ADVICE-987",
+            "summary": "No Insured - Adjust Claim Form to Not Require an Insured - Agent and Policy Owner: US-0005025",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          }
+        ],
+        "team": "Feature Freight"
+      },
+      {
+        "key": "ADVICE-1530",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1530",
+        "summary": "Automating Live CME Activities",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1533",
+            "summary": "Create CME Activity from Survey Completion",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Hogwarts Express"
+          }
+        ],
+        "team": "Hogwarts Express"
+      },
+      {
+        "key": "ADVICE-354",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-354",
+        "summary": "Automating litigation materials being sent to PH",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-873",
+            "summary": "Agent submission email",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-716",
+            "summary": "Claims Operations case journey - Email to case",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-714",
+            "summary": "Relate MC emails to case ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-713",
+            "summary": "Claims Operations case journey - AGENT",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-658",
+            "summary": "Claims Operations case journey - MMM",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-657",
+            "summary": "Create Claims Operations case templates in Marketing Cloud",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-656",
+            "summary": "Research: Current automated responses to Claims Operations cases",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "ADVICE-1244",
+            "summary": "Deactivate Salesforce flow ",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Other"
+          }
+        ],
+        "team": "Fox Force"
+      },
+      {
+        "key": "EN-809",
+        "url": "https://magmutual.atlassian.net/browse/EN-809",
+        "summary": "Add sheet to claims scorecard",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "Data Divers"
+      },
+      {
+        "key": "ADVICE-679",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-679",
+        "summary": "Strat Plan 24 - Implement CCP creation in Qliksense",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-115",
+            "summary": "Determine the Note Category Groups for the Critical Path Report",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-114",
+            "summary": "Update Claim Critical Path Report in Claims Form App",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-112",
+            "summary": "Create a View or Table for the Claim Critical Path Report",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-110",
+            "summary": "Add Note_Category to Oasis Staging",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      }
+    ],
+    "4.3": [
+      {
+        "key": "ADVICE-977",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-977",
+        "summary": "Learning Center Content Reusability",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1517",
+            "summary": "Learning Center Content Reusability",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "OG Team"
+          }
+        ],
+        "team": "OG Team"
+      },
+      {
+        "key": "ADVICE-114",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-114",
+        "summary": "09 MFR - Track Reviewers in a System (Move the medical faculty list into a tool that supports better efficiency)",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1559",
+            "summary": "Med Faculty - Med Faculty List",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1201",
+            "summary": "Med Faculty - Prototype for Med Faculty List",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1118",
+            "summary": "SPIKE - Med Faculty - Payment Info",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1117",
+            "summary": "SPIKE - Med Faculty - Data Migration",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1116",
+            "summary": "SPIKE - Med Faculty - Current Med Faculty Process",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1115",
+            "summary": "SPIKE - Med Faculty - Offboarding Old Process",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1114",
+            "summary": "SPIKE - Med Faculty - Determine Relevant Information in Spreadsheet",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1103",
+            "summary": "SPIKE - Med Faculty - Data Review and Planning",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1028",
+            "summary": "SPIKE - Medical Faculty List Review - New Fields",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          }
+        ],
+        "team": "Feature Freight"
+      },
+      {
+        "key": "ADVICE-95",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-95",
+        "summary": "MOC Dashboard",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1535",
+            "summary": "Export MOC Data From Dashboard",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1534",
+            "summary": "Create MOC Dashboard",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Hogwarts Express"
+          }
+        ],
+        "team": "Hogwarts Express"
+      },
+      {
+        "key": "ADVICE-1169",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1169",
+        "summary": "Course Survey Automation and Simplification",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-865",
+            "summary": "Research moving survey to cloud page",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-864",
+            "summary": "Course Survey email - MC",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          }
+        ],
+        "team": "Fox Force"
+      },
+      {
+        "key": "JPP-2641",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2641",
+        "summary": "Opty Updates - Auto-populate Dr. Salutation",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5165",
+            "summary": "Prod Release: Salutation field - data update",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-5089",
+            "summary": "Automation to manage Salutation on Contact records",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-3445",
+            "summary": "Marketing Cloud template updates ",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-2948",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2948",
+        "summary": "CSA DB : Case Stage Pipeline ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-484",
+            "summary": "Update Customer Service Analytics Dashboard with Pipeline feature",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "EN-518",
+        "url": "https://magmutual.atlassian.net/browse/EN-518",
+        "summary": "Monthly Account Performance Dashboard",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-309",
+            "summary": "Account Performance Report > Incident and Claim Activity Updates",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-298",
+            "summary": "Create Design Document for Monthly Account Performance Report",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-297",
+            "summary": "Monthly Account Performance Report > Update to 3 Components Based on New MyMagMutual Account Access Object in Salesforce",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-288",
+            "summary": "Modify Monthly Account Performance Report",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-134",
+            "summary": "Monthly Account Performance Report > Resource Utilization - Courses Complete Component > Update Based on New CME Content & CME Activity Objects",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "EN-533",
+        "url": "https://magmutual.atlassian.net/browse/EN-533",
+        "summary": "Update Logic for Persistency Changes",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-621",
+            "summary": "Create Definitions Document for Executive Dashboard",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-345",
+            "summary": "Update logic for Persistency Calculation",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      }
+    ],
+    "4.4": [
+      {
+        "key": "ADVICE-93",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-93",
+        "summary": "MOC for CME Assignments",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1541",
+            "summary": "Update the My/Team Assignments tables to show MOC related fields",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-1540",
+            "summary": "MOC Board(s) Dropdown in assign activity modal filters pos",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-1539",
+            "summary": "Add MOC Board(s) dropdown to Assign Activity Modal",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-1538",
+            "summary": "Update Assign Activity Text to support MOC reporting",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-1527",
+            "summary": "MOC for CME - Assignment endpoint update",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "cad"
+          }
+        ],
+        "team": "OG Team"
+      },
+      {
+        "key": "ADVICE-1021",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1021",
+        "summary": "Implement HPL indemnity model in Oasis - API portion",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1528",
+            "summary": "HPL - Sapiens API research",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1526",
+            "summary": "HPL - Validation",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1524",
+            "summary": "CAD - Review R model",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1523",
+            "summary": "HPL - Modify /predict endpoint to send reserve amount to Oasis / staging table",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1484",
+            "summary": "SPIKE - HPL Indemnity model - Python wrapper research",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "cad"
+          }
+        ],
+        "team": "cad"
+      },
+      {
+        "key": "ADVICE-111",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-111",
+        "summary": "Implement HPL indemnity model in Oasis -- Oasis/Appian portion",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1234",
+            "summary": "SPIKE - cm_transaction table verification",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1199",
+            "summary": "SPIKE - HPL OASIS - Pull Data from Oasis",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1119",
+            "summary": "SPIKE - HPL OASIS - Determine Oasis Data Needs",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1111",
+            "summary": "HPL OASIS - Updating Reserve in Oasis",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1110",
+            "summary": "HPL OASIS - Pull Data from Oasis",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          }
+        ],
+        "team": "Feature Freight"
+      },
+      {
+        "key": "ADVICE-1105",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1105",
+        "summary": "Key Litigation Events and Dates  (Enabler (MVP): PH emotional support survey support)",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1536",
+            "summary": "Litigation Dates: Data Upload ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1525",
+            "summary": "Litigation Dates: SalesForce Field Creation",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1203",
+            "summary": "Litigation Dates: Claims Date View ",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Feature Freight"
+          }
+        ],
+        "team": "Feature Freight"
+      },
+      {
+        "key": "ADVICE-730",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-730",
+        "summary": "Agents' Account Access Management",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1543",
+            "summary": "Matt - Research Sapiens API",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Other"
+          },
+          {
+            "key": "ADVICE-1537",
+            "summary": "Inquire About Oasis/Velocity API Connection",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1044",
+            "summary": "Connect Oasis/Velocity Producer API to Manage Agents Table",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1042",
+            "summary": "Create Agent Account Relation Modal",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1041",
+            "summary": "Update Agent Management Access Table - Multiple Accounts",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1040",
+            "summary": "Update Agent Access Management Table - Single",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Hogwarts Express"
+          }
+        ],
+        "team": "Hogwarts Express"
+      },
+      {
+        "key": "JPP-4436",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4436",
+        "summary": "Standardized OLQ Notifications ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5176",
+            "summary": "Add Underwriter field to OLQ Opp Layout",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "EN-861",
+            "summary": "OLQ journey - Underwriting",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-860",
+            "summary": "OLQ journey - Assigned owner",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-829",
+            "summary": "OLQ Notifications: Assignment",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-828",
+            "summary": "OLQ Notifications: Underwriting Review",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-827",
+            "summary": "OLQ Notifications: RFQ",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-826",
+            "summary": "OLQ Notifications: Declined",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          }
+        ],
+        "team": "Fox Force"
+      },
+      {
+        "key": "EN-539",
+        "url": "https://magmutual.atlassian.net/browse/EN-539",
+        "summary": "S&P Dashboard Enhancements",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-780",
+            "summary": "MPL Industry Premium for 2024 is not correct in Market Share Dashboard ",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-619",
+            "summary": "S&P Public Financials - MDA Peer Compare and Market Share Q1 2025 Refresh",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-386",
+            "summary": "The Qlik app \"S&P Public Financials - Market Share\" needs to be optimized.",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "EN-164",
+        "url": "https://magmutual.atlassian.net/browse/EN-164",
+        "summary": "CRMA: Segmentation Dashboard >  CME Activity object",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "Data Divers"
+      }
+    ],
+    "4.5IP": [
+      {
+        "key": "ADVICE-94",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-94",
+        "summary": "MOC for CME Credits",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "OG Team"
+      }
+    ],
+    "uncommitted": [
+      {
+        "key": "ADVICE-48",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-48",
+        "summary": "Risk Mitigation Advice Integration - User Interface/Data Management Dashboard",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1311",
+            "summary": "Update error handling for risk factor repository layer",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1144",
+            "summary": "RMA API - Look into how best to implement Fuzzy Search into the RMA API",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1097",
+            "summary": "RMA API - Create PATCH endpoint to update 'Status'",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1084",
+            "summary": "RMA API - Implement fuzzy search (risk-factor-api)",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1031",
+            "summary": "RMA API - Audit Table*",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1020",
+            "summary": "RMA API - Add pagination class to new POST and PATCH endpoints",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1019",
+            "summary": "RMA API - Create PUT endpoint to update existing mapping records",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1018",
+            "summary": "RMA API - Create POST endpoint to create new mapping records",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "cad"
+          },
+          {
+            "key": "ADVICE-1017",
+            "summary": "RMA API - Add 'status' to endpoint",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "cad"
+          }
+        ],
+        "team": "cad"
+      },
+      {
+        "key": "ADVICE-1289",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1289",
+        "summary": "Live Integration of Oasis Claims",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "cad"
+      },
+      {
+        "key": "ADVICE-720",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-720",
+        "summary": "Learning Center Assignments Improvements",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1175",
+            "summary": "Completed assignments shown as expired",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-1173",
+            "summary": "Test Learning Center Assignments Improvements",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Other"
+          },
+          {
+            "key": "ADVICE-984",
+            "summary": "Notify User of Expiring/Expired Assignments in Advice Hub COPADO: US-0004347",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Hogwarts Express"
+          },
+          {
+            "key": "ADVICE-983",
+            "summary": "Add expiration timestamp to cme activites from bridge webhook",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-980",
+            "summary": "Configure bridge course expiration in dev and test with new users",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "OG Team"
+          },
+          {
+            "key": "ADVICE-833",
+            "summary": "Add CreateActivity Endpoint to sf-lc-auth FAST API service",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "OG Team"
+          }
+        ],
+        "team": "OG Team"
+      },
+      {
+        "key": "ADVICE-700",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-700",
+        "summary": "Automate getting SIR Bordereaux into the system",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "CLAIM-1026",
+            "summary": "External file number was replaced by CLAIM-885",
+            "status": "Deployed",
+            "statusCategory": "done",
+            "team": "Other"
+          },
+          {
+            "key": "CLAIM-885",
+            "summary": "FIX --- Create new file type \"SIR Potential Claim\"",
+            "status": "Deployed",
+            "statusCategory": "done",
+            "team": "Other"
+          },
+          {
+            "key": "CLAIM-722",
+            "summary": "SD-29278 Create new file type \"SIR Potential Claim\"",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Other"
+          },
+          {
+            "key": "BI-7571",
+            "summary": "Exclude new file type \"Potential Claim\" from loss runs and credentialing",
+            "status": "Closed",
+            "statusCategory": "done",
+            "team": "Other"
+          },
+          {
+            "key": "ADVICE-1123",
+            "summary": "SIR - Bordereaux Data Requirements",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1122",
+            "summary": "SIR - Automate SIR Bordereaux into Oasis ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1120",
+            "summary": "SPIKE - SIR - Automation Research",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          }
+        ],
+        "team": "Feature Freight"
+      },
+      {
+        "key": "ADVICE-1172",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1172",
+        "summary": "Include Account as MyMagMutual Experience Driver",
+        "status": "Feasibility Review",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "Feature Freight"
+      },
+      {
+        "key": "ADVICE-127",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-127",
+        "summary": "Update Jury Scorecard",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "ADVICE-1588",
+            "summary": "Implement Salesforce Relationship Object for Firm/Attorney/Paralegal Linking",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Claims"
+          },
+          {
+            "key": "ADVICE-1405",
+            "summary": "Scorecard - Create Custom Notes Component",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1404",
+            "summary": "Scorecard - Create Custom Dropdown Component",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1403",
+            "summary": "Scorecard - Internal Jury Selection Dashboard",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1402",
+            "summary": "SPIKE - Scorecard - List View Page Design ",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1401",
+            "summary": "SPIKE - Scorecard - Card View Page Design ",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1400",
+            "summary": "SPIKE - Scorecard - Condensed View Page Design ",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1399",
+            "summary": "SPIKE - Scorecard - Start/Create Page Design",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1398",
+            "summary": "SPIKE - Scorecard - Help Page Design ",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1200",
+            "summary": "SPIKE - Scorecard - Data",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1153",
+            "summary": "SPIKE - Jury Scorecard - Data Review and Planning",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1032",
+            "summary": "SPIKE - Attorney Authentication",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-1000",
+            "summary": "Scorecard - Email Automation",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-999",
+            "summary": "Scorecard - Data Model",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          },
+          {
+            "key": "ADVICE-998",
+            "summary": "Scorecard - New Jury Scorecard",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Feature Freight"
+          }
+        ],
+        "team": "Feature Freight"
+      },
+      {
+        "key": "JPP-4786",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4786",
+        "summary": "EA Email Comms: Remove Physician",
+        "status": "Analyzing",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-820",
+            "summary": "EA | Remove Physician Journey",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-819",
+            "summary": "EA | Remove Physician SQL query + DE",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-817",
+            "summary": "EA | Remove Physician Change Request Email",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          }
+        ],
+        "team": "Fox Force"
+      },
+      {
+        "key": "JPP-4785",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4785",
+        "summary": "Tail Offer Generation: Remove Physician",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5138",
+            "summary": "EA | Tail offer notification",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "JPP-5114",
+            "summary": "EA- Generate Tail Offer",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5113",
+            "summary": "EA Admin-Internal Users Access to Tail Offer Documentation",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "EN-812",
+            "summary": "Tail Offer notification process [research]",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "ADVICE-767",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-767",
+        "summary": "Create a Risk Report Dashboard for All Reports",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-843",
+            "summary": "Build Data Model for Risk Reports Dashboard",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-842",
+            "summary": "Investigate Tables and Views used for Risk Reports",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-841",
+            "summary": "Review Tables/Data used in all Risk Reports",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-810",
+            "summary": "Establish Data Connection to DRATST and DRADEV in Qlik Dev",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-772",
+            "summary": "Identify Solution for Using Dev Risk Data in Qlik",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "ADVICE-68",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-68",
+        "summary": "Digital Experience Analytics Dashboard - DatoCMS",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "MED-683",
+            "summary": "Create Documentation for Website Analytics Data",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-808",
+            "summary": "Validate Logic in Digital Experience Analytics Dashboard",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-806",
+            "summary": "Validate GA4 - Google Analytics Data",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-430",
+            "summary": "Move Website Analytics Dashboard to Qlik Prod - Digital Experience Analytics Dashboard",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-429",
+            "summary": "Validate DatoCMS Data",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "ADVICE-67",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-67",
+        "summary": "Digital Experience Analytics Dashboard - Builder.io",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-807",
+            "summary": "Validate Builder.io Data",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-438",
+            "summary": "Establish API Connection from Builder.IO to Qlik",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "JPP-2949",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2949",
+        "summary": "CSA DB : Factor Holiday Hours into Call Metrics",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-486",
+            "summary": "Investigate Dataflow for Missed Call Flag - CSA DB",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-485",
+            "summary": "CSA DB: Update Missed Calls Flag to Factor in Holiday",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "EN-530",
+        "url": "https://magmutual.atlassian.net/browse/EN-530",
+        "summary": "COI, Loss Run, and Credentialing Report Enhancements",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-700",
+            "summary": "Update COI Nprinting form - BI-8335",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-385",
+            "summary": "Incorrect Retro Date on Qlik Sense Policy History ",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-173",
+            "summary": "CIS Number Connection Request in Qlik Sense",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      }
+    ]
+  },
+  "title": "Advice and Claims"
+}

@@ -360,9 +360,9 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
   }, [graphData.nodes]);
 
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
       <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" gutterBottom sx={{ color: '#212529', fontWeight: 600 }}>
           {title}
         </Typography>
         
@@ -371,7 +371,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
             {/* Zoom Controls */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, color: '#212529', fontWeight: 600 }}>
                 Navigation:
               </Typography>
               <Button
@@ -382,20 +382,20 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
               >
                 View All
               </Button>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{ color: '#6c757d' }}>
                 • Scroll to zoom in/out
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{ color: '#6c757d' }}>
                 • Drag to pan around
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{ color: '#6c757d' }}>
                 • Drag nodes to rearrange
               </Typography>
             </Box>
 
             {/* Status Legend */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, color: '#212529', fontWeight: 600 }}>
                 Status Colors:
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -416,7 +416,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
             
             {/* Teams Legend */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, color: '#212529', fontWeight: 600 }}>
                 Teams (Border Colors):
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -427,6 +427,8 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
                     size="small"
                     sx={{
                       border: `2px solid ${getColorForTeam(team || '')}`,
+                      backgroundColor: '#ffffff',
+                      color: '#212529',
                       fontSize: '0.75rem'
                     }}
                   />
@@ -436,7 +438,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
 
             {/* Iterations Legend */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, color: '#212529', fontWeight: 600 }}>
                 Iterations:
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -459,7 +461,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
           {/* Graph */}
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             {graphData.nodes.length === 0 ? (
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: '#6c757d' }}>
                 No data available for dependency graph
               </Typography>
             ) : (
@@ -476,16 +478,16 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
 
           {/* Stats */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: '#6c757d' }}>
               Total Issues: {graphData.nodes.length}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: '#6c757d' }}>
               Dependencies: {graphData.links.length}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: '#6c757d' }}>
               Iterations: {iterations.length}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: '#6c757d' }}>
               Teams: {teams.length}
             </Typography>
           </Box>

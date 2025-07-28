@@ -4,17 +4,8 @@ import React, { useState, useEffect } from "react";
 import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText } from '@mui/material';
 import { Close, Refresh, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
-
-// Import the demo data
-import demoData from '../../../board-save.json';
-import adviceData from '../../../board-saveAdvice.json';
-import pddData from '../../../board-savePDD.json';
-
-const dataSources = {
-  'board-save': demoData,
-  'board-saveAdvice': adviceData,
-  'board-savePDD': pddData
-};
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { loadDataSource, dataSources } from '@/lib/dataService';
 
 const ITERATIONS = [
   { key: "4.1", label: "2025 Iteration 4.1", range: "July 9 - July 22" },
@@ -369,22 +360,22 @@ const teams = Array.from(new Set(timeData.map(item => item.team)));
                 </Box>
                 <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
                   <Typography sx={{ color: statusColors['Done'], fontWeight: 500 }}>
-                    {item.done}
+                    {isNaN(item.done) ? 0 : item.done}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
                   <Typography sx={{ color: statusColors['Creating'], fontWeight: 500 }}>
-                    {item.creating}
+                    {isNaN(item.creating) ? 0 : item.creating}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
                   <Typography sx={{ color: statusColors['Validating'], fontWeight: 500 }}>
-                    {item.validating}
+                    {isNaN(item.validating) ? 0 : item.validating}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
                   <Typography sx={{ color: statusColors['Ready'], fontWeight: 500 }}>
-                    {item.ready}
+                    {isNaN(item.ready) ? 0 : item.ready}
                   </Typography>
                 </Box>
               </Box>
@@ -397,22 +388,38 @@ const teams = Array.from(new Set(timeData.map(item => item.team)));
               </Box>
               <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
                 <Typography sx={{ color: statusColors['Done'] }}>
-                  {Math.round((timeData.reduce((sum, item) => sum + item.done, 0) / timeData.length) * 10) / 10}
+                  {timeData.length > 0 ? (() => {
+                    const total = timeData.reduce((sum, item) => sum + (isNaN(item.done) ? 0 : item.done), 0);
+                    const avg = total / timeData.length;
+                    return isNaN(avg) ? 0 : Math.round(avg * 10) / 10;
+                  })() : 0}
                 </Typography>
               </Box>
               <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
                 <Typography sx={{ color: statusColors['Creating'] }}>
-                  {Math.round((timeData.reduce((sum, item) => sum + item.creating, 0) / timeData.length) * 10) / 10}
+                  {timeData.length > 0 ? (() => {
+                    const total = timeData.reduce((sum, item) => sum + (isNaN(item.creating) ? 0 : item.creating), 0);
+                    const avg = total / timeData.length;
+                    return isNaN(avg) ? 0 : Math.round(avg * 10) / 10;
+                  })() : 0}
                 </Typography>
               </Box>
               <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
                 <Typography sx={{ color: statusColors['Validating'] }}>
-                  {Math.round((timeData.reduce((sum, item) => sum + item.validating, 0) / timeData.length) * 10) / 10}
+                  {timeData.length > 0 ? (() => {
+                    const total = timeData.reduce((sum, item) => sum + (isNaN(item.validating) ? 0 : item.validating), 0);
+                    const avg = total / timeData.length;
+                    return isNaN(avg) ? 0 : Math.round(avg * 10) / 10;
+                  })() : 0}
                 </Typography>
               </Box>
               <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
                 <Typography sx={{ color: statusColors['Ready'] }}>
-                  {Math.round((timeData.reduce((sum, item) => sum + item.ready, 0) / timeData.length) * 10) / 10}
+                  {timeData.length > 0 ? (() => {
+                    const total = timeData.reduce((sum, item) => sum + (isNaN(item.ready) ? 0 : item.ready), 0);
+                    const avg = total / timeData.length;
+                    return isNaN(avg) ? 0 : Math.round(avg * 10) / 10;
+                  })() : 0}
                 </Typography>
               </Box>
             </Box>
@@ -644,7 +651,7 @@ async function fetchJiraIssueWithStories(key: string) {
 }
 
 export default function DemoKanban() {
-  const [selectedDataSource, setSelectedDataSource] = useState('board-save');
+  const [selectedDataSource, setSelectedDataSource] = useState('');
   const [columns, setColumns] = useState(() =>
     ITERATIONS.reduce((acc, iter) => {
       acc[iter.key] = [];
@@ -691,22 +698,31 @@ export default function DemoKanban() {
   }
 
   // Function to load data from selected data source
-  const loadDataSourceData = (dataSourceKey: string) => {
-    const dataSource = dataSources[dataSourceKey as keyof typeof dataSources];
-    if (dataSource && dataSource.columns) {
-      // Ensure all iteration keys are present in the loaded state
-      const initializedColumns = ITERATIONS.reduce((acc, iter) => {
-        acc[iter.key] = (dataSource.columns as Record<string, any[]>)?.[iter.key] || [];
-        return acc;
-      }, {} as Record<string, any[]>);
-      setColumns(initializedColumns);
-      setBoardTitle(`Demo Iteration Board - ${dataSourceKey}`);
+  const loadDataSourceData = async (dataSourceKey: string) => {
+    try {
+      setLoading(true);
+      const dataSource = await loadDataSource(dataSourceKey);
+      if (dataSource && dataSource.columns) {
+        // Ensure all iteration keys are present in the loaded state
+        const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+          acc[iter.key] = (dataSource.columns as Record<string, any[]>)?.[iter.key] || [];
+          return acc;
+        }, {} as Record<string, any[]>);
+        setColumns(initializedColumns);
+        setBoardTitle(`Demo Iteration Board - ${dataSourceKey}`);
+      }
+    } catch (error) {
+      console.error('Failed to load data source:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   // Effect to load data when data source changes
   useEffect(() => {
-    loadDataSourceData(selectedDataSource);
+    if (selectedDataSource) {
+      loadDataSourceData(selectedDataSource);
+    }
   }, [selectedDataSource]);
 
   useEffect(() => {
@@ -803,6 +819,64 @@ export default function DemoKanban() {
     };
     setColumns(newColumns);
     await saveBoardState(newColumns, boardTitle);
+  };
+
+  const handleRefreshAllCards = async () => {
+    setError(null);
+    let successCount = 0;
+    let errorCount = 0;
+    const errors: string[] = [];
+    
+    // Collect all cards that need refreshing
+    const cardsToRefresh: Array<{colKey: string, cardIndex: number, cardKey: string}> = [];
+    ITERATIONS.forEach(iter => {
+      const cards = columns[iter.key] || [];
+      cards.forEach((card, cardIndex) => {
+        if (card.key) {
+          cardsToRefresh.push({
+            colKey: iter.key,
+            cardIndex,
+            cardKey: card.key
+          });
+        }
+      });
+    });
+    
+    if (cardsToRefresh.length === 0) {
+      setError('No cards to refresh.');
+      return;
+    }
+    
+    // Refresh each card one by one
+    for (const { colKey, cardIndex, cardKey } of cardsToRefresh) {
+      try {
+        const updatedCard = await fetchJiraIssueWithStories(cardKey);
+        if (updatedCard) {
+          const newColumns = {
+            ...columns,
+            [colKey]: columns[colKey].map((c, index) => index === cardIndex ? updatedCard : c)
+          };
+          setColumns(newColumns);
+          successCount++;
+        } else {
+          errorCount++;
+          errors.push(`Failed to reload data for '${cardKey}'`);
+        }
+      } catch (error) {
+        errorCount++;
+        errors.push(`Error reloading '${cardKey}': ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+    
+    // Save the final state
+    await saveBoardState(columns, boardTitle);
+    
+    // Show results
+    if (errorCount > 0) {
+      setError(`Refreshed ${successCount} cards successfully. ${errorCount} cards failed: ${errors.slice(0, 3).join(', ')}${errors.length > 3 ? '...' : ''}`);
+    } else {
+      setError(null);
+    }
   };
 
   const handleToggleMinimize = (colKey: string, cardIndex: number) => {
@@ -934,43 +1008,126 @@ export default function DemoKanban() {
           </Button>
         </Box>
       </Box>
-      {/* Data Source Selector */}
-      <Box sx={{ mb: 2, maxWidth: 400 }}>
-        <FormControl fullWidth size="small">
-          <InputLabel id="data-source-label">Data Source</InputLabel>
-          <Select
-            labelId="data-source-label"
-            value={selectedDataSource}
-            label="Data Source"
-            onChange={(e) => setSelectedDataSource(e.target.value)}
+      {/* Data Source and Team Filter Controls */}
+      <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', mb: 3, alignItems: 'flex-end' }}>
+        {/* Data Source Selector */}
+        <Box sx={{ minWidth: 250 }}>
+          <FormControl fullWidth size="small">
+            <InputLabel 
+              id="data-source-label" 
+              sx={{ 
+                color: '#495057', 
+                fontWeight: 500,
+                '&.Mui-focused': {
+                  color: '#0d6efd',
+                },
+                '&.MuiInputLabel-shrink': {
+                  color: '#0d6efd',
+                }
+              }}
+            >
+              Data Source
+            </InputLabel>
+            <Select
+              labelId="data-source-label"
+              value={selectedDataSource}
+              label="Data Source"
+              onChange={(e) => setSelectedDataSource(e.target.value)}
+              sx={{
+                backgroundColor: '#ffffff',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#dee2e6',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#adb5bd',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#0d6efd',
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#0d6efd',
+                },
+              }}
+            >
+              <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
+              <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* Team Filter */}
+        <Box sx={{ minWidth: 300 }}>
+          <FormControl fullWidth size="small">
+            <InputLabel 
+              id="team-filter-label" 
+              sx={{ 
+                color: '#495057', 
+                fontWeight: 500,
+                '&.Mui-focused': {
+                  color: '#0d6efd',
+                },
+                '&.MuiInputLabel-shrink': {
+                  color: '#0d6efd',
+                }
+              }}
+            >
+              Filter by Team
+            </InputLabel>
+            <Select
+              labelId="team-filter-label"
+              multiple
+              value={teamFilter}
+              onChange={e => setTeamFilter(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+              input={<OutlinedInput label="Filter by Team" />}
+              renderValue={(selected) => selected.length === 0 ? 'All Teams' : selected.join(', ')}
+              sx={{
+                backgroundColor: '#ffffff',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#dee2e6',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#adb5bd',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#0d6efd',
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#0d6efd',
+                },
+              }}
+            >
+              {allTeams.map(team => (
+                <MenuItem key={team} value={team}>
+                  <Checkbox checked={teamFilter.indexOf(team) > -1} style={{ color: getColorForTeam(team) }} />
+                  <ListItemText primary={team} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* Refresh Button */}
+        <Box>
+          <Button
+            variant="outlined"
+            size="small"
+            color="primary"
+            onClick={handleRefreshAllCards}
+            startIcon={<RefreshIcon />}
+            sx={{ 
+              fontWeight: 600, 
+              borderRadius: 1,
+              borderColor: '#0d6efd',
+              color: '#0d6efd',
+              '&:hover': {
+                borderColor: '#0b5ed7',
+                backgroundColor: 'rgba(13, 110, 253, 0.04)'
+              }
+            }}
           >
-            <MenuItem value="board-save">Board Save (JPP)</MenuItem>
-            <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
-            <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-      
-      {/* Team Filter UI */}
-      <Box sx={{ mb: 2, maxWidth: 400 }}>
-        <FormControl fullWidth size="small">
-          <InputLabel id="team-filter-label">Filter by Team</InputLabel>
-          <Select
-            labelId="team-filter-label"
-            multiple
-            value={teamFilter}
-            onChange={e => setTeamFilter(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
-            input={<OutlinedInput label="Filter by Team" />}
-            renderValue={(selected) => selected.length === 0 ? 'All Teams' : selected.join(', ')}
-          >
-            {allTeams.map(team => (
-              <MenuItem key={team} value={team}>
-                <Checkbox checked={teamFilter.indexOf(team) > -1} style={{ color: getColorForTeam(team) }} />
-                <ListItemText primary={team} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            Refresh All Cards
+          </Button>
+        </Box>
       </Box>
       {/* PI Status Summary Box */}
       <Box sx={{ mb: 4, maxWidth: 600, bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3 }}>

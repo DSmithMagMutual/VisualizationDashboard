@@ -1,0 +1,4144 @@
+{
+  "columns": {
+    "4.1": [
+      {
+        "key": "JPP-5159",
+        "url": "https://magmutual.atlassian.net/browse/JPP-5159",
+        "summary": "OneModel - Hospitals (Phase 2) - Create Tables, Scope out simulation logic",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5223",
+            "summary": "Create Hospital Hazard_Frequency Table from ORAWSACT DATA_SHARE.HPL_ASRA_FREQ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-5222",
+            "summary": "Build Data Logic in Excel for Hospital Flow",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-5221",
+            "summary": "Create Hospital Hazard_Layer Table from ORAWSACT DATA_SHARE.HPL_ASRA_HAZARD_FACTORS",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-5220",
+            "summary": "Create Hospital Hazard_CW Table from ORAWSACT DATA_SHARE.HPL_MODEL_SUMMARY",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          }
+        ],
+        "team": "Special Forces"
+      },
+      {
+        "key": "JPP-3458",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3458",
+        "summary": "Tech| Point Sunset",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-4831",
+            "summary": "Decom gcp-billing-inquiry-point ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4792",
+            "summary": "Refactor gcp-point-gl-oc-to-workday to Remove Point SQL Integration",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4791",
+            "summary": "Refactor gcp-point-ap-oc-payments-api to Eliminate Point SQL References",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4790",
+            "summary": "Refactor gcp-claims-to-workday to Remove SQL Database Dependency",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4642",
+            "summary": "Decommission Workday to Point AP Sync Process",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4641",
+            "summary": "Decommission Point to Workday Refund and Commission Integration",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4638",
+            "summary": "Decommission Point to Workday GL",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4635",
+            "summary": "Decommission the Point to Invoice Cloud Load",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          }
+        ],
+        "team": "Pioneers - ART Pilot"
+      },
+      {
+        "key": "EN-531",
+        "url": "https://magmutual.atlassian.net/browse/EN-531",
+        "summary": "RBE Renewal Enhancements",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-715",
+            "summary": "Modify Pending Policy Premium Logic in RBE Renewal Report",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-693",
+            "summary": "Validate Renewal Rate Table in RBE Renewal Report for WIP Status Policies in Pending Status",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-660",
+            "summary": "Check into adding Surcharges and fees to RBE Renewal app - BI-7800",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "EN-529",
+        "url": "https://magmutual.atlassian.net/browse/EN-529",
+        "summary": "Company Wide Dashboard Enhancements",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-804",
+            "summary": "\"Withdrawn\" Closed Lost opportunities in the CRMA Pipeline",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-731",
+            "summary": "Company Wide Dashboard - Pipeline - Bug RE-Introduced",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-497",
+            "summary": "Identify Reason for Loss in Company Wide Dashboard",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-496",
+            "summary": "Company Wide Dashboard and AE Dashboard showing Withdrawn Opportunities SD-41618",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-470",
+            "summary": "Regional Quotas need to be update on Company Wide Dashboard SD-41616",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-262",
+            "summary": "Update Company Wide for Prospect Stewardship SD-41613",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "JPP-4780",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4780",
+        "summary": "Entry Points: Remove Physician",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5182",
+            "summary": "EA Internal User Landing Page",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5135",
+            "summary": "EA- Admin Internal User Starting Point Update \"Add PCR\" Button to \"Add Physician\"",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5134",
+            "summary": "EA M3 Portal Landing Page",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5133",
+            "summary": "EA Agent Portal Landing Page Policy Selection",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4802",
+            "summary": "EA- Admin Internal User Starting Point Remove Physician",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4800",
+            "summary": "EA- M3 Portal Starting Point Add Remove Physician to Submit Request Dropdown",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4799",
+            "summary": "EA- Agent Portal Starting Point Remove Physician",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-4459",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4459",
+        "summary": "EA: Document Upload Toast Message",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-4774",
+            "summary": "EA-Toast Message for Document Upload Success",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-4781",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4781",
+        "summary": "Policy Selection & Filtering: Remove Physician",
+        "status": "Backlog",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-4804",
+            "summary": "EA- UI Display Message for Non-Listed Policies",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4803",
+            "summary": "EA- Implement Policy Filtering Logic for Remove Physician Endorsements",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-3030",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3030",
+        "summary": "EA | Enhance New Doctor Discount",
+        "status": "Validating",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "JPP-4134",
+            "summary": "Update Add Risk API based on deprecation of New Doctor Checkbox",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4104",
+            "summary": "UI Changes for ND Discount- updated Figma sketches",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4103",
+            "summary": "EA -Spike Research Add Risk API to check if it expects the component value for the ND discount",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4102",
+            "summary": "EA Update UI-Help Text for Graduation Field",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4101",
+            "summary": "UI Update Remove New Doctor check box",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-3795",
+            "summary": "Research Components Necessary to Enhance New Doctor Discount",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-3125",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3125",
+        "summary": "MMM Agent : Communication Center - Clearly Identify Read/Unread",
+        "status": "Validating",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "JPP-5445",
+            "summary": "UAT : Test Communication Center Read/Unread Functionality ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Product Management"
+          },
+          {
+            "key": "JPP-5305",
+            "summary": "Change Marked as Read field to boolean",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4876",
+            "summary": "Agency Communications: Article expiration",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4778",
+            "summary": "Agent Communication Center: Marked as read field US-0004461",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4776",
+            "summary": "MMM Agent Communication Center: Enable user to mark article as Read/Unread",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4018",
+            "summary": "JPP-4018 MMM Agent: Create Junction Object to capture Comm Center engagement",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4017",
+            "summary": "MMM Agent Communication Center: Update UI with Read/Unread",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-3124",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3124",
+        "summary": "MMM Agent : Agent Inbox - Clearly Identify Read/Unread",
+        "status": "Validating",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "JPP-5444",
+            "summary": "UAT : Test Agent Inbox Read/Unread Functionality ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Product Management"
+          },
+          {
+            "key": "JPP-4622",
+            "summary": "Agent Inbox: Purge Activity History after 90 days (dev):Copado US-0004438",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4576",
+            "summary": "JPP-4576 - Agent Inbox: Activity History",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4487",
+            "summary": "MMM Agent Inbox: Enable user to mark a document as read or unread",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4087",
+            "summary": "MMM Agent Inbox: Extend to 90 days of transactions:Copado US-0004438",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4037",
+            "summary": "MMM Agent: Create new Object to capture a user's Agent Inbox activity",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4036",
+            "summary": "MMM Agent Inbox: Update UI with Read/Unread:Copado US-0004438",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-2643",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2643",
+        "summary": "Opty Update - Current and Winning Carrier",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5022",
+            "summary": "Update Current and Winning Carrier fields",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-4916",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4916",
+        "summary": "Stamp the Account Type value on Tasks at Completion",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5018",
+            "summary": "Update flow to stamp the Account Type on activities",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-3107",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3107",
+        "summary": "Watch Item - Require Association of Watch Items Impacting Loss when key Opportunities moves to Closed Lost",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5347",
+            "summary": "(Change) Update Watch Item screen flow - UI/verbiage",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4898",
+            "summary": "(cancelled) Research options to address refresh and cancel during closed lost screen flow",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4854",
+            "summary": "(Change) Add option to create a new Watch Item if existing records did not contribute to loss ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4659",
+            "summary": "Select Impacted Loss Screen Flow US-0004475",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4421",
+            "summary": "Research Requiring Watch Items for Opportunities in Closed Lost",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-2642",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2642",
+        "summary": "Opty Update - Close Lost process for accurate data capture",
+        "status": "Validating",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "JPP-5313",
+            "summary": "Opportunity: Create task for Opportunity Owner to complete Closed Lost data",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-5282",
+            "summary": "SPIKE: Security Assessment of Salesforce-Custom-Path-Assistant-LWC Package",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4930",
+            "summary": "Error moving to Closed Lost",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4894",
+            "summary": "(Change) Add option to create new Competitor Account in closed lost screen flow",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4714",
+            "summary": "(Cancelled) Watch Item Go Live - Migrate Winning Carrier data to Winning Carrier - Other",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4687",
+            "summary": "JPP-4687 - Opportunity: Update Winning Carrier fields",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4686",
+            "summary": "JPP-4686 Opportunity: Screen flow to capture Closed Lost data",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4422",
+            "summary": "Research Requiring Inputs for Closed Lost Opportunities",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-4728",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4728",
+        "summary": "Oasis - Tail Rating Adjustment for Specialty Changes - Config and QA",
+        "status": "Validating",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "JPP-4858",
+            "summary": "Oasis Tail Rating - Specialty Class Increase and Cancel Beyond 24 months",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4857",
+            "summary": "Oasis Tail Rating - Specialty Class Increase and Cancel within 24 months",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4856",
+            "summary": "Oasis Tail Rating - Specialty Class Reduction and Cancel Beyond 24 months",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4855",
+            "summary": "Oasis Tail Rating - Specialty Class Reduction and Cancel within 24 months",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          }
+        ],
+        "team": "Pioneers - ART Pilot"
+      },
+      {
+        "key": "JPP-5186",
+        "url": "https://magmutual.atlassian.net/browse/JPP-5186",
+        "summary": "Spike - OASIS - NEW DOCTOR AND PART TIME APPLY TO TAIL Per State Filing Rules",
+        "status": "Ready for Release",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "JPP-5187",
+            "summary": "Spike - OASIS - NEW DOCTOR AND PART TIME APPLY TO TAIL Per State Filing Rules",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          }
+        ],
+        "team": "Pioneers - ART Pilot"
+      }
+    ],
+    "4.2": [
+      {
+        "key": "JPP-4728",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4728",
+        "summary": "Oasis - Tail Rating Adjustment for Specialty Changes - Config and QA",
+        "status": "Validating",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "JPP-4858",
+            "summary": "Oasis Tail Rating - Specialty Class Increase and Cancel Beyond 24 months",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4857",
+            "summary": "Oasis Tail Rating - Specialty Class Increase and Cancel within 24 months",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4856",
+            "summary": "Oasis Tail Rating - Specialty Class Reduction and Cancel Beyond 24 months",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4855",
+            "summary": "Oasis Tail Rating - Specialty Class Reduction and Cancel within 24 months",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          }
+        ],
+        "team": "Pioneers - ART Pilot"
+      },
+      {
+        "key": "JPP-4389",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4389",
+        "summary": "Opty Update - View OneModel runs in Salesforce",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-4820",
+            "summary": "Add policy row when simulation is created",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4819",
+            "summary": "Update onemodel-ui to update completedDate column from Comparison Page",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4818",
+            "summary": "Add endpoint to sim-accounts to update completedDate column ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4817",
+            "summary": "Add completedDate column to the Simulation table in postgres",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4816",
+            "summary": "Create a new postgres table to store policy level data for a simulation",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4718",
+            "summary": "Associated Policy, Opportunity and Last Completed Date on OneModel execution stats",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-4351",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4351",
+        "summary": "Salesforce - UW Workflow Cloud Storage Document Visibility",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5078",
+            "summary": "Execute SQL During Deployment ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5064",
+            "summary": "Update and Test Unified Metadata Branch with Field Enhancements",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5063",
+            "summary": "Update Search Functionality to Support New Identifiers",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5062",
+            "summary": "Update Metadata Capture Logic for Document Uploads",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5061",
+            "summary": "Add appian_id to Metadata and Audit Tables",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5060",
+            "summary": "Add salesforce_id & appian_id to Metadata and Audit Tables",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4846",
+            "summary": "Research Work Required for Migrating Underwriting Documents to Cloud Storage ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "ADVICE-679",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-679",
+        "summary": "Strat Plan 24 - Implement CCP creation in Qliksense",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-115",
+            "summary": "Determine the Note Category Groups for the Critical Path Report",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-114",
+            "summary": "Update Claim Critical Path Report in Claims Form App",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-112",
+            "summary": "Create a View or Table for the Claim Critical Path Report",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-110",
+            "summary": "Add Note_Category to Oasis Staging",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "EN-809",
+        "url": "https://magmutual.atlassian.net/browse/EN-809",
+        "summary": "Add sheet to claims scorecard",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "Data Divers"
+      },
+      {
+        "key": "JPP-4789",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4789",
+        "summary": " Custom Error Messaging for EA Failures",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5303",
+            "summary": "List of Error Messages Sent from Appian APIs",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5290",
+            "summary": "SF Dev - Updated Error Message When Duplicate Physician (Risk) is Added to a Policy",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5029",
+            "summary": "Appian API to identify Risk(s) available at Policy in Oasis",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-3121",
+            "summary": "EA- Update Appian Error Message When Duplicate Physician (Risk) is Added to a Policy",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-4179",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4179",
+        "summary": "Data Validation - Verify Phone Number",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-4178",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4178",
+        "summary": "Data Validation - Verify Email Addresses",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5409",
+            "summary": "Create New Objects for Email Validation",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-5189",
+            "summary": "Allow Salesforce user to Blacklist an email address",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-5188",
+            "summary": "Verify and Manage Email Addresses on Contact Record",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-5017",
+            "summary": "Research Brite Verify API capabilities",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4874",
+            "summary": "Research MC process for email validation and hard bounces",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4873",
+            "summary": "Research Brite Verify Capabilities (Robert)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4872",
+            "summary": "Research Brite Verify Capabilities (Dan)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4805",
+            "summary": "Set up demo of Brite Verify ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-3735",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3735",
+        "summary": "Automatically add Contacts to Campaigns from a Report",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5283",
+            "summary": "SPIKE: Security Assessment of sfdx-mass-action-scheduler Package",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-5140",
+            "summary": "Auto Add Campaign Members",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4679",
+            "summary": "Research automation to add contacts to campaign from reports",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-3011",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3011",
+        "summary": "Oasis - Coverage - Adding Sexual Misconduct Coverage for PSL so the limit can be tracked and erode the coverage. ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5178",
+            "summary": "Sexual Misconduct Tail should not Apply to Emp Shared",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4868",
+            "summary": "Batch RN Oasis - Add Sexual Misconduct Coverage",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4867",
+            "summary": "Manual RN Oasis PSIC ESP - Add Sexual Misconduct Coverage",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4866",
+            "summary": "Manual RN Oasis PSIC PSL - Add Sexual Misconduct Coverage",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4850",
+            "summary": "Manual RN Oasis MMIC PSL - Add Sexual Misconduct Coverage",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4408",
+            "summary": "not needed -Add Sexual Misconduct Coverage Codes to the GL",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4401",
+            "summary": "Add Sexual Misconduct Coverage Codes to the API mapping for Workday Integration",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3816",
+            "summary": "UW Workflow NB and RN- Add Sexual Misconduct Coverage ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-3815",
+            "summary": "Quoting - Pass Sexual Misconduct Coverage to Oasis",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-3814",
+            "summary": "Oasis MMIC PSL - Add Sexual Misconduct Coverage",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-3813",
+            "summary": "Oasis PSIC ESP - Add Sexual Misconduct Coverage",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-3812",
+            "summary": "Oasis PSIC PSL - Add Sexual Misconduct Coverage",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "EN-701",
+            "summary": "Repair - Update DRA table to add Sexual Misconduct Coverage Codes",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-614",
+            "summary": "Update DRA table to add Sexual Misconduct Coverage Codes",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Pioneers - ART Pilot"
+      },
+      {
+        "key": "JPP-3002",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3002",
+        "summary": "Oasis - Expire Coverage Inside the Limits in Oasis\n",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-3659",
+            "summary": "Oasis PSIC PSL - Expire Inside Coverage",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-3658",
+            "summary": "Oasis PSIC ESP - Expire Inside Coverage",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-3657",
+            "summary": "Oasis MMIC - Expire Inside Coverage ",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Pioneers - ART Pilot"
+          }
+        ],
+        "team": "Pioneers - ART Pilot"
+      },
+      {
+        "key": "JPP-4443",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4443",
+        "summary": "Drop (RFQ) For Paid Claims In Past 5 Years ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5098",
+            "summary": "Quoting - Update logic: Claims Paid in last 5 yrs drops to RFQ",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-5037",
+        "url": "https://magmutual.atlassian.net/browse/JPP-5037",
+        "summary": "PCF states drop to RFQ",
+        "status": "Validating",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "JPP-5440",
+            "summary": "Test and Validate RFQ Drop Functionality",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "ADVICE-354",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-354",
+        "summary": "Automating litigation materials being sent to PH",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-873",
+            "summary": "Agent submission email",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-716",
+            "summary": "Claims Operations case journey - Email to case",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-714",
+            "summary": "Relate MC emails to case ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-713",
+            "summary": "Claims Operations case journey - AGENT",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-658",
+            "summary": "Claims Operations case journey - MMM",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-657",
+            "summary": "Create Claims Operations case templates in Marketing Cloud",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-656",
+            "summary": "Research: Current automated responses to Claims Operations cases",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          },
+          {
+            "key": "ADVICE-1244",
+            "summary": "Deactivate Salesforce flow ",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Other"
+          }
+        ],
+        "team": "Fox Force"
+      }
+    ],
+    "4.3": [
+      {
+        "key": "JPP-3981",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3981",
+        "summary": "Oasis - Independent COI option in the System",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-4043",
+            "summary": "Oasis - Set up trigger for Independent COI",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4042",
+            "summary": "Oasis - Set up trigger for Group COI",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4041",
+            "summary": "Oasis - Configure two new endorsement reasons",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          }
+        ],
+        "team": "Magic Makers"
+      },
+      {
+        "key": "JPP-1893",
+        "url": "https://magmutual.atlassian.net/browse/JPP-1893",
+        "summary": "IC : Salesforce/IC : Update for M3A2 Object",
+        "status": "Ready for Release",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "JPP-5311",
+            "summary": "Prepare for IC features deployment (M3A2/PDF)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4937",
+            "summary": "Incorrect Accounts showing in Invoice Cloud - Support LWR",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4592",
+            "summary": "IC | invoice show twice for some policies",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4584",
+            "summary": "Update auth0-actions-api to Support Invoice Cloud Access Changes (Actions 6 & 11)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4398",
+            "summary": "E2E Cypress Test Coverage for M3A2 Access Flow",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4383",
+            "summary": "Add Regression Cypress Tests for Auth0 Actions and Access Logic Utilizing M3A2",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4311",
+            "summary": "Create Test Plan to Validate Update to Our Integration",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4219",
+            "summary": "Update Auth0 Action #11 to ensure that only users with active accessToAccountBillingCount may access IC",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3980",
+            "summary": "Mag Zephyr Testing - Validation for the Update for M3A2 Object",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-3963",
+            "summary": "Update Automated Test Suite in Cypress to Incorporate Invoice Cloud Access Testing",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3961",
+            "summary": "QA| Validate Automated Testing of User Flow for Invoice Cloud Access Feature",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3868",
+            "summary": "SF Admin | Create Roll-Up Summary Field for Counting Billing Access Records US-0004357",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-3864",
+            "summary": "Update auth0-actions-api to include changes for ‘axia-health’ connector ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3824",
+            "summary": "SOQL Updates: Update queryForPurchaseProgramAccounts to filter by billing access",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3823",
+            "summary": "SOQL Updates: Update queryForRelatedAccounts to filter by billing access",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3821",
+            "summary": "SOQL Updates: Update queryForSelfAccount to filter by billing access",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3820",
+            "summary": "Update Auth0 Action #11 to conditionally call invoice-cloud-mapping-api",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3819",
+            "summary": "Update Auth0 Action #6 to store accessToAccountBillingCount in app_metadata",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3818",
+            "summary": " Mapping Required of new field to entity ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3397",
+            "summary": "Spike for  IC : Salesforce/IC : Update for M3A2 Object",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-1825",
+            "summary": "Ensure SF USER ID Sync in Auth0 App Metadata on Website User Login",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          }
+        ],
+        "team": "Avengers"
+      },
+      {
+        "key": "JPP-4458",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4458",
+        "summary": "Spike - Oasis - FM - Align Dividend, Tax, and Surcharge Timing with Related Premium Transactions",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5190",
+            "summary": "Sapiens Requirements and Research - Oasis - FM - Align Dividend, Tax, and Surcharge Timing with Related Premium Transactions",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-5174",
+            "summary": "Oasis QA Testing - Oasis - FM - Align Dividend, Tax, and Surcharge Timing with Related Premium Transactions",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-5172",
+            "summary": "Sapiens QA Testing - Oasis - FM - Align Dividend, Tax, and Surcharge Timing with Related Premium Transactions",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-5171",
+            "summary": "Sapiens Development Work - Oasis - FM - Align Dividend, Tax, and Surcharge Timing with Related Premium Transactions",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "System Operatives"
+          }
+        ],
+        "team": "System Operatives"
+      },
+      {
+        "key": "JPP-5192",
+        "url": "https://magmutual.atlassian.net/browse/JPP-5192",
+        "summary": "Automated Dividend Credit Application",
+        "status": "Ready for Release",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "JPP-4213",
+            "summary": "Development/Implementation of the Automated Dividend Credit Application",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-4190",
+            "summary": "Mag Zephyr Testing - Automated Dividend Credit Application",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "System Operatives"
+          }
+        ],
+        "team": "System Operatives"
+      },
+      {
+        "key": "EN-518",
+        "url": "https://magmutual.atlassian.net/browse/EN-518",
+        "summary": "Monthly Account Performance Dashboard",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-309",
+            "summary": "Account Performance Report > Incident and Claim Activity Updates",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-298",
+            "summary": "Create Design Document for Monthly Account Performance Report",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-297",
+            "summary": "Monthly Account Performance Report > Update to 3 Components Based on New MyMagMutual Account Access Object in Salesforce",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-288",
+            "summary": "Modify Monthly Account Performance Report",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-134",
+            "summary": "Monthly Account Performance Report > Resource Utilization - Courses Complete Component > Update Based on New CME Content & CME Activity Objects",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "JPP-2948",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2948",
+        "summary": "CSA DB : Case Stage Pipeline ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-484",
+            "summary": "Update Customer Service Analytics Dashboard with Pipeline feature",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "EN-533",
+        "url": "https://magmutual.atlassian.net/browse/EN-533",
+        "summary": "Update Logic for Persistency Changes",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-621",
+            "summary": "Create Definitions Document for Executive Dashboard",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-345",
+            "summary": "Update logic for Persistency Calculation",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "JPP-4782",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4782",
+        "summary": "Physician Selection: Remove Physician",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5371",
+            "summary": "Figma sketch for Ineligible Cancel Reasons ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5279",
+            "summary": "EA- Consume List of Physicians",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5260",
+            "summary": "API to Retrieve Physicians, Midlevels and Identify Primary Risk",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5230",
+            "summary": "EA Admin- Create Field on PCR Object to store Cancel Reason",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4880",
+            "summary": "EA UI Physician Selection",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-1900",
+        "url": "https://magmutual.atlassian.net/browse/JPP-1900",
+        "summary": "Q | Enhance New Doctor Discount",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-3811",
+            "summary": "Appian to pass graduation date to Oasis as a new doctor cycle",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-3810",
+            "summary": "Update rating to use graduation date field as first cycle for new doctor discount calculation",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-3809",
+            "summary": "Display help text for Graduation Date ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-91",
+        "url": "https://magmutual.atlassian.net/browse/JPP-91",
+        "summary": "Q | Enhance Part Time Discount ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-2640",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2640",
+        "summary": "Opty Update - Need by Date",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5023",
+            "summary": "Create Need by Date field on Opportunity record",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-2708",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2708",
+        "summary": "Opty Update - New Business, OLQ and Renewal Layout",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-4793",
+            "summary": "Tech debt cleanup - decommission old opp pages / records ...",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4772",
+            "summary": "(Cancelled) Update Opportunity Layouts (New Business, OLQ, Renewal)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4485",
+            "summary": "Document as-is Opportunity page layout details by profile",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4484",
+            "summary": "Decommission Opportunity record types no longer used US-0004466",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4476",
+            "summary": "Migrate Opportunity layouts to dynamic components",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-1652",
+        "url": "https://magmutual.atlassian.net/browse/JPP-1652",
+        "summary": "UW Workflow - PSIC Task - Identify Co-Broker Agencies",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5141",
+            "summary": "UW Workflow - PSIC Task - Identify Co-Broker Agencies",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-1654",
+        "url": "https://magmutual.atlassian.net/browse/JPP-1654",
+        "summary": "UW Workflow - PSIC Task - Creating PSIC Tasks",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5142",
+            "summary": "UW Workflow - PSIC Task - Creating PSIC Tasks",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-1547",
+        "url": "https://magmutual.atlassian.net/browse/JPP-1547",
+        "summary": "UW Workflow - Endorsement Task Display on Endorsement Cases",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5143",
+            "summary": "Create Tasks tabs on Endorsement cases",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-4345",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4345",
+        "summary": "OASIS - CLEAN UP OCC COVERAGE NOT FILED in State Filings",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-4851",
+            "summary": "Oasis - Remove Occurrence Coverage not filed in State Filings",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          }
+        ],
+        "team": "Pioneers - ART Pilot"
+      },
+      {
+        "key": "JPP-4444",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4444",
+        "summary": "Copy Quote: Re-use Existing Salesforce Opportunity ",
+        "status": "Feasibility Review",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5039",
+            "summary": "Research document Appian Quote Status and how they relate to SF Opp Status",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5038",
+            "summary": "Copy Quote will reuse the existing SF Opp instead of creating a new one",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-2641",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2641",
+        "summary": "Opty Updates - Auto-populate Dr. Salutation",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5165",
+            "summary": "Prod Release: Salutation field - data update",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-5089",
+            "summary": "Automation to manage Salutation on Contact records",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-3445",
+            "summary": "Marketing Cloud template updates ",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "ADVICE-1169",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1169",
+        "summary": "Course Survey Automation and Simplification",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-865",
+            "summary": "Research moving survey to cloud page",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-864",
+            "summary": "Course Survey email - MC",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          }
+        ],
+        "team": "Fox Force"
+      }
+    ],
+    "4.4": [
+      {
+        "key": "JPP-4849",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4849",
+        "summary": "OneModel - Multi-State (Phase 4) - Integration Updates, API fixes, End-to-End Flow",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5298",
+            "summary": "Investigate caching strategy for all endpoints in loss-simulation",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-5259",
+            "summary": "Add Risk Strategy Dropdown on Future Coverage Modal",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-5158",
+            "summary": "Add state dropdown to comparison page",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-5081",
+            "summary": "Fix claims reformatting logic",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-5076",
+            "summary": "Add Coverage Modal to Future Coverage page",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-5073",
+            "summary": "Reset simulation when user changes selected state",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4836",
+            "summary": "Add Error handling on Current Coverage page",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4632",
+            "summary": "Simulations Table - Rename Properties on SimulationDetail",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4583",
+            "summary": "Add RiskStrategy record for multi-state policies",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4558",
+            "summary": "Add FuturePracticeStates to simulation",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4557",
+            "summary": "Create future state setup page",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4548",
+            "summary": "Request future premium for coverage modal",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4546",
+            "summary": "Override Risk strategy for all the states",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4544",
+            "summary": "Add editable total premium breakdown feature to coverage modal",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4543",
+            "summary": "Add risk strategy dropdown column to the coverage modal",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4537",
+            "summary": "Update Carbon UI for ComboBox Enhancements",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4536",
+            "summary": "Standardize practice.id Format",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4377",
+            "summary": "Add a maximum height to claim narrative window, if the narrative breaks that height, add a scroll bar",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4274",
+            "summary": "Add Readonly Total Premium field to Current Coverage MultiState Component",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4118",
+            "summary": "Add Initial State to Loss Scenario",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-4108",
+            "summary": "Switch peers cron job to Cloud Run Jobs",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-3969",
+            "summary": "Switch to Cloud Run deployment of loss-simulation",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-3967",
+            "summary": "Create Future State Selection Page",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-3762",
+            "summary": "Simulations Table - Remove Properties on SimulationDetail",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-3586",
+            "summary": "replace api.writeOutput in sim-accounts-api",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-3298",
+            "summary": "Refactor sim-common functions after being merged into sim-accounts",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-3279",
+            "summary": "SPIKE - Research how to adjust or add Postgres table(s) to accommodate multi-state simulations",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-3032",
+            "summary": "Make simulationDetail Required",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-2731",
+            "summary": "Revise response types in sim-accounts-api",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          },
+          {
+            "key": "JPP-876",
+            "summary": "OneModel - POC to Use C1E to compare peers",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          }
+        ],
+        "team": "Special Forces"
+      },
+      {
+        "key": "JPP-3461",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3461",
+        "summary": "Tech|  MS SQL Upgrade",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5048",
+            "summary": "Promote Remaining Services to Use New SQL Server Instance in Production",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5047",
+            "summary": "Repoint gcp-osat-scheduler-api to New SQL Server",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5046",
+            "summary": "Repoint gcp-oc-journal-service to New SQL Server",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-4660",
+            "summary": "MS SQL Server Upgrade: Purging Git History for deprecated services ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Avengers"
+          }
+        ],
+        "team": "Avengers"
+      },
+      {
+        "key": "JPP-4455",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4455",
+        "summary": "SPIKE - MGL & RPL - Allied Lines Integration into Oasis (Excluding Workers' Compensation)",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5469",
+            "summary": "POC 2 - MGL integrating into Oasis",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Magic Makers"
+          },
+          {
+            "key": "JPP-5236",
+            "summary": "POC - MGL integrating into Oasis",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Magic Makers"
+          },
+          {
+            "key": "JPP-5214",
+            "summary": "RLP -Identify Fields Required to Build LOB in Oasis",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Magic Makers"
+          },
+          {
+            "key": "JPP-5213",
+            "summary": "MGL - Identify Fields Required to Build LOB in Oasis",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Magic Makers"
+          },
+          {
+            "key": "JPP-5212",
+            "summary": "Velocity Demo for Allied Lines Integration",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Magic Makers"
+          },
+          {
+            "key": "JPP-5147",
+            "summary": "RLP Cyber/Reg - Research Integration into Oasis",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Magic Makers"
+          },
+          {
+            "key": "JPP-5144",
+            "summary": "MGL- Research Integration into Oasis",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Magic Makers"
+          }
+        ],
+        "team": "Magic Makers"
+      },
+      {
+        "key": "JPP-2663",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2663",
+        "summary": "Oasis - FM - Real-Time Endorsement Billing Updates",
+        "status": "Validating",
+        "statusCategory": "indeterminate",
+        "stories": [
+          {
+            "key": "JPP-4715",
+            "summary": "Sapiens Development Retrofit version 2021 - Real-Time Endorsement Billing Updates",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-4713",
+            "summary": "Sapiens QA - Real-Time Endorsement Billing Updates -  version 2021",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-3751",
+            "summary": "Development - Code Migration to Oasis 2021 - Real-Time Endorsement Billing Updates",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-2970",
+            "summary": "Oasis QA Testing - Real-Time Endorsement Billing Updates - Zephyr Test Cases",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-2696",
+            "summary": "Sapiens Development Work - Real-Time Endorsement Billing Updates",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-2506",
+            "summary": "Invoice Cloud Testing - Real-Time Endorsement Billing Updates",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "System Operatives"
+          }
+        ],
+        "team": "System Operatives"
+      },
+      {
+        "key": "EN-539",
+        "url": "https://magmutual.atlassian.net/browse/EN-539",
+        "summary": "S&P Dashboard Enhancements",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-780",
+            "summary": "MPL Industry Premium for 2024 is not correct in Market Share Dashboard ",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-619",
+            "summary": "S&P Public Financials - MDA Peer Compare and Market Share Q1 2025 Refresh",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-386",
+            "summary": "The Qlik app \"S&P Public Financials - Market Share\" needs to be optimized.",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "EN-164",
+        "url": "https://magmutual.atlassian.net/browse/EN-164",
+        "summary": "CRMA: Segmentation Dashboard >  CME Activity object",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "Data Divers"
+      },
+      {
+        "key": "JPP-4788",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4788",
+        "summary": "Endorsements During Renewal WIP Period ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5131",
+            "summary": "EA Determine Business Rules with Considerations to Failures When EA transactions are Executed on Policies where a Renewal WIP Exists",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4647",
+            "summary": "EA Research Impact on UW Model When Logic is Updated to allow EA transactions when Renewal WIP Exists",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4607",
+            "summary": "EA Research Existing Oasis Functionality and APIs",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-3172",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3172",
+        "summary": "MMM Agent : Delinquent Account Notification ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5137",
+            "summary": "MMM Agent: Display Banner on Customer Detail Page",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4078",
+            "summary": "Create \"Is Delinquent\" checkbox",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4077",
+            "summary": "MMM Agent Inbox: Filter for Delinquent Accounts",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4076",
+            "summary": "MMM Agent: Display Delinquent Account Banner on Landing Page ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-4021",
+            "summary": "Research integrations for MMM account and billing updates",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-3503",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3503",
+        "summary": "MMM PO : Delinquent Account Notification",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5139",
+            "summary": "MMM PO: Admin Landing Page, Support & Advice Hub Banners",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-3019",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3019",
+        "summary": "Oasis – Add controls for use of SIR Options on PSL MMIC / PSIC ESP",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-3667",
+            "summary": "not needed - Oasis PSIC PSL - Clean up of SIR Options",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-3666",
+            "summary": "not needed - Oasis PSIC ESP - Clean up of SIR Options",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-3665",
+            "summary": "Oasis MMIC PSL - Clean up of SIR Options",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          }
+        ],
+        "team": "Pioneers - ART Pilot"
+      },
+      {
+        "key": "JPP-3020",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3020",
+        "summary": "Oasis – Add controls for use of Higher Limit Layer Options per our reinsurance agreements\n",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-3650",
+            "summary": "not needed - Oasis PSIC PSL - Clean up of Higher Limit Layer Options",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-3649",
+            "summary": "Oasis PSIC ESP/PSL - Clean up of Higher Limit Layer Options",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-3648",
+            "summary": "Oasis MMIC - Clean up of Higher Limit Layer Options",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          }
+        ],
+        "team": "Pioneers - ART Pilot"
+      },
+      {
+        "key": "JPP-4146",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4146",
+        "summary": "Agent Quoting UAT && No-Go Issues",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5369",
+            "summary": "Create a field on the Opportunity object to indicate if an Agent wants to share the quote with the prospect",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5336",
+            "summary": "Online Quoting - Quotes and Coverages - \"Saved Quotes\" tab and \"Requested Coverages\" filter issues",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5335",
+            "summary": "OQ/AQ - Duplicated Associated Agent on the Quote Summary after clicking Link to Web Quote from SalesForce Opportunity page",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Other"
+          },
+          {
+            "key": "JPP-5262",
+            "summary": "Validate AQ Drop Rate",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5255",
+            "summary": "Align Appian Quote Status w/ UW Workflow Case ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5241",
+            "summary": "AQ | Marketing Cloud Email Redirection Journey Button Error",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5191",
+            "summary": "OQ: Coverage Approved status transitions to Coverage Pending due to Integration Failure",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5107",
+            "summary": "Quote link in the email for Expired portal is not working as expected",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Appian Team"
+          },
+          {
+            "key": "JPP-5091",
+            "summary": "AQ | Quotes being Assigned to Wrong Agent ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5087",
+            "summary": "Online Quoting - Decision Outcome Tracking - Decision Reason does not show for multi NPIs",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5086",
+            "summary": "Online Quoting - MPL CM - Separate - Integration fail Online Quoting & Oasis with multiple Risks/NPIs (bulk upload)",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5084",
+            "summary": "QLQ - Tiles's Cost per got accumulated each time user go back to the first page",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5012",
+            "summary": "Agent Quoting E2E: Functionality ",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Appian Team"
+          },
+          {
+            "key": "JPP-5010",
+            "summary": "OQ - RLP: The question selected in VSS page and the one in Coverage Summary page doesn't match",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5009",
+            "summary": "OQ/AQ - RLP question: Quote drops to \"Coverage Processing\" instead of \"UW Review\" when question is set to \"No\" in VSS page",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4956",
+            "summary": "Finalize coverage page is missing in the online quoting",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4897",
+            "summary": "RPL - When physician does not have HIPPA compliance, the coverage drops to Coverage Declined status instead of UW Review",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4890",
+            "summary": "View Quote link from Coverage Summary Page does not work after viewing coverage from Salesforce Opportunity page",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4889",
+            "summary": "Blank page display After clicking  External Quote Link from SalesForce Opportunity page",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4758",
+            "summary": "[Invalid]OLQ - Creating a quote with both MPL and RPL selected does not generate 2 leads on SF",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4757",
+            "summary": "OLQ - Enter valid Arizona state zip code in \"Where do you need coverage?\" section results in error message",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4736",
+            "summary": "PSIC policy doesn't get generated when quote is created for a physician with no board certification",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4729",
+            "summary": "OLQ - NPIs records are duplicated when bulk uploading using excel template",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4725",
+            "summary": "Policy is issued when the physician's license is inactive",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4606",
+            "summary": "Add cost per physician to build your own rates ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4605",
+            "summary": "\"Finalize Coverage\" copy update ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4604",
+            "summary": "30 day grace period on license expiration",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4603",
+            "summary": "Remove banner from coverage selection page and proposal PDF",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4428",
+            "summary": "OQ - Document Decision Matrix Logic",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4413",
+            "summary": "Verify board action update had expected result in OLQ/AQ/PQ (MED-568)",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4393",
+            "summary": "Quoting - Update UW workflow so that OLQ, AQ, and PQ each drop into their own intake path",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4392",
+            "summary": "Research if the Board Name object Underwriting Specialty field is used anywhere other than Appian Quoting",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4391",
+            "summary": "Automate Board Action updates ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4378",
+            "summary": "500 Error after entering NPI",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4327",
+            "summary": "OLQ - End to End QA Testing",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4285",
+            "summary": "Update OLQ Missing Documents Report ",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4267",
+            "summary": "AQ - End to End QA Testing",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4265",
+            "summary": "AQ - Agent Quotes should drop to UW workflow using the same logic as OLQ",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "EN-870",
+            "summary": "Prevent Milestone Notifications from Being Sent to Prospects Until Triggered by External Agents",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-4114",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4114",
+        "summary": "Push Quoting UAT && No-Go Issues",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5368",
+            "summary": "PQ: Generate quote for all eligible contacts on account",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5367",
+            "summary": "PQ: No e-mail sent ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5366",
+            "summary": "PQ PDF Issues",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5365",
+            "summary": "Cathy Williams Self-Service User Type",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5363",
+            "summary": "SSO Issues: Salesforce",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5340",
+            "summary": "EA WI Update Appian API",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5304",
+            "summary": "PQ campaigns not processing ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5256",
+            "summary": "Access for PQ UAT Testing",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4911",
+            "summary": "PQ - Add button to campaign for account list upload ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4862",
+            "summary": "OLQ Proposal Update - Replace Doctor2Doctor with Peer2Peer",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4676",
+            "summary": "PQ - Remove the standard \"Clone\" from PQ Campaign",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4538",
+            "summary": "PQ - Unexpected results and error with query",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4434",
+            "summary": "OQ - Review and update decision outcome text that appears on the Quoting Source report",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4374",
+            "summary": "PQ - Update specialty verification to follow the same process as OLQ and AQ",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4268",
+            "summary": "PQ - End to End QA Testing",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4266",
+            "summary": "PQ - Review system limitation to recommend a max campaign size for push quoting",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4254",
+            "summary": "PQ - Research and document ways to Clone a push quote campaign with existing members",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4221",
+            "summary": "PQ - Update push quote to use max loss free discount when sent to user",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4193",
+            "summary": "Appian to Salesforce Login Rate Limit Exceeded",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4138",
+            "summary": "PQ - Document current Push Quote Filter criteria",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4137",
+            "summary": "Quoting - Create mapping document for the fields being used in Appian",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4031",
+            "summary": "PQ - Update Character Limit (to max) for Push Quote Error field (Campaign Member) - Include NPI Number in Error (Appian); US-0004339",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4030",
+            "summary": "PQ - Add visibility condition to \"Ready for Quoting\" button; US-0004340",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4016",
+            "summary": "Q - Update cost per physician with limits",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4015",
+            "summary": "PQ - Update push quote filter criteria - Copado US-0004114",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-3975",
+            "summary": "PQ - Clone a push quote campaign with existing members - Copado US-0004114",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-2952",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2952",
+        "summary": "CSAT : Salesforce > Operations ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5183",
+            "summary": "CSAT : Salesforce > Operations",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-1903",
+        "url": "https://magmutual.atlassian.net/browse/JPP-1903",
+        "summary": "Q | PQ Override Effective Date",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5045",
+            "summary": "PQ - Update to use the effective date from PQ campaign",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5044",
+            "summary": "Add Effective Date field to PQ App and clone process",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-4343",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4343",
+        "summary": "Salesforce- Loss Free Date Sync with CIS Records",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5058",
+            "summary": "Create Nightly Job to Trigger Contact Sync from Oasis to SF",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5057",
+            "summary": "Collab w/ Matt & Tom to Create Query Oasis/CIS for Recently Updated Contacts",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5055",
+            "summary": "Retrieve Contacts from SF via API for Nightly Sync",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5054",
+            "summary": "Update UpdateContactService to Map dateLossFreeDate",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5053",
+            "summary": "Add dateLossFreeDate to CIS Entity Model",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-5052",
+            "summary": "Add dateLossFreeDate Field to Contact Platform Event",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5050",
+            "summary": "Perform Initial Bulk Load of dateLossFreeDate for Contacts in Salesforce",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5049",
+            "summary": "Add dateLossFreeDate Field to Contact Object in Salesforce",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4847",
+            "summary": "Research Updates to Salesforce & CIS Integrations for Loss Free Date",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          }
+        ],
+        "team": "Avengers"
+      },
+      {
+        "key": "JPP-4436",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4436",
+        "summary": "Standardized OLQ Notifications ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5176",
+            "summary": "Add Underwriter field to OLQ Opp Layout",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "EN-861",
+            "summary": "OLQ journey - Underwriting",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-860",
+            "summary": "OLQ journey - Assigned owner",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-829",
+            "summary": "OLQ Notifications: Assignment",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-828",
+            "summary": "OLQ Notifications: Underwriting Review",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-827",
+            "summary": "OLQ Notifications: RFQ",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-826",
+            "summary": "OLQ Notifications: Declined",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          }
+        ],
+        "team": "Fox Force"
+      }
+    ],
+    "4.5IP": [
+      {
+        "key": "JPP-5092",
+        "url": "https://magmutual.atlassian.net/browse/JPP-5092",
+        "summary": "Oasis - FM - Prevent Cancellation Credit Application to Other Policy Term",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-4144",
+            "summary": "Oasis QA Testing - Prevent Cancellation Credit Application to Prior Policy Term",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-4142",
+            "summary": "Invoice Cloud Testing - Prevent Cancellation Credit Application to Prior Policy Term",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-4141",
+            "summary": "Sapiens QA Testing -Prevent Cancellation Credit Application to Prior Policy Term",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "System Operatives"
+          },
+          {
+            "key": "JPP-4139",
+            "summary": "Sapiens Development Work - Prevent Cancellation Credit Application to Prior Policy Term",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "System Operatives"
+          }
+        ],
+        "team": "System Operatives"
+      },
+      {
+        "key": "JPP-3094",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3094",
+        "summary": "Salesforce / UW Workflow - New Business Submission Button in Salesforce Feeding into the New UW Workflow for Internal BD",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5154",
+            "summary": "New Business Submission Button on Salesforce Opportunity for BD Team ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5153",
+            "summary": "Required Fields/ Data Points to Create Appian Case",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5151",
+            "summary": "Appian",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-5040",
+        "url": "https://magmutual.atlassian.net/browse/JPP-5040",
+        "summary": "Technical/Data Requirements for MIS WC",
+        "status": "Feasibility Review",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "Other"
+      },
+      {
+        "key": "JPP-2327",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2327",
+        "summary": "Policy Roster : Build Connection : Salesforce & Oasis Relationship Data Sync",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-4723",
+            "summary": "Create Proposed Object Hierarchy ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Product Management"
+          },
+          {
+            "key": "JPP-4722",
+            "summary": "Architecture: SF & Oasis",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Architecture"
+          },
+          {
+            "key": "JPP-4721",
+            "summary": "Data Alignment: SF & Oasis",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Architecture"
+          },
+          {
+            "key": "JPP-4719",
+            "summary": "Roster Mapping to FTE",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Architecture"
+          },
+          {
+            "key": "JPP-4711",
+            "summary": "MVP Data Scope and Definition Collaboration ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Avengers"
+          },
+          {
+            "key": "JPP-3334",
+            "summary": "Oasis Insured Tracking > Documentation on what data is going to be available",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-2056",
+            "summary": "Investigate Using Existing Kafka Integration to Enable Policy Roster Sync Between Oasis and Salesforce",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Avengers"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-3012",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3012",
+        "summary": "UW Workflow - Adding an Endorsement Workflow MVP",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5148",
+            "summary": "Move Email to Processed after Ingesting",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-5083",
+            "summary": "Ops Queue EN Case Workflow - Hold/Close/Clone/Task/Upload Roster",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-5082",
+            "summary": "UW Queue EN Case Workflow - Close/Clone/Task/Upload Excel Roster",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-5041",
+            "summary": "Indexing Queue EN Case Workflow - Validate",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-5021",
+            "summary": "Service Case Creation in Salesforce",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-5020",
+            "summary": "Indexing Queue EN Case Workflow - Clone/Create Task",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-5019",
+            "summary": "Indexing Queue EN Case Workflow - Move on Hold, Upload Roster/Close",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4955",
+            "summary": "Store and Display Email Content within the Case",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4950",
+            "summary": "Display EN Attachments within the Case UI",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4734",
+            "summary": "Case Information UI in UW Review Case",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4727",
+            "summary": "Create Mockups for Tasks within the Case",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4643",
+            "summary": "Filters for the Endorsement UW Workflow tab",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4433",
+            "summary": "Upload and Display EN Attachments to Cloud Storage",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4375",
+            "summary": "UW Queue EN Case Workflow - Review/Send to Service/Hold",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4305",
+            "summary": "reuse - Allow Manual Data Entry for EN Type, Text box, Needed by date",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4297",
+            "summary": "Include a hyperlink to the Salesforce account in the Case",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4290",
+            "summary": "Ops Queue EN Case Workflow - Validate/Service Review/UW Review",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4289",
+            "summary": "Add Physician Request - Extract Data by Gen AI",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4264",
+            "summary": "Task Status within the Workflow",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4261",
+            "summary": "Populate Current Policy Term Data from Oasis in the Case",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4208",
+            "summary": "Indexing Queue EN Case Workflow - Service Review/UW Review",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4207",
+            "summary": "Finance System Automatic Cancellations - Create an EN Case in UW workflow ",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4203",
+            "summary": "Review API stack to determine if the policy data can be pulled from Oasis",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4186",
+            "summary": "to be determined later - PSIC Stamping",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4167",
+            "summary": "Create Task(s)",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4166",
+            "summary": "Clone a Case",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4124",
+            "summary": "Salesforce Chevron Status Mapping",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4123",
+            "summary": "Workflow Drop Items from EA",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4122",
+            "summary": "Salesforce Case Origin Update",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4121",
+            "summary": "Salesforce Case Owner Update",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4120",
+            "summary": "will revisit - Document Storage in SF Case",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4119",
+            "summary": "EN Case Creation in Salesforce",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4088",
+            "summary": "Add DDR document type to the Documents ddl",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4079",
+            "summary": "Populate case fields with Gen AI data extraction",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4067",
+            "summary": "LOA for Endorsement Case Workflow",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4066",
+            "summary": "Create fields for EN Case - UI",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4065",
+            "summary": "Title Endorsement Requests",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4062",
+            "summary": "Assign Endorsement Cases to the Operations team member by policy state",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4061",
+            "summary": "Define Operations Persona and set up test accounts",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4060",
+            "summary": "Set up a new tab for Endorsement cases",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4058",
+            "summary": "Create Case for Email requests received via Testendorsements@magmutual.com",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-4057",
+            "summary": "Ingest emails sent to Testendorsements@magmutual.com",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Pioneers - ART Pilot"
+          },
+          {
+            "key": "JPP-3845",
+            "summary": "will need for later Automation --Review API stack to determine which fields are necessary for various EN types",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Pioneers - ART Pilot"
+          }
+        ],
+        "team": "Pioneers - ART Pilot"
+      },
+      {
+        "key": "JPP-442",
+        "url": "https://magmutual.atlassian.net/browse/JPP-442",
+        "summary": "Update process map so that Renewal Business follows the same process as New Business",
+        "status": "Done",
+        "statusCategory": "done",
+        "stories": [
+          {
+            "key": "JPP-1141",
+            "summary": "QA Testing - Validation Rules",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-1103",
+            "summary": "SF Declarative Validation/Testing",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-982",
+            "summary": "QA Testing - Flows",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-941",
+            "summary": "SF Declarative Development",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-906",
+            "summary": "PM Approval",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-905",
+            "summary": "PO Validation",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-4446",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4446",
+        "summary": "PQ Factor Aggregation and Filtering ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-4445",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4445",
+        "summary": "PQ List Upload",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5136",
+            "summary": "Research the best way to allow users to upload a list to create a PQ campaign",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-4497",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4497",
+        "summary": "Policy Object Updates : Policy Term",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5035",
+            "summary": "Research changes needed to the Policy Trigger to include Policy Term for Velocity",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5027",
+            "summary": "Bulk upload of Oasis Policy Term information into SF Policy Term object",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5026",
+            "summary": "Need Oasis data file for Policy Term History bulk upload",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5025",
+            "summary": "Identify data that will be needed to do a historical Bulk Upload for Policy Term Objects",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-5024",
+            "summary": "Updates Policy trigger to update Policy Term Object",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4663",
+            "summary": "Research changes needed to the Staging Object Header - to include Policy Term",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4412",
+            "summary": "Policy Object - Research if there are any issues with not updating the policy object for future terms",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4156",
+            "summary": "Policy Term - Research fields on current Policy object to see what should carry over to Term",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          },
+          {
+            "key": "JPP-4135",
+            "summary": "Policy Term - Create Policy Term object in SF",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-3996",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3996",
+        "summary": "CSAT : New Bound Policy Experience Survey",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5184",
+            "summary": "CSAT : New Bound Policy Experience Survey",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-4440",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4440",
+        "summary": "Display Policy Number for PSIC Risks in Underwriting Review ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-4689",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4689",
+        "summary": "SF Validation Rules Update",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-3879",
+            "summary": "SF Validation Rules Update - System Profiles - Account Object",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      },
+      {
+        "key": "JPP-4441",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4441",
+        "summary": "Decision Matrix Adjustment for Non-Surgery Physicians 70+ ",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5180",
+            "summary": "Update the logic for physicians > 70 yrs",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Crazy Train"
+          }
+        ],
+        "team": "Crazy Train"
+      }
+    ],
+    "uncommitted": [
+      {
+        "key": "JPP-4344",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4344",
+        "summary": "OASIS - EXTRACT COIs FROM POLICY DOCUMENTS",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "Magic Makers"
+      },
+      {
+        "key": "JPP-4783",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4783",
+        "summary": "Rate Review: Remove Physician",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-4887",
+            "summary": "EA - Update Rate Review UI to Display Rate Changes",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-4885",
+            "summary": "EA UI- Rate Display Sketches",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-4785",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4785",
+        "summary": "Tail Offer Generation: Remove Physician",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5138",
+            "summary": "EA | Tail offer notification",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "JPP-5114",
+            "summary": "EA- Generate Tail Offer",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5113",
+            "summary": "EA Admin-Internal Users Access to Tail Offer Documentation",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "EN-812",
+            "summary": "Tail Offer notification process [research]",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Fox Force"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-4784",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4784",
+        "summary": "Verify Sign & Submit: Remove Physician ",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5128",
+            "summary": "API Callouts to Complete Remove Physician Endorsement Rating",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5124",
+            "summary": "TESTING Ensure PCRs for Remove Physician Endorsements from EA Accurately Reflect Necessary Data Points",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5122",
+            "summary": "EA Route Submission Failures to Tech Team",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5117",
+            "summary": "EA VSS Remove Physician UI Updates to Step 4",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5116",
+            "summary": "EA VSS  Remove Physician -Verify Sign and Submit",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-4884",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4884",
+        "summary": "EA-Process to Rate Physician Removal",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5177",
+            "summary": "Research APIs to ensure Capability to Cancel Multiple Physicians on an Endorsement",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          },
+          {
+            "key": "JPP-5126",
+            "summary": "Process to Rate Remove Physician",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "LOCOMotive Legends"
+          }
+        ],
+        "team": "LOCOMotive Legends"
+      },
+      {
+        "key": "JPP-3834",
+        "url": "https://magmutual.atlassian.net/browse/JPP-3834",
+        "summary": "PF - Add Segment to Budget and Forecast Process SF",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-5175",
+            "summary": "Segment - code work on trigger - unique value - prevent duplicates",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          },
+          {
+            "key": "JPP-5173",
+            "summary": "Segment metadata PLACEHOLDER",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Soul Train"
+          }
+        ],
+        "team": "Soul Train"
+      },
+      {
+        "key": "JPP-4786",
+        "url": "https://magmutual.atlassian.net/browse/JPP-4786",
+        "summary": "EA Email Comms: Remove Physician",
+        "status": "Analyzing",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-820",
+            "summary": "EA | Remove Physician Journey",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-819",
+            "summary": "EA | Remove Physician SQL query + DE",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          },
+          {
+            "key": "EN-817",
+            "summary": "EA | Remove Physician Change Request Email",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Fox Force"
+          }
+        ],
+        "team": "Fox Force"
+      },
+      {
+        "key": "JPP-5164",
+        "url": "https://magmutual.atlassian.net/browse/JPP-5164",
+        "summary": "OneModel - Multi-State (Phase 5) - Comparison State Map View",
+        "status": "Backlog",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "JPP-4110",
+            "summary": "Add new map UI components to Comparison Page",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Special Forces"
+          }
+        ],
+        "team": "Special Forces"
+      },
+      {
+        "key": "INFRA-3422",
+        "url": "https://magmutual.atlassian.net/browse/INFRA-3422",
+        "summary": "Oasis 2025 Upgrade",
+        "status": "Backlog",
+        "statusCategory": "new",
+        "stories": [],
+        "team": "Other"
+      },
+      {
+        "key": "EN-530",
+        "url": "https://magmutual.atlassian.net/browse/EN-530",
+        "summary": "COI, Loss Run, and Credentialing Report Enhancements",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-700",
+            "summary": "Update COI Nprinting form - BI-8335",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-385",
+            "summary": "Incorrect Retro Date on Qlik Sense Policy History ",
+            "status": "Creating",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-173",
+            "summary": "CIS Number Connection Request in Qlik Sense",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "ADVICE-68",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-68",
+        "summary": "Digital Experience Analytics Dashboard - DatoCMS",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "MED-683",
+            "summary": "Create Documentation for Website Analytics Data",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-808",
+            "summary": "Validate Logic in Digital Experience Analytics Dashboard",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-806",
+            "summary": "Validate GA4 - Google Analytics Data",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-430",
+            "summary": "Move Website Analytics Dashboard to Qlik Prod - Digital Experience Analytics Dashboard",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-429",
+            "summary": "Validate DatoCMS Data",
+            "status": "Validating",
+            "statusCategory": "indeterminate",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "ADVICE-767",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-767",
+        "summary": "Create a Risk Report Dashboard for All Reports",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-843",
+            "summary": "Build Data Model for Risk Reports Dashboard",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-842",
+            "summary": "Investigate Tables and Views used for Risk Reports",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-841",
+            "summary": "Review Tables/Data used in all Risk Reports",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-810",
+            "summary": "Establish Data Connection to DRATST and DRADEV in Qlik Dev",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-772",
+            "summary": "Identify Solution for Using Dev Risk Data in Qlik",
+            "status": "Done",
+            "statusCategory": "done",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "JPP-2949",
+        "url": "https://magmutual.atlassian.net/browse/JPP-2949",
+        "summary": "CSA DB : Factor Holiday Hours into Call Metrics",
+        "status": "Creating",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-486",
+            "summary": "Investigate Dataflow for Missed Call Flag - CSA DB",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-485",
+            "summary": "CSA DB: Update Missed Calls Flag to Factor in Holiday",
+            "status": "Ready",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      },
+      {
+        "key": "ADVICE-67",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-67",
+        "summary": "Digital Experience Analytics Dashboard - Builder.io",
+        "status": "Ready",
+        "statusCategory": "new",
+        "stories": [
+          {
+            "key": "EN-807",
+            "summary": "Validate Builder.io Data",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          },
+          {
+            "key": "EN-438",
+            "summary": "Establish API Connection from Builder.IO to Qlik",
+            "status": "Backlog",
+            "statusCategory": "new",
+            "team": "Data Divers"
+          }
+        ],
+        "team": "Data Divers"
+      }
+    ]
+  },
+  "title": "PDD"
+}

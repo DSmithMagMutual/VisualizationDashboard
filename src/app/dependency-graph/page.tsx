@@ -1,36 +1,43 @@
 'use client'
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Container, Typography, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText } from '@mui/material';
+import { Box, Container, Typography, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, CircularProgress, Button } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import DependencyGraphWidget from '@/components/widgets/DependencyGraphWidget';
-
-// Import the demo data
-import demoData from '../../../board-save.json';
-import adviceData from '../../../board-saveAdvice.json';
-import pddData from '../../../board-savePDD.json';
-
-const dataSources = {
-  'board-save': demoData,
-  'board-saveAdvice': adviceData,
-  'board-savePDD': pddData
-};
+import { loadDataSource, dataSources } from '@/lib/dataService';
 
 export default function DependencyGraphPage() {
-  const [selectedDataSource, setSelectedDataSource] = useState('board-save');
-  const [currentData, setCurrentData] = useState(dataSources['board-save']);
+  const [selectedDataSource, setSelectedDataSource] = useState('');
+  const [currentData, setCurrentData] = useState<any>(null);
   const [teamFilter, setTeamFilter] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setCurrentData(dataSources[selectedDataSource as keyof typeof dataSources]);
-    // Reset team filter when data source changes
-    setTeamFilter([]);
+    if (selectedDataSource) {
+      setIsLoading(true);
+      loadDataSource(selectedDataSource)
+        .then((data) => {
+          if (data) {
+            setCurrentData(data);
+            setTeamFilter([]); // Reset team filter when data source changes
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to load data:', error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
   }, [selectedDataSource]);
 
   // Get all unique teams from current data
   const allTeams = useMemo(() => {
+    if (!currentData || !currentData.columns) return [];
+    
     const teams = new Set<string>();
-    Object.values(currentData.columns).forEach(epics => {
-      epics.forEach(epic => {
+    Object.values(currentData.columns).forEach((epics: any) => {
+      epics.forEach((epic: any) => {
         if (epic.team) teams.add(epic.team);
         if (Array.isArray(epic.stories)) {
           epic.stories.forEach((story: any) => {
@@ -43,31 +50,80 @@ export default function DependencyGraphPage() {
   }, [currentData]);
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Jira Dependency Graph
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Visualize dependencies between epics and stories with color-coded status and team information.
-        </Typography>
+    <Box sx={{ background: '#f8f9fa', minHeight: '100vh', p: 4 }}>
+      <Container maxWidth="xl">
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" gutterBottom sx={{ color: '#212529', fontWeight: 700 }}>
+            Jira Dependency Graph
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3, color: '#6c757d' }}>
+            Visualize dependencies between epics and stories with color-coded status and team information.
+          </Typography>
         
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
-          <FormControl sx={{ minWidth: 200 }}>
-            <InputLabel>Data Source</InputLabel>
+        <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', mb: 3, alignItems: 'flex-end' }}>
+                  {/* Data Source Selector */}
+        <Box sx={{ minWidth: 250 }}>
+          <FormControl fullWidth size="small">
+            <InputLabel 
+              id="data-source-label" 
+              sx={{ 
+                color: '#495057', 
+                fontWeight: 500,
+                '&.Mui-focused': {
+                  color: '#0d6efd',
+                },
+                '&.MuiInputLabel-shrink': {
+                  color: '#0d6efd',
+                }
+              }}
+            >
+              Data Source
+            </InputLabel>
             <Select
+              labelId="data-source-label"
               value={selectedDataSource}
               label="Data Source"
               onChange={(e) => setSelectedDataSource(e.target.value)}
+              sx={{
+                backgroundColor: '#ffffff',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#dee2e6',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#adb5bd',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#0d6efd',
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#0d6efd',
+                },
+              }}
             >
-              <MenuItem value="board-save">Board Save (JPP)</MenuItem>
               <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
               <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
             </Select>
           </FormControl>
+        </Box>
 
-          <FormControl sx={{ minWidth: 300 }}>
-            <InputLabel id="team-filter-label">Filter by Team</InputLabel>
+        {/* Team Filter */}
+        <Box sx={{ minWidth: 300 }}>
+          <FormControl fullWidth size="small">
+            <InputLabel 
+              id="team-filter-label" 
+              sx={{ 
+                color: '#495057', 
+                fontWeight: 500,
+                '&.Mui-focused': {
+                  color: '#0d6efd',
+                },
+                '&.MuiInputLabel-shrink': {
+                  color: '#0d6efd',
+                }
+              }}
+            >
+              Filter by Team
+            </InputLabel>
             <Select
               labelId="team-filter-label"
               multiple
@@ -75,6 +131,21 @@ export default function DependencyGraphPage() {
               onChange={e => setTeamFilter(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
               input={<OutlinedInput label="Filter by Team" />}
               renderValue={(selected) => selected.length === 0 ? 'All Teams' : selected.join(', ')}
+              sx={{
+                backgroundColor: '#ffffff',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#dee2e6',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#adb5bd',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#0d6efd',
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#0d6efd',
+                },
+              }}
             >
               {allTeams.map(team => (
                 <MenuItem key={team} value={team}>
@@ -85,39 +156,90 @@ export default function DependencyGraphPage() {
             </Select>
           </FormControl>
         </Box>
+
+        {/* Refresh Button */}
+        <Box>
+          <Button
+            variant="outlined"
+            size="small"
+            color="primary"
+            onClick={async () => {
+              if (selectedDataSource) {
+                try {
+                  setIsLoading(true);
+                  const data = await loadDataSource(selectedDataSource);
+                  if (data) {
+                    setCurrentData(data);
+                  }
+                } catch (error) {
+                  console.error('Failed to reload data:', error);
+                } finally {
+                  setIsLoading(false);
+                }
+              }
+            }}
+            startIcon={<RefreshIcon />}
+            sx={{ 
+              fontWeight: 600, 
+              borderRadius: 1,
+              borderColor: '#0d6efd',
+              color: '#0d6efd',
+              '&:hover': {
+                borderColor: '#0b5ed7',
+                backgroundColor: 'rgba(13, 110, 253, 0.04)'
+              }
+            }}
+          >
+            Refresh Data
+          </Button>
+        </Box>
+        </Box>
       </Box>
 
-      <Box sx={{ width: '100%' }}>
-        <DependencyGraphWidget 
-          data={currentData} 
-          title={`Dependency Graph - ${selectedDataSource}`}
-          teamFilter={teamFilter}
-        />
-      </Box>
+        <Box sx={{ width: '100%' }}>
+          {isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+              <CircularProgress size={60} />
+            </Box>
+          ) : currentData ? (
+            <DependencyGraphWidget 
+              data={currentData} 
+              title={`Dependency Graph - ${selectedDataSource}`}
+              teamFilter={teamFilter}
+            />
+          ) : (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+              <Typography variant="h6" sx={{ color: '#6c757d' }}>
+                Please select a data source to view the dependency graph
+              </Typography>
+            </Box>
+          )}
+        </Box>
 
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          How to Use
-        </Typography>
-        <Typography variant="body2" paragraph>
-          • <strong>Epics</strong> are shown as larger circles, <strong>Stories</strong> as smaller circles
-        </Typography>
-        <Typography variant="body2" paragraph>
-          • <strong>Node colors</strong> represent status: Red (To Do), Orange (In Progress), Green (Done)
-        </Typography>
-        <Typography variant="body2" paragraph>
-          • <strong>Border colors</strong> represent teams
-        </Typography>
-        <Typography variant="body2" paragraph>
-          • <strong>Lines</strong> show dependencies between epics and their stories
-        </Typography>
-        <Typography variant="body2" paragraph>
-          • <strong>Drag nodes</strong> to rearrange the graph layout
-        </Typography>
-        <Typography variant="body2" paragraph>
-          • <strong>Hover over nodes</strong> to see detailed information
-        </Typography>
-      </Box>
-    </Container>
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h6" gutterBottom sx={{ color: '#212529', fontWeight: 600 }}>
+            How to Use
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Epics</strong> are shown as larger circles, <strong>Stories</strong> as smaller circles
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Node colors</strong> represent status: Red (To Do), Orange (In Progress), Green (Done)
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Border colors</strong> represent teams
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Lines</strong> show dependencies between epics and their stories
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Drag nodes</strong> to rearrange the graph layout
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Hover over nodes</strong> to see detailed information
+          </Typography>
+        </Box>
+      </Container>
+    </Box>
   );
 } 
