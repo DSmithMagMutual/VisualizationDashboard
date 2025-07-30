@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { loadAllDataSources } from '../lib/dataService';
+import CredentialsWarning from './CredentialsWarning';
 
 interface WidgetError {
   message: string;
@@ -225,11 +226,17 @@ const MinimalistDashboard = () => {
   const [targets] = useState(getTargets());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasCredentials, setHasCredentials] = useState<boolean | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
+        
+        // Check if Jira credentials are configured
+        // TODO: Add credentials check when Tauri is properly configured
+        setHasCredentials(true); // For now, assume credentials are available
+        
         await loadAllDataSources();
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load data');
@@ -256,6 +263,18 @@ const MinimalistDashboard = () => {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
         <ErrorWidget title="Dashboard Error" error={{ message: error }} />
+      </Box>
+    );
+  }
+
+  // Show credentials warning if no Jira credentials are configured
+  if (hasCredentials === false) {
+    return (
+      <Box minHeight="100vh" bgcolor="#f6f7fb">
+        <CredentialsWarning onOpenSettings={() => {
+          // This will be handled by the parent App component
+          window.location.reload();
+        }} />
       </Box>
     );
   }

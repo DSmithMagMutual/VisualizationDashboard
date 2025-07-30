@@ -250,7 +250,10 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
       .attr('dy', '.35em')
       .attr('font-size', '11px')
       .attr('fill', 'white')
-      .attr('font-weight', 'bold');
+      .attr('font-weight', 'bold')
+      .attr('stroke', 'black')
+      .attr('stroke-width', '0.5px')
+      .attr('paint-order', 'stroke fill');
 
     // Add iteration labels for epics
     node.filter((d: any) => d.type === 'epic')
@@ -260,7 +263,10 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
       .attr('dy', '1.8em')
       .attr('font-size', '10px')
       .attr('fill', '#666')
-      .attr('font-weight', '500');
+      .attr('font-weight', '500')
+      .attr('stroke', 'black')
+      .attr('stroke-width', '0.3px')
+      .attr('paint-order', 'stroke fill');
 
     // Add tooltips with iteration information
     node.append('title')

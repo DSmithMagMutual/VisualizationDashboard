@@ -419,6 +419,7 @@ export default function DemoPage() {
         }, {} as Record<string, any[]>);
         setColumns(initializedColumns);
         setBoardTitle(`Demo Iteration Board - ${dataSourceKey}`);
+        setTeamFilter([]); // Reset team filter when data source changes
       }
     } catch (error) {
       console.error('Failed to load data source:', error);

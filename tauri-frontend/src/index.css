@@ -24,10 +24,112 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Improve layout stability */
+* {
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal scrolling during zoom */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Ensure consistent navigation bar height */
+.MuiAppBar-root .MuiToolbar-root {
+  min-height: 64px !important;
+  height: 64px !important;
+}
+
+/* Prevent navigation items from wrapping */
+.MuiAppBar-root .MuiToolbar-root > * {
+  flex-shrink: 0;
+}
+
+/* Keep navigation bar fixed and not affected by zoom */
+.MuiAppBar-root {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1100 !important;
+  transform: none !important;
+}
+
+/* Ensure zoom controls stay in place */
+.MuiAppBar-root * {
+  transform: none !important;
+}
+
+/* Improve zoom compatibility */
+body[style*="zoom"] {
+  transform-origin: top left;
+}
+
+/* Ensure proper scaling for all elements */
+body[style*="transform"] {
+  transform-origin: top left;
+  width: 100%;
+  height: 100%;
+}
+
+/* Prevent zoom from breaking layout */
+.MuiContainer-root,
+.MuiBox-root {
+  max-width: 100% !important;
+}
+
+/* Improve slider appearance */
+.MuiSlider-root {
+  color: #6C63FF;
+}
+
+.MuiSlider-thumb {
+  background-color: #6C63FF;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.MuiSlider-thumb:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.MuiSlider-track {
+  background-color: #6C63FF;
+  border-radius: 2px;
+}
+
+.MuiSlider-rail {
+  background-color: #e9ecef;
+  border-radius: 2px;
+}
+
+/* Improve dialog appearance */
+.MuiDialog-paper {
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15) !important;
+}
+
+/* Improve button hover states */
+.MuiButton-root:hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.MuiIconButton-root:hover {
+  transition: all 0.2s ease-in-out;
 }
 
 h1 {
