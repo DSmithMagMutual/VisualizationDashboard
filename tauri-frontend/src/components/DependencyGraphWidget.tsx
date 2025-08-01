@@ -27,6 +27,7 @@ interface DependencyGraphWidgetProps {
   };
   title?: string;
   teamFilter?: string[];
+  onNodeClick?: (node: any) => void;
 }
 
 const statusColors: Record<string, string> = {
@@ -94,7 +95,7 @@ function getColorForTeam(team: string): string {
   return '#' + '00000'.substring(0, 6 - c.length) + c;
 }
 
-export default function DependencyGraphWidget({ data, title = "Dependency Graph", teamFilter = [] }: DependencyGraphWidgetProps) {
+export default function DependencyGraphWidget({ data, title = "Dependency Graph", teamFilter = [], onNodeClick }: DependencyGraphWidgetProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<any>(null);
 
@@ -207,10 +208,10 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
 
     // Create the force simulation with better spacing
     const simulation = d3.forceSimulation(graphData.nodes)
-      .force('link', d3.forceLink(graphData.links).id((d: any) => d.id).distance(150))
-      .force('charge', d3.forceManyBody().strength(-500))
+      .force('link', d3.forceLink(graphData.links).id((d: any) => d.id).distance(200))
+      .force('charge', d3.forceManyBody().strength(-800))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(40));
+      .force('collision', d3.forceCollide().radius(60));
 
     // Create the links
     const link = g.append('g')
@@ -231,28 +232,34 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
       .call(d3.drag<any, any>()
         .on('start', dragstarted)
         .on('drag', dragged)
-        .on('end', dragended));
+        .on('end', dragended))
+      .on('click', (_event: any, d: any) => {
+        if (onNodeClick) {
+          onNodeClick(d);
+        }
+      })
+      .style('cursor', 'pointer');
 
     // Add circles for nodes
     node.append('circle')
-      .attr('r', (d: any) => d.type === 'epic' ? 25 : 18)
+      .attr('r', (d: any) => d.type === 'epic' ? 35 : 25)
       .attr('fill', (d: any) => {
         const statusCat = getStatusCategory(d.status);
         return statusColors[statusCat] || statusColors.default;
       })
       .attr('stroke', (d: any) => getColorForTeam(d.team))
-      .attr('stroke-width', 3);
+      .attr('stroke-width', 4);
 
     // Add labels
     node.append('text')
       .text((d: any) => d.label)
       .attr('text-anchor', 'middle')
       .attr('dy', '.35em')
-      .attr('font-size', '11px')
+      .attr('font-size', '14px')
       .attr('fill', 'white')
       .attr('font-weight', 'bold')
       .attr('stroke', 'black')
-      .attr('stroke-width', '0.5px')
+      .attr('stroke-width', '0.8px')
       .attr('paint-order', 'stroke fill');
 
     // Add iteration labels for epics
@@ -260,12 +267,12 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
       .append('text')
       .text((d: any) => d.iteration || '')
       .attr('text-anchor', 'middle')
-      .attr('dy', '1.8em')
-      .attr('font-size', '10px')
+      .attr('dy', '2.2em')
+      .attr('font-size', '12px')
       .attr('fill', '#666')
       .attr('font-weight', '500')
       .attr('stroke', 'black')
-      .attr('stroke-width', '0.3px')
+      .attr('stroke-width', '0.5px')
       .attr('paint-order', 'stroke fill');
 
     // Add tooltips with iteration information

@@ -26,29 +26,44 @@ const theme = createTheme({
 });
 
 function Navigation({ onOpenSettings }: { onOpenSettings: () => void }) {
-  const [zoomLevel, setZoomLevel] = useState(80); // 80% = 0.8 zoom factor
+  const [zoomLevel, setZoomLevel] = useState(100); // Start at 100%
 
   // Function to apply zoom and update state
   const applyZoom = (newZoom: number) => {
-    setZoomLevel(newZoom);
-    const zoomFactor = newZoom / 100;
-    document.body.style.zoom = `${zoomFactor}`;
-    document.body.style.transform = `scale(${zoomFactor})`;
-    document.body.style.transformOrigin = 'top left';
+    const roundedZoom = Math.round(newZoom);
+    setZoomLevel(roundedZoom);
+    const zoomFactor = roundedZoom / 100;
+    
+    // Apply zoom only to the content area, not the navigation
+    const contentArea = document.getElementById('content-area');
+    if (contentArea) {
+      contentArea.style.transform = `scale(${zoomFactor})`;
+      contentArea.style.transformOrigin = 'top left';
+      
+      // Allow horizontal expansion like a regular webpage
+      // Remove width constraint to let content expand naturally
+      contentArea.style.width = 'auto';
+      contentArea.style.minWidth = `${100 / zoomFactor}%`;
+      
+      // Adjust top padding to account for zoom level
+      const navHeight = 64; // Navigation bar height
+      const adjustedPadding = navHeight / zoomFactor;
+      contentArea.style.paddingTop = `${adjustedPadding}px`;
+    }
   };
 
   const handleZoomChange = (_event: Event, newValue: number | number[]) => {
-    const zoom = newValue as number;
+    const zoom = Math.round(newValue as number);
     applyZoom(zoom);
   };
 
   const handleZoomIn = () => {
-    const newZoom = Math.min(zoomLevel + 10, 150);
+    const newZoom = Math.min(Math.round(zoomLevel + 10), 150);
     applyZoom(newZoom);
   };
 
   const handleZoomOut = () => {
-    const newZoom = Math.max(zoomLevel - 10, 50);
+    const newZoom = Math.max(Math.round(zoomLevel - 10), 50);
     applyZoom(newZoom);
   };
 
@@ -56,7 +71,16 @@ function Navigation({ onOpenSettings }: { onOpenSettings: () => void }) {
   useEffect(() => {
     (window as any).updateZoomLevel = setZoomLevel;
     (window as any).applyZoom = applyZoom;
+    (window as any).currentZoomLevel = zoomLevel;
   }, [zoomLevel]);
+
+  // Initialize zoom on component mount
+  useEffect(() => {
+    // Small delay to ensure content area is available
+    setTimeout(() => {
+      applyZoom(zoomLevel);
+    }, 100);
+  }, []);
 
       return (
       <AppBar position="static" sx={{ 
@@ -132,7 +156,7 @@ function Navigation({ onOpenSettings }: { onOpenSettings: () => void }) {
             alignItems: 'center', 
             gap: 1, 
             ml: 3, 
-            minWidth: '200px',
+            minWidth: '220px',
             backgroundColor: '#f8f9fa',
             borderRadius: 2,
             px: 2,
@@ -173,6 +197,7 @@ function Navigation({ onOpenSettings }: { onOpenSettings: () => void }) {
                   backgroundColor: '#6C63FF',
                   border: '2px solid #fff',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  marginTop: '-7px', // Center the thumb on the track
                   '&:hover': {
                     boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
                   }
@@ -217,8 +242,30 @@ function Navigation({ onOpenSettings }: { onOpenSettings: () => void }) {
               fontWeight: 600,
               fontSize: '0.75rem'
             }}>
-              {zoomLevel}%
+              {Math.round(zoomLevel)}%
             </Typography>
+            
+            <Tooltip title="Reset Zoom">
+              <IconButton
+                onClick={() => applyZoom(100)}
+                disabled={zoomLevel === 100}
+                size="small"
+                sx={{ 
+                  color: '#6c757d',
+                  '&:hover': { 
+                    backgroundColor: 'rgba(108, 99, 255, 0.1)',
+                    color: '#6C63FF'
+                  },
+                  '&.Mui-disabled': {
+                    color: '#dee2e6'
+                  }
+                }}
+              >
+                <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.7rem' }}>
+                  100%
+                </Typography>
+              </IconButton>
+            </Tooltip>
           </Box>
           
           <Tooltip title="Jira Settings">
@@ -263,18 +310,18 @@ function App() {
           case '+':
             event.preventDefault();
             // Zoom in
-            const currentZoom = parseFloat(document.body.style.zoom || '1') * 100;
-            const newZoomIn = Math.min(currentZoom + 10, 150);
-            if ((window as any).applyZoom) {
+            if ((window as any).updateZoomLevel && (window as any).applyZoom) {
+              const currentZoom = Math.round((window as any).currentZoomLevel || 100);
+              const newZoomIn = Math.min(currentZoom + 10, 150);
               (window as any).applyZoom(newZoomIn);
             }
             break;
           case '-':
             event.preventDefault();
             // Zoom out
-            const currentZoomOut = parseFloat(document.body.style.zoom || '1') * 100;
-            const newZoomOut = Math.max(currentZoomOut - 10, 50);
-            if ((window as any).applyZoom) {
+            if ((window as any).updateZoomLevel && (window as any).applyZoom) {
+              const currentZoom = Math.round((window as any).currentZoomLevel || 100);
+              const newZoomOut = Math.max(currentZoom - 10, 50);
               (window as any).applyZoom(newZoomOut);
             }
             break;
@@ -298,7 +345,7 @@ function App() {
       <CssBaseline />
       <Router>
         <Navigation onOpenSettings={() => setSettingsOpen(true)} />
-        <Box sx={{ pt: '64px' }}> {/* Add padding for fixed navigation */}
+        <Box id="content-area" sx={{ pt: '64px', minHeight: '100vh' }}> {/* Add padding for fixed navigation */}
           <Routes>
             <Route path="/" element={<DemoPage />} />
             <Route path="/dependency-graph" element={<DependencyGraphPage />} />

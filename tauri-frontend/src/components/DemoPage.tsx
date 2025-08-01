@@ -4,6 +4,7 @@ import { Close, Refresh, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource } from '../lib/dataService';
+import JiraConfigDialog from './JiraConfigDialog';
 
 const ITERATIONS = [
   { key: "4.1", label: "2025 Iteration 4.1", range: "July 9 - July 22" },
@@ -379,6 +380,12 @@ export default function DemoPage() {
   const [boardTitle, setBoardTitle] = useState("Demo Iteration Board");
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [teamFilter, setTeamFilter] = useState<string[]>([]);
+  const [showJiraConfig, setShowJiraConfig] = useState(false);
+
+  // Debug effect to log when showJiraConfig changes
+  useEffect(() => {
+    console.log('showJiraConfig changed to:', showJiraConfig);
+  }, [showJiraConfig]);
 
   // Collect all unique teams from current board data
   const allTeams = React.useMemo(() => {
@@ -496,14 +503,60 @@ export default function DemoPage() {
     const card = columns[colKey][cardIndex];
     if (!card.key) return;
     
+    console.log(`Reload card button clicked for: ${card.key}`);
     setError(null);
-    // For demo purposes, just show a success message
-    console.log(`Reloaded card: ${card.key}`);
+    
+    // Check if Jira credentials are configured
+    const hasCredentials = await checkJiraCredentials();
+    console.log('Has credentials for card reload:', hasCredentials);
+    
+    if (!hasCredentials) {
+      console.log('No credentials found, showing config dialog for card reload');
+      setShowJiraConfig(true);
+      return;
+    }
+    
+    // Proceed with card refresh if credentials are available
+    console.log(`Proceeding with card refresh - credentials available for: ${card.key}`);
+    
+    // TODO: Implement actual card refresh logic here
+    // For now, just show a success message
+    console.log(`Card refresh completed for: ${card.key}`);
+  };
+
+  // Function to check if Jira credentials are configured
+  const checkJiraCredentials = async (): Promise<boolean> => {
+    try {
+      // TODO: Implement when Tauri is properly configured
+      // For now, return true to test refresh functionality
+      // When Tauri is ready, this should call: const config = await invoke('load_jira_config');
+      return true; // Temporarily return true to test refresh
+    } catch (error) {
+      console.error('Error checking Jira credentials:', error);
+      return false;
+    }
   };
 
   const handleRefreshAllCards = async () => {
+    console.log('Refresh button clicked!');
     setError(null);
-    console.log('Refreshed all cards');
+    
+    // Check if Jira credentials are configured
+    const hasCredentials = await checkJiraCredentials();
+    console.log('Has credentials:', hasCredentials);
+    
+    if (!hasCredentials) {
+      console.log('No credentials found, showing config dialog');
+      setShowJiraConfig(true);
+      return;
+    }
+    
+    // Proceed with refresh if credentials are available
+    console.log('Proceeding with refresh - credentials available');
+    
+    // TODO: Implement actual refresh logic here
+    // For now, just show a success message
+    console.log('Refresh completed successfully');
   };
 
   const handleToggleMinimize = (colKey: string, cardIndex: number) => {
@@ -877,6 +930,21 @@ export default function DemoPage() {
         ))}
       </Box>
       <StatusChart columns={columns} />
+      
+      {/* Jira Configuration Dialog */}
+      <JiraConfigDialog
+        open={showJiraConfig}
+        onClose={() => {
+          console.log('Closing Jira config dialog');
+          setShowJiraConfig(false);
+        }}
+        onConfigSaved={(config) => {
+          console.log('Jira configuration saved:', config);
+          setShowJiraConfig(false);
+          // Optionally trigger refresh after config is saved
+          // handleRefreshAllCards();
+        }}
+      />
     </Box>
   );
 } 
