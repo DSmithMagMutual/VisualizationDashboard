@@ -9,6 +9,12 @@ interface Issue {
   statusCategory: string;
   team?: string;
   url?: string;
+  relationships?: {
+    blockedBy: string[];
+    blocks: string[];
+    related: string[];
+    subtasks: string[];
+  };
 }
 
 interface Epic {
@@ -18,6 +24,12 @@ interface Epic {
   statusCategory: string;
   team?: string;
   url?: string;
+  relationships?: {
+    blockedBy: string[];
+    blocks: string[];
+    related: string[];
+    subtasks: string[];
+  };
   stories: Issue[];
 }
 
@@ -119,7 +131,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
     const links: Array<{
       source: string;
       target: string;
-      type: 'epic-story';
+      type: 'epic-story' | 'blocked-by' | 'blocks' | 'related';
     }> = [];
 
     // Process all epics and their stories with iteration information
@@ -167,6 +179,61 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
               source: epic.key,
               target: story.key,
               type: 'epic-story'
+            });
+
+            // Add relationships for this story
+            if (story.relationships) {
+              story.relationships.blockedBy.forEach((blockedByKey: string) => {
+                links.push({
+                  source: blockedByKey,
+                  target: story.key,
+                  type: 'blocked-by'
+                });
+              });
+              story.relationships.blocks.forEach((blocksKey: string) => {
+                links.push({
+                  source: story.key,
+                  target: blocksKey,
+                  type: 'blocks'
+                });
+              });
+              story.relationships.related.forEach((relatedKey: string) => {
+                links.push({
+                  source: story.key,
+                  target: relatedKey,
+                  type: 'related'
+                });
+              });
+            }
+          });
+        }
+      });
+    });
+
+    // Add blocking relationships for epics
+    Object.entries(data.columns).forEach(([, epics]) => {
+      epics.forEach(epic => {
+        // Add blocking relationships for epics
+        if (epic.relationships) {
+          epic.relationships.blockedBy.forEach((blockedByKey: string) => {
+            links.push({
+              source: blockedByKey,
+              target: epic.key,
+              type: 'blocked-by'
+            });
+          });
+          epic.relationships.blocks.forEach((blocksKey: string) => {
+            links.push({
+              source: epic.key,
+              target: blocksKey,
+              type: 'blocks'
+            });
+          });
+          epic.relationships.related.forEach((relatedKey: string) => {
+            links.push({
+              source: epic.key,
+              target: relatedKey,
+              type: 'related'
             });
           });
         }
@@ -219,9 +286,43 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
       .data(graphData.links)
       .enter()
       .append('line')
-      .attr('stroke', '#999')
-      .attr('stroke-opacity', 0.6)
-      .attr('stroke-width', 2);
+      .attr('stroke', (d: any) => {
+        switch (d.type) {
+          case 'epic-story':
+            return '#999';
+          case 'blocked-by':
+            return '#dc3545'; // Red for blocked-by
+          case 'blocks':
+            return '#fd7e14'; // Orange for blocks
+          case 'related':
+            return '#0d6efd'; // Blue for related
+          default:
+            return '#999';
+        }
+      })
+      .attr('stroke-opacity', 0.8)
+      .attr('stroke-width', (d: any) => {
+        switch (d.type) {
+          case 'epic-story':
+            return 2;
+          case 'blocked-by':
+            return 3; // Thicker for blocked-by
+          case 'blocks':
+            return 3; // Thicker for blocks
+          case 'related':
+            return 2;
+          default:
+            return 2;
+        }
+      })
+      .attr('stroke-dasharray', (d: any) => {
+        switch (d.type) {
+          case 'related':
+            return '5,5'; // Dashed for related
+          default:
+            return 'none';
+        }
+      });
 
     // Create the nodes
     const node = g.append('g')
@@ -275,11 +376,28 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
       .attr('stroke-width', '0.5px')
       .attr('paint-order', 'stroke fill');
 
-    // Add tooltips with iteration information
+    // Add tooltips with iteration and relationship information
     node.append('title')
-      .text((d: any) => 
-        `${d.label}\n${d.summary}\nStatus: ${d.status}\nTeam: ${d.team || 'N/A'}\nIteration: ${d.iteration || 'N/A'}`
-      );
+      .text((d: any) => {
+        let tooltipText = `${d.label}\n${d.summary}\nStatus: ${d.status}\nTeam: ${d.team || 'N/A'}\nIteration: ${d.iteration || 'N/A'}`;
+        
+        // Find the epic data to get relationships
+        const epicData = Object.values(data.columns).flat().find((epic: any) => epic.key === d.id);
+        if (epicData && epicData.relationships) {
+          const rel = epicData.relationships;
+          if (rel.blockedBy.length > 0) {
+            tooltipText += `\nBlocked by: ${rel.blockedBy.join(', ')}`;
+          }
+          if (rel.blocks.length > 0) {
+            tooltipText += `\nBlocks: ${rel.blocks.join(', ')}`;
+          }
+          if (rel.related.length > 0) {
+            tooltipText += `\nRelated: ${rel.related.join(', ')}`;
+          }
+        }
+        
+        return tooltipText;
+      });
 
     // Update positions on simulation tick
     simulation.on('tick', () => {

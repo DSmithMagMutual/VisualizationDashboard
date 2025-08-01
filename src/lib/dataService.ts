@@ -5,6 +5,7 @@ export interface DataSource {
 export const dataSources: Record<string, string> = {
   'board-saveAdvice': 'board-saveAdvice.json',
   'board-savePDD': 'board-savePDD.json',
+  'test-relationships': 'test-relationships.json',
 };
 
 export async function loadDataSource(sourceKey: string): Promise<DataSource | null> {

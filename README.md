@@ -1,135 +1,52 @@
-# Jira Dashboard
+# Jira Dashboard - Tauri App
 
-A minimalist dashboard for Jira data visualization built with Next.js and Material-UI.
+A clean, Tauri-only version of the Jira Dashboard with enhanced dependency graph visualization.
 
 ## Features
 
-- **Sprint Progress Tracking**: Monitor sprint completion and velocity
-- **Feature Status Overview**: Track feature development progress
-- **Team Utilization Metrics**: Monitor team workload and capacity
-- **Sprint Velocity Analysis**: Historical sprint performance data
-- **Survey & Feedback Integration**: Collect and display team feedback
-- **Real-time Data**: Live updates from Jira API
-- **Responsive Design**: Works on desktop and mobile devices
+- **Dependency Graph Visualization** with relationship types:
+  - Red arrows: "Blocked by" relationships
+  - Orange arrows: "Blocks" relationships  
+  - Blue dashed lines: "Related to" relationships
+  - Gray lines: Epic-to-story relationships
 
-## Tech Stack
+- **Test Data**: Includes "Test Relationships (Demo)" to showcase all relationship types
 
-- **Framework**: Next.js 15 with App Router
-- **UI Library**: Material-UI (MUI) v7
-- **Charts**: Recharts
-- **Icons**: Lucide React
-- **HTTP Client**: Axios
-- **Language**: TypeScript
+## Quick Start
 
-## Getting Started
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-### Prerequisites
+2. **Start development**:
+   ```bash
+   npm run tauri dev
+   ```
 
-- Node.js 18+ 
-- npm or yarn
-- Jira instance with API access
+3. **Build for production**:
+   ```bash
+   npm run tauri build
+   ```
 
-### Installation
+## Testing the Dependency Graph
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd VisualizationDashboard
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up environment variables:
-Create a `.env.local` file in the root directory with your Jira credentials:
-
-```env
-JIRA_BASE_URL=https://your-domain.atlassian.net
-JIRA_EMAIL=your-email@example.com
-JIRA_API_TOKEN=your-api-token
-```
-
-**Note**: Remove `/rest/api/3` from the base URL if it's included - the API routes will add this automatically.
-
-### Running the Application
-
-1. Start the development server:
-```bash
-npm run dev
-```
-
-2. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### Building for Production
-
-```bash
-npm run build
-npm start
-```
+1. Open the Tauri app
+2. Navigate to "Dependency Graph" 
+3. Select "Test Relationships (Demo)" from the data source dropdown
+4. Explore the visual relationships between issues
 
 ## Project Structure
 
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   │   └── jira/         # Jira API proxy
-│   ├── globals.css       # Global styles
-│   ├── layout.tsx        # Root layout
-│   └── page.tsx          # Main dashboard page
-├── components/            # React components
-│   ├── dialogs/          # Dialog components
-│   ├── widgets/          # Dashboard widgets
-│   └── MinimalistDashboard.tsx
-├── config/               # Configuration files
-├── lib/                  # Utility libraries
-└── types/                # TypeScript type definitions
-```
+- `src/` - React frontend code
+- `src-tauri/` - Rust backend code
+- `public/` - Static assets and data files
+  - `test-relationships.json` - Demo data with relationship examples
+  - `board-saveAdvice.json` - Real Jira data (ADVICE project)
+  - `board-savePDD.json` - Real Jira data (PDD project)
 
-## API Routes
+## Data Sources
 
-The application uses Next.js API routes to proxy Jira API calls, avoiding CORS issues:
-
-- `GET /api/jira?endpoint=board` - Get all boards
-- `GET /api/jira?endpoint=board/{id}/sprint` - Get sprints for a board
-- `GET /api/jira?endpoint=sprint/{id}/issue` - Get issues for a sprint
-- `POST /api/jira?endpoint=...` - Post data to Jira
-
-## Widgets
-
-### Sprint Progress Widget
-Displays current sprint completion status with visual progress indicators.
-
-### Feature Status Widget
-Shows feature development status across different categories.
-
-### Team Utilization Widget
-Tracks team member workload and capacity utilization.
-
-### Sprint Velocity Widget
-Historical sprint velocity data with trend analysis.
-
-### Survey Cell
-Integration point for team feedback and surveys.
-
-## Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `JIRA_BASE_URL` | Your Jira instance URL | Yes |
-| `JIRA_EMAIL` | Your Jira account email | Yes |
-| `JIRA_API_TOKEN` | Your Jira API token | Yes |
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License. 
+- **Test Relationships (Demo)**: Shows all relationship types with test data
+- **Board Save Advice (ADVICE)**: Real Jira project data
+- **Board Save PDD**: Real Jira project data 

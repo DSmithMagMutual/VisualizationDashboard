@@ -102,6 +102,7 @@ export default function DependencyGraphPage() {
             >
               <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
               <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
+              <MenuItem value="test-relationships">Test Relationships (Demo)</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -230,7 +231,16 @@ export default function DependencyGraphPage() {
             • <strong>Border colors</strong> represent teams
           </Typography>
           <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
-            • <strong>Lines</strong> show dependencies between epics and their stories
+            • <strong>Gray lines</strong> show epic-to-story relationships
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Red arrows</strong> show "blocked by" relationships
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Orange arrows</strong> show "blocks" relationships
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Blue dashed lines</strong> show "related to" relationships
           </Typography>
           <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
             • <strong>Drag nodes</strong> to rearrange the graph layout

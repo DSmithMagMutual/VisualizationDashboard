@@ -44,8 +44,16 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
   }, [open]);
 
   const loadExistingConfig = async () => {
-    // TODO: Implement when Tauri is properly configured
-    console.log('Loading existing config - not yet implemented');
+    // TODO: Replace with actual Tauri invoke call when Tauri integration is working
+    // try {
+    //   const existingConfig = await invoke('load_jira_config');
+    //   if (existingConfig) {
+    //     setConfig(existingConfig);
+    //   }
+    // } catch (error) {
+    //   console.log('No existing config found or error loading:', error);
+    // }
+    console.log('Loading existing config - Tauri integration pending');
   };
 
   const handleTestConnection = async () => {
@@ -58,11 +66,25 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
     setError(null);
     setSuccess(null);
 
-    // TODO: Implement when Tauri is properly configured
-    setTimeout(() => {
-      setSuccess('Connection test not yet implemented');
+    try {
+      // TODO: Replace with actual Tauri invoke call when Tauri integration is working
+      // const result = await invoke('test_jira_connection', { config });
+      
+      // Simulate connection test for now
+      const isValidUrl = config.base_url.includes('atlassian.net') || config.base_url.includes('jira.com');
+      const isValidEmail = config.email.includes('@');
+      const hasToken = config.api_token.length > 0;
+      
+      if (isValidUrl && isValidEmail && hasToken) {
+        setSuccess('Connection test successful! (Demo mode - backend integration pending)');
+      } else {
+        setError('Please check your Jira URL, email, and API token format.');
+      }
+    } catch (error) {
+      setError(`Connection test failed: ${error}`);
+    } finally {
       setTesting(false);
-    }, 1000);
+    }
   };
 
   const handleSave = async () => {
@@ -74,17 +96,23 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
     setLoading(true);
     setError(null);
 
-    // TODO: Implement when Tauri is properly configured
-    setTimeout(() => {
-      setSuccess('Configuration saved successfully! (Demo mode)');
+    try {
+      // TODO: Replace with actual Tauri invoke call when Tauri integration is working
+      // await invoke('save_jira_config', { config });
+      
+      // Simulate save for now
+      setSuccess('Configuration saved successfully! (Demo mode - backend integration pending)');
       onConfigSaved(config);
-      setLoading(false);
       
       // Auto-close after a short delay
       setTimeout(() => {
         onClose();
       }, 1500);
-    }, 1000);
+    } catch (error) {
+      setError(`Failed to save configuration: ${error}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {

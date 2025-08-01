@@ -1,2027 +1,4083 @@
 {
   "columns": {
-    "4.1": [
+    "4.1": [],
+    "4.2": [],
+    "4.3": [],
+    "4.4": [],
+    "4.5IP": [],
+    "uncommitted": [
       {
-        "key": "ADVICE-1157",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-1157",
-        "summary": "MOC for LC Content",
-        "status": "Ready for Release",
-        "statusCategory": "indeterminate",
-        "stories": [
-          {
-            "key": "ADVICE-1521",
-            "summary": "Add Hover for MOC to Content Library",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-1504",
-            "summary": "Add MOC disclosure within CME accreditation in CMS ",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Other"
-          },
-          {
-            "key": "ADVICE-1454",
-            "summary": "Add hover over for MOC accreditation ",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-1431",
-            "summary": "Test MOC for Content",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Other"
-          },
-          {
-            "key": "ADVICE-1248",
-            "summary": "Add MOC filtering to Content Library page",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-1247",
-            "summary": "Add moc reference in applicable content",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "OG Team"
-          }
-        ],
-        "team": "OG Team"
+        "key": "ADVICE-1711",
+        "summary": "Development Work",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Tera Benoit",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1711",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "ADVICE-1167",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-1167",
-        "summary": "CME Tracking for Content not in Learning Center",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1532",
-            "summary": "Train Solomon to use surveys in SF",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1531",
-            "summary": "Move Surveys into SF from SurveyMonkey",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Hogwarts Express"
-          }
-        ],
-        "team": "Hogwarts Express"
-      },
-      {
-        "key": "EN-531",
-        "url": "https://magmutual.atlassian.net/browse/EN-531",
-        "summary": "RBE Renewal Enhancements",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-715",
-            "summary": "Modify Pending Policy Premium Logic in RBE Renewal Report",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-693",
-            "summary": "Validate Renewal Rate Table in RBE Renewal Report for WIP Status Policies in Pending Status",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-660",
-            "summary": "Check into adding Surcharges and fees to RBE Renewal app - BI-7800",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
-      },
-      {
-        "key": "EN-529",
-        "url": "https://magmutual.atlassian.net/browse/EN-529",
-        "summary": "Company Wide Dashboard Enhancements",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-804",
-            "summary": "\"Withdrawn\" Closed Lost opportunities in the CRMA Pipeline",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-731",
-            "summary": "Company Wide Dashboard - Pipeline - Bug RE-Introduced",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-497",
-            "summary": "Identify Reason for Loss in Company Wide Dashboard",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-496",
-            "summary": "Company Wide Dashboard and AE Dashboard showing Withdrawn Opportunities SD-41618",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-470",
-            "summary": "Regional Quotas need to be update on Company Wide Dashboard SD-41616",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-262",
-            "summary": "Update Company Wide for Prospect Stewardship SD-41613",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
-      }
-    ],
-    "4.2": [
-      {
-        "key": "ADVICE-1045",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-1045",
-        "summary": "MMM PO : Claims > Update Site Access Request ",
+        "key": "ADVICE-1710",
+        "summary": "Add Claims 911/Pay Invoice Online to profile flyout if they exist in top nav at a certain breakpoint",
         "status": "Validating",
-        "statusCategory": "indeterminate",
-        "stories": [
-          {
-            "key": "EN-696",
-            "summary": "UAT Change Request: List of permissions in Site Access Email(s)",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-668",
-            "summary": "Failed test case: Emails",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-490",
-            "summary": "Research changes needed following JPP-1850 work",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-432",
-            "summary": "Updated Site Access Email(s)",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Fox Force"
-          },
-          {
-            "key": "ADVICE-1564",
-            "summary": "Test Site Access Request Updates + MyMagMutual Account Access Updates",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Other"
-          },
-          {
-            "key": "ADVICE-1334",
-            "summary": "MMM > Admin Users > Should Have Access to Additional Portal Access Option if Manage Claims is not Assigned",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1230",
-            "summary": "MMM > Additional Portal Access Request Case Summary Page > Button Label and Action Incorrect: US-0004367",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1182",
-            "summary": "Add Manage Claims Check Box to Case Object - COPADO US-0004389",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1048",
-            "summary": "Update Site Access Case Screenflow in SF - US-0004410",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1047",
-            "summary": "Relabel \"File Claims\" to \"Report Claims\" in SF - COPADO US-0004379",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1046",
-            "summary": "Add Checkbox to Support Request Access Page: Copado US-0004393",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Hogwarts Express"
-          }
-        ],
-        "team": "Hogwarts Express"
+        "statusCategory": "In Progress",
+        "team": "Christopher Roman",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1710",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "ADVICE-57",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-57",
-        "summary": "MyMagMutual Defending",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1548",
-            "summary": "LC - Update Navigation for Single Secondary Feature",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-1319",
-            "summary": "ADVICE-1319: Defending File A Clime: Updated the Claim overview page for redirection from the Learning Center(ADVICE-57)",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1298",
-            "summary": "Learning Center redirect wcv",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-1243",
-            "summary": "ADVICE-1243: Preparing an API that allows to check access to WCV(ADVICE-57)",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-712",
-            "summary": "Defending: Add Claims Overview to Defending Menu on Agent Portal Navigation: US-0004174",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-711",
-            "summary": "Defending: Add Claims Overview link to Agent Portal Landing Page: US-0004174",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-709",
-            "summary": "Defending (Learning Center): Add Defending Menu to Customer Portal Navigation",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-707",
-            "summary": "Defending (Learning Center): Remove Online Claims Submission (OCS) link Under Servicing",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-666",
-            "summary": "Test MyMagMutual Defending",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Other"
-          },
-          {
-            "key": "ADVICE-665",
-            "summary": "Defending: Update Navigation for Single Secondary Feature: US-0004283",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-664",
-            "summary": "Defending: Remove Online Claims Submission (OCS) link Under Servicing: US-0004174",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-663",
-            "summary": "Defending: Add File a Claim Link to Agent Portal Landing Page: US-0004174",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-662",
-            "summary": "Defending: Admin to see Defending Link on Customer Portal Landing Page: US-0004174",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-661",
-            "summary": "Defending: Add Defending Menu to Agent Portal Navigation: US-0004174",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-660",
-            "summary": "Defending: Add Defending Menu to Customer Portal Navigation: US-0004174",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          }
-        ],
-        "team": "Feature Freight"
-      },
-      {
-        "key": "ADVICE-59",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-59",
-        "summary": "Updated Claim Submission",
-        "status": "UAT",
-        "statusCategory": "done",
-        "stories": [
-          {
-            "key": "ADVICE-1372",
-            "summary": "Updated Claim Submission",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-1369",
-            "summary": "Updated Claim Submission",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1256",
-            "summary": "ADVICE-1256: File a Claim: Updating of Insured/Provider Information form(ADVICE-59)",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1142",
-            "summary": "WCV submission doesn't go to Claims Home page: US-0004367",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1141",
-            "summary": "WCV submission doesn't go to Claims List page: US-0004367",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1140",
-            "summary": "MPL submission doesn't go to Claims Home page: US-0004375",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1139",
-            "summary": "MPL submission doesn't go to Claims List page: US-0004375",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1129",
-            "summary": "Agent submitting a claim goes to My Cases page: US-0004376",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1127",
-            "summary": "ADVICE-1127: Modal form styling(ADVICE-59)",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1124",
-            "summary": "Test Updated Claim Submission",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Other"
-          },
-          {
-            "key": "ADVICE-790",
-            "summary": "Claim Submission: Start Claim - Manage Claims Page: US-0004316",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-789",
-            "summary": "Claim Submission: Start Claim - Claims Overview Page: US-0004316",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-788",
-            "summary": "Claim Submission: Under Agent Landing Page",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-787",
-            "summary": "Claim Submission: Under PO Admin Landing Page: US-0004316",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-786",
-            "summary": "Claim Submission: Under Secondary Tab - Defending: US-0004316",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-785",
-            "summary": "Claim Submission: Create Modal: US-0004316",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          }
-        ],
-        "team": "Feature Freight"
-      },
-      {
-        "key": "ADVICE-58",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-58",
-        "summary": "Claims Homepage",
-        "status": "Ready for Release",
-        "statusCategory": "indeterminate",
-        "stories": [
-          {
-            "key": "ADVICE-1520",
-            "summary": "M3 Claims FAQs",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1415",
-            "summary": "ADVICE-1415: Overview: FAQ - remove Claim drop down(ADVICE-58)",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1221",
-            "summary": "ADVICE-1221: Overview: Name Changes(ADVICE-58)",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1161",
-            "summary": "Create Claims FAQ model inside of builder.io",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-1151",
-            "summary": "Test Claims Homepage",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Other"
-          },
-          {
-            "key": "ADVICE-750",
-            "summary": "Overview: Create new Claims Overview page in Agent Portal: US-0004248",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-749",
-            "summary": "Overview: Create Claims FAQs component: US-0004247",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-748",
-            "summary": "Overview: Create Policy Owners Programs component: US-0004247",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-747",
-            "summary": "Overview: Create Process Timeline component: US-0004247",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-746",
-            "summary": "Overview: Create Team Engagement component: US-0004247",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-745",
-            "summary": "Overview: Create new Claims Overview page in Customer Portal: US-0004248",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-744",
-            "summary": "Overview: Create hero section: US-0004247",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          }
-        ],
-        "team": "Feature Freight"
-      },
-      {
-        "key": "ADVICE-60",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-60",
-        "summary": "Manage Claims List",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1490",
-            "summary": "Test Manage Claims List",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Other"
-          },
-          {
-            "key": "ADVICE-1467",
-            "summary": "Manage Claims: Create New Field for Oasis Created Date",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1307",
-            "summary": "Manage Claims - 5 Years Worth of Oasis Data - Admin",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1306",
-            "summary": "Manage Claims - 5 Years Worth of Oasis Data",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1297",
-            "summary": "Manage Claims:  Update API to include 'multi-loss' (added to mag-claim-summary view)",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1204",
-            "summary": "SPIKE - Verify that we have 5 years worth of data in the Claims List",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1130",
-            "summary": "Manage Claims: No Claims Listed: US-0004178",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1098",
-            "summary": "Manage Claims: Revise Manage Claims Links: US-0004178",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1066",
-            "summary": "Manage Claims - SPIKE - API Performance data comparison",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1043",
-            "summary": "Manage Claims: NEW API for List of Claims Fields",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-831",
-            "summary": "Manage Claims: Load List of Claims - Tablet and Mobile: US-0004178",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-673",
-            "summary": "Support Role Claim Visibility on Manage Claims Page: US-0004178",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-655",
-            "summary": "Manage Claims: Create a Manage Claims Page_Agent Portal",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-619",
-            "summary": "Manage Claims: Policy holder List for PP Admin Only: US-0004178 ",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-617",
-            "summary": "ADVICE-617: Manage Claims: Custom Component to Load List of Claims Associated to User(ADVICE-60)",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-608",
-            "summary": "File a Claim Button visibility on Manage Claims Page: US-0004178",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-598",
-            "summary": "ADVICE-598: Manage Claims: Create a Manage Claims Page_Customer Portal(ADVICE-60)",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-487",
-            "summary": "SPIKE - Research How to get the Info Buttons to work",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-486",
-            "summary": "SPIKE - Research multi-loss field in Oasis",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          }
-        ],
-        "team": "Feature Freight"
-      },
-      {
-        "key": "ADVICE-743",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-743",
-        "summary": "Automate Oasis no-insured-provider Claim Creation",
-        "status": "UAT",
-        "statusCategory": "done",
-        "stories": [
-          {
-            "key": "ADVICE-1492",
-            "summary": "Test Automate Oasis no-insured-provider Claim Creation",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Other"
-          },
-          {
-            "key": "ADVICE-987",
-            "summary": "No Insured - Adjust Claim Form to Not Require an Insured - Agent and Policy Owner: US-0005025",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          }
-        ],
-        "team": "Feature Freight"
-      },
-      {
-        "key": "ADVICE-1530",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-1530",
-        "summary": "Automating Live CME Activities",
+        "key": "ADVICE-1709",
+        "summary": "UTD - Update 'specialty' parameter ",
         "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1533",
-            "summary": "Create CME Activity from Survey Completion",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Hogwarts Express"
-          }
-        ],
-        "team": "Hogwarts Express"
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1709",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1084"
+          ],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "ADVICE-354",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-354",
-        "summary": "Automating litigation materials being sent to PH",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-873",
-            "summary": "Agent submission email",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-716",
-            "summary": "Claims Operations case journey - Email to case",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-714",
-            "summary": "Relate MC emails to case ",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-713",
-            "summary": "Claims Operations case journey - AGENT",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-658",
-            "summary": "Claims Operations case journey - MMM",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-657",
-            "summary": "Create Claims Operations case templates in Marketing Cloud",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-656",
-            "summary": "Research: Current automated responses to Claims Operations cases",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Fox Force"
-          },
-          {
-            "key": "ADVICE-1244",
-            "summary": "Deactivate Salesforce flow ",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Other"
-          }
-        ],
-        "team": "Fox Force"
+        "key": "ADVICE-1708",
+        "summary": "[QA] - Verify the domain update for magnify.magmutual (Magnify frontend) to use mag approved domain",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Tuyen Nguyen",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1708",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "EN-809",
-        "url": "https://magmutual.atlassian.net/browse/EN-809",
-        "summary": "Add sheet to claims scorecard",
+        "key": "ADVICE-1707",
+        "summary": "[QA] - Verify the domain update for api.magnify.magmutual (Magnify Server) applications",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Tuyen Nguyen",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1707",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1706",
+        "summary": "QA - Create tcs for ADVICE-1540",
         "status": "Creating",
-        "statusCategory": "new",
-        "stories": [],
-        "team": "Data Divers"
+        "statusCategory": "To Do",
+        "team": "Hieu Tran",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1706",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1705",
+        "summary": "RMA API - [QA] - Update TC and verify the last testing round",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Tuyen Nguyen",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1705",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1704",
+        "summary": "QA - Update tcs related to dropdown in LC of SupportTL",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Hieu Tran",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1704",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1703",
+        "summary": "Research serverside HTTP/2 solutions for cloud-storage-api",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Diana Baughan",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1703",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1702",
+        "summary": "Automation work for MOC Board Associations",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Samuel McLaughlin",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1702",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1701",
+        "summary": "[Automation Test] Implement automation tests for Defending submodules",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Thanh Le",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1701",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1700",
+        "summary": "QA Validating",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "An Nguyen",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1700",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1699",
+        "summary": "Update build image in Netlify to the latest build for my-magmutual.",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1699",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1609"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1696",
+        "summary": "Support has Manage Users in LC",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Blake Patterson",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1696",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-666"
+          ],
+          "subtasks": [
+            "ADVICE-1704"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1695",
+        "summary": "RMA API - [QA] - Testing execution for Adding 'status' to endpoint - round 2",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Tuyen Nguyen",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1695",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1694",
+        "summary": "QA - Verify ADVICE-1306 Manage Claims - 5 Years Worth of Oasis Data",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Thu Pham",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1694",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1693",
+        "summary": "The record pulled from Oasis is not displayed in the Manage Claim List",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Thu Pham",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1693",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1306"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1692",
+        "summary": "QA - Execute tcs for ADVICE-1298",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Hieu Tran",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1692",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1691",
+        "summary": "QA - Create tcs for ADVICE-1298",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Hieu Tran",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1691",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1690",
+        "summary": "[Automation Test] Implement automation tests for Menu Bars",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Thanh Le",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1690",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1689",
+        "summary": "CLONE - Release: Complete Production Readiness Checklist",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1689",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1688",
+        "summary": "CLONE - Release: Deployment Checklist",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1688",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1612"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1687",
+        "summary": "CLONE - Release: Production Support Plan",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1687",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1686",
+        "summary": "CLONE - Testing: Complete UAT Readiness Checklist",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1686",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1606"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1685",
+        "summary": "CLONE - Testing: Complete UAT Testing",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1685",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1604"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1684",
+        "summary": "CLONE - Testing: Create UAT Test Cases",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1684",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1603"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1683",
+        "summary": "CLONE - Documentation: Create/Update for Internal Users",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1683",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1602"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1682",
+        "summary": "CLONE - Documentation: Create/Update for External Users",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1682",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1601"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1681",
+        "summary": "CLONE - Documentation: Create/Update Technical Documentation",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1681",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1600"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1680",
+        "summary": "CLONE - Documentation: Create/Update Product Documentation",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1680",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1599"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1679",
+        "summary": "CLONE - Training: Execute Planned Training",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1679",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1598"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1678",
+        "summary": "CLONE - Training: Create/Update for External Audiences",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1678",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1597"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1677",
+        "summary": "CLONE - Training: Create/Update for Internal Audiences",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1677",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1596"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1676",
+        "summary": "CLONE - Training: Complete Training Plan",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1676",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1595"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1675",
+        "summary": "CLONE - Communication: Send Communications",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1675",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1594"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1674",
+        "summary": "CLONE - Communication: Create/Update for External Audiences",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1674",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1593"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1673",
+        "summary": "CLONE - Communication: Create/Update for Internal Audience",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1673",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1592"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1672",
+        "summary": "CLONE - Communication: Create Communication Strategy and Plan",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1672",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1591"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1671",
+        "summary": "CLONE - Strategy: Complete Adoption Plan",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1671",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1590"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1670",
+        "summary": "CLONE - Strategy: Complete Impact Assessment",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1670",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1589"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1669",
+        "summary": "CLONE - Release Readiness > Sample",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1669",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1584"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1668",
+        "summary": "SPIKE - Review No Coverage Data in DEV ",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Melanie Villiesse",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1668",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-617"
+          ],
+          "related": [
+            "ADVICE-1043",
+            "ADVICE-60"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1667",
+        "summary": "QA Validating",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "An Nguyen",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1667",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1666",
+        "summary": "Mismatch value of some fields between Oasis and SalesForce",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Thu Pham",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1666",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1307"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1665",
+        "summary": "[ADVICE-1203] The mismatch value of fields between Oasis and OASHI.MAG_CLAIM_SUMMARY view",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Thu Pham",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1665",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1203"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1663",
+        "summary": "QA - Update test case for ADVICE-1203",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Thu Pham",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1663",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1662",
+        "summary": "Navigation Dropdown Click Behavior - Not Wrapped in OCJ Feature Flag",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Vladyslav Ponomarov",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1662",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1661",
+        "summary": "QA - Create test case for ADVICE-1307",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Thu Pham",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1661",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1660",
+        "summary": "[Automation test] Implement automation tests for Claims 911",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1660",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1659",
+        "summary": "Advising menu items not showing correctly",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Blake Patterson",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1659",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-84",
+            "ADVICE-1475"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1658",
+        "summary": "QA - Create & Execute tcs for ADVICE-1242",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Hieu Tran",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1658",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1657",
+        "summary": "UpToDate - Enhance existing risk-factor-controller search",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1657",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1656",
+        "summary": "Builder API work for Board Associations",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Blake Patterson",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1656",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1655",
+        "summary": "Object and Field Configuration for MOC Board Associations",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Samuel McLaughlin",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1655",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-1534"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1654",
+        "summary": "Deactivate Salesforce flow",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Samuel McLaughlin",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1654",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1653",
+        "summary": "Update Redirect after course completion",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1653",
+        "relationships": {
+          "blockedBy": [
+            "EN-911"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1652",
+        "summary": "Create standard CME Course Survey [SF]",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1652",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "EN-911"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1651",
+        "summary": "Scorecard - Create Jury Scorecard LWC",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Vladyslav Ponomarov",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1651",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1650",
+        "summary": "QA - Verify ADVICE-1203 Litigation Dates: Claims Date View ",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Thu Pham",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1650",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1649",
+        "summary": "QA - Define regression test cases for Dropdowns in Learning Center",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Hieu Tran",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1649",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1648",
+        "summary": "[Automation Test] Implement automation tests for Defending",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Thanh Le",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1648",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1647",
+        "summary": "Generate Moc Report Items from CME_Activitiy__c",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Tera Benoit",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1647",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-1534"
+          ],
+          "related": [],
+          "subtasks": [
+            "ADVICE-1711"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1646",
+        "summary": "Release: Complete Production Readiness Checklist",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Blake Patterson",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1646",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1645",
+        "summary": " Release: Deployment Checklist",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Blake Patterson",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1645",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1644",
+        "summary": "Release: Production Support Plan",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1644",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1643",
+        "summary": "Testing: Complete UAT Readiness Checklist",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1643",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1606"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1642",
+        "summary": "Testing: Complete UAT Testing",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1642",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1604"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1641",
+        "summary": "Testing: Create UAT Test Cases",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1641",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1603"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1640",
+        "summary": "Documentation: Create/Update for Internal Users",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Solomon Alford",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1640",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1602"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1639",
+        "summary": "Documentation: Create/Update for External Users",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Solomon Alford",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1639",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1601"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1638",
+        "summary": "Documentation: Create/Update Technical Documentation",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Blake Patterson",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1638",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1600"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1637",
+        "summary": "Documentation: Create/Update Product Documentation",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1637",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1636",
+        "summary": "Training: Execute Planned Training",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1636",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1598"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1635",
+        "summary": "Training: Create/Update for External Audiences",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1635",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1597"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1634",
+        "summary": "Training: Create/Update for Internal Audiences",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1634",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1596"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1633",
+        "summary": "Training: Complete Training Plan",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Ruth Wood",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1633",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1632",
+        "summary": "Communication: Send Communications",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Chetan Jadhav",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1632",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1594"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1631",
+        "summary": "Communication: Create/Update for External Audiences",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Chetan Jadhav",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1631",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1593"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1630",
+        "summary": "Communication: Create/Update for Internal Audience",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Chetan Jadhav",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1630",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1592"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1629",
+        "summary": "Communication: Create Communication Strategy and Plan",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Chetan Jadhav",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1629",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1628",
+        "summary": "Strategy: Complete Adoption Plan",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Solomon Alford",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1628",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1627",
+        "summary": "Strategy: Complete Impact Assessment",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Solomon Alford",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1627",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1626",
+        "summary": "Release Readiness > Advising - INT/EXT - MOC - Q3 2025",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1626",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1625",
+        "summary": "No access to report or manage claims",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1625",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1624",
+        "summary": "No access to submit manage claims",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1624",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1623",
+        "summary": "Admin did not have access to manage and submit claims",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1623",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1621",
+        "summary": "Kafka Producer - Retry process",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Ben Hood",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1621",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-874"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1620",
+        "summary": "Kafka Producer - Error Handling",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Ben Hood",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1620",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-874"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1619",
+        "summary": "No email generated after granting partial access",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1619",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1618",
+        "summary": "Document users of mag-user-api",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1618",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-896"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1617",
+        "summary": "QA - Execute tcs for ADVICE-1538",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Hieu Tran",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1617",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1616",
+        "summary": "QA - Create tcs for ADVICE-1538",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Hieu Tran",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1616",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1615",
+        "summary": "Verify Manage Claims: Create New Field for Oasis Created Date",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Thu Pham",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1615",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1614",
+        "summary": "[QA] Verify ADVICE-1307 - Manage Claims - 5 Years Worth of Oasis Data - Admin",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Thu Pham",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1614",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1613",
+        "summary": "Release: Complete Production Readiness Checklist",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1613",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1612",
+        "summary": "Release: Deployment Checklist",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1612",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1688"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1611",
+        "summary": "Come up with deployment/testing plan for website",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Blake Patterson",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1611",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1610",
+        "summary": "Update to the latest nodejs HCI",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "E Kathuria",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1610",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1609",
+        "summary": "Update build image in Netlify to the latest build for HCI.",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Christopher Roman",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1609",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1699"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1608",
+        "summary": "Determine which forms in HCI need lower env submission url",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "E Kathuria",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1608",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-1004"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-407",
+        "summary": "Salesforce: Pass Selected Account from Flyout Panel to Contact Record: Copado US-0004142",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Seng Soukhavong",
+        "url": "https://jira.atlassian.com/browse/ADVICE-407",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "SPR-3909"
+          ],
+          "related": [
+            "SD-38283"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-870",
+        "summary": "**APRIL** Remove k8s-manifests repo",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-870",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-438",
+        "summary": "Salesforce: Update code susceptable to SOQL injection COPADO: US-0004155, US-0003998, US-0003959,  US-0003752, US-0003966",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Tera Benoit",
+        "url": "https://jira.atlassian.com/browse/ADVICE-438",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "PLAT-36",
+            "PLAT-39",
+            "SD-38283"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-391",
+        "summary": "Salesforce: Delete Expired Certificates US-0004001",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Lauren Crimmins",
+        "url": "https://jira.atlassian.com/browse/ADVICE-391",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-384",
+        "summary": "Salesforce: Set default external access on objects to private - Copado Manual Deployment Step Only: US-0004076",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Samuel McLaughlin",
+        "url": "https://jira.atlassian.com/browse/ADVICE-384",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-383",
+        "summary": "Salesforce: Remove Unused Profiles US-0003992",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Lauren Crimmins",
+        "url": "https://jira.atlassian.com/browse/ADVICE-383",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-379",
+        "summary": "User doesn't get logged out from the portal after 60 minutes of being idle",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Tera Benoit",
+        "url": "https://jira.atlassian.com/browse/ADVICE-379",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-88"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1009",
+        "summary": "Grid Alignment is Inconsistent",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1009",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-403",
+        "summary": "Bugfix-Policy-Owner-Support-Redirect",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Christopher Roman",
+        "url": "https://jira.atlassian.com/browse/ADVICE-403",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-378",
+        "summary": "My Learning menu item on M2 needs to be removed",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Christopher Roman",
+        "url": "https://jira.atlassian.com/browse/ADVICE-378",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-377",
+        "summary": "Store Learning Center Content Assignment URL's in Salesforce - Copado US-0003988",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Kiara Elliott",
+        "url": "https://jira.atlassian.com/browse/ADVICE-377",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-375",
+        "summary": "Finalize Presentations for Surgery Net",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-375",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
         "key": "ADVICE-679",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-679",
         "summary": "Strat Plan 24 - Implement CCP creation in Qliksense",
+        "status": "Ready for Release",
+        "statusCategory": "In Progress",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-679",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-426",
+        "summary": "MyMagMutual CSP Violation: Copado US-0004142",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Seng Soukhavong",
+        "url": "https://jira.atlassian.com/browse/ADVICE-426",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "SD-38283"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-364",
+        "summary": "Replace SOQL with Custom Metadata Type Methods Copado:  US-0004020",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Kiara Elliott",
+        "url": "https://jira.atlassian.com/browse/ADVICE-364",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "SFDC-4146"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-400",
+        "summary": "Validate Website AWS Service(s) and Notify DevOps for Potential Decommissioning",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Blake Patterson",
+        "url": "https://jira.atlassian.com/browse/ADVICE-400",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-875",
+        "summary": "**April/MAY** Decommission APIs that support the OLD version of Learning Center",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-875",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-357",
+        "summary": "Discount eligible content dashboard",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-357",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-358",
+        "summary": "When the user is terminated from the session, user should be directed to login screen",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-358",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-88"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-359",
+        "summary": "The MYMAGMUTUAL link at the bottom left of the MagMutual page doesn't work",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Sukanya Karan",
+        "url": "https://jira.atlassian.com/browse/ADVICE-359",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-88"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-360",
+        "summary": "User doesn't end up in the portal landing page after logging in with Axia credentials",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-360",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-88"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-716",
+        "summary": "Subscribe to the email newsletter",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-716",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-423",
+        "summary": "Analytics & SEO",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Adam Garling",
+        "url": "https://jira.atlassian.com/browse/ADVICE-423",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-425",
+        "summary": "Redirects",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Adam Garling",
+        "url": "https://jira.atlassian.com/browse/ADVICE-425",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-414"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-413",
+        "summary": "AdviceHub",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Vickram Kahlon",
+        "url": "https://jira.atlassian.com/browse/ADVICE-413",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-415",
+            "MAV-699",
+            "ADVICE-474"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-355",
+        "summary": "AdviceHub (duplicate)",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-355",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-354",
+        "summary": "Automating litigation materials being sent to PH",
         "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-115",
-            "summary": "Determine the Note Category Groups for the Critical Path Report",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-114",
-            "summary": "Update Claim Critical Path Report in Claims Form App",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-112",
-            "summary": "Create a View or Table for the Claim Critical Path Report",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-110",
-            "summary": "Add Note_Category to Oasis Staging",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
-      }
-    ],
-    "4.3": [
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-354",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-797",
+            "EN-483"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
       {
-        "key": "ADVICE-977",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-977",
-        "summary": "Learning Center Content Reusability",
+        "key": "ADVICE-455",
+        "summary": "Agile Release Training (ART) (E Kathuria)",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "E Kathuria",
+        "url": "https://jira.atlassian.com/browse/ADVICE-455",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "SFAO-2277",
+            "SFAO-2279"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-315",
+        "summary": "Qlik Design - Risk Environment Reports",
         "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1517",
-            "summary": "Learning Center Content Reusability",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "OG Team"
-          }
-        ],
-        "team": "OG Team"
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-315",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "ADVICE-114",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-114",
-        "summary": "09 MFR - Track Reviewers in a System (Move the medical faculty list into a tool that supports better efficiency)",
+        "key": "ADVICE-226",
+        "summary": "Trial Support Resources - Phase 1",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-226",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-187",
+        "summary": "Expanding Magnify Functionality to Include Cause of Loss Coding and Predictors",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-187",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-186",
+        "summary": "Expanding Magnify Functionality to Include better OCR and Search Functionality ",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-186",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1034",
+        "summary": "08 MFR - MFQ Web Based Form",
         "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1559",
-            "summary": "Med Faculty - Med Faculty List",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1201",
-            "summary": "Med Faculty - Prototype for Med Faculty List",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1118",
-            "summary": "SPIKE - Med Faculty - Payment Info",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1117",
-            "summary": "SPIKE - Med Faculty - Data Migration",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1116",
-            "summary": "SPIKE - Med Faculty - Current Med Faculty Process",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1115",
-            "summary": "SPIKE - Med Faculty - Offboarding Old Process",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1114",
-            "summary": "SPIKE - Med Faculty - Determine Relevant Information in Spreadsheet",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1103",
-            "summary": "SPIKE - Med Faculty - Data Review and Planning",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1028",
-            "summary": "SPIKE - Medical Faculty List Review - New Fields",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          }
-        ],
-        "team": "Feature Freight"
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1034",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-114"
+          ],
+          "blocks": [],
+          "related": [
+            "ADVICE-115",
+            "ADVICE-127"
+          ],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "ADVICE-95",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-95",
-        "summary": "MOC Dashboard",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1535",
-            "summary": "Export MOC Data From Dashboard",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1534",
-            "summary": "Create MOC Dashboard",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Hogwarts Express"
-          }
-        ],
-        "team": "Hogwarts Express"
+        "key": "ADVICE-132",
+        "summary": "Enabler: Automated Actions for Portal Accounts",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-132",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-26"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "ADVICE-1169",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-1169",
-        "summary": "Course Survey Automation and Simplification",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-865",
-            "summary": "Research moving survey to cloud page",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-864",
-            "summary": "Course Survey email - MC",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          }
-        ],
-        "team": "Fox Force"
+        "key": "ADVICE-131",
+        "summary": "Enabler: Global Search on M3 Site",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-131",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "JPP-2641",
-        "url": "https://magmutual.atlassian.net/browse/JPP-2641",
-        "summary": "Opty Updates - Auto-populate Dr. Salutation",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "JPP-5165",
-            "summary": "Prod Release: Salutation field - data update",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Soul Train"
-          },
-          {
-            "key": "JPP-5089",
-            "summary": "Automation to manage Salutation on Contact records",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Soul Train"
-          },
-          {
-            "key": "JPP-3445",
-            "summary": "Marketing Cloud template updates ",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          }
-        ],
-        "team": "Soul Train"
+        "key": "ADVICE-130",
+        "summary": "Auth0 Salesforce Email Update",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Michael Evans",
+        "url": "https://jira.atlassian.com/browse/ADVICE-130",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-15"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "JPP-2948",
-        "url": "https://magmutual.atlassian.net/browse/JPP-2948",
-        "summary": "CSA DB : Case Stage Pipeline ",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-484",
-            "summary": "Update Customer Service Analytics Dashboard with Pipeline feature",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
+        "key": "ADVICE-129",
+        "summary": "Strat Plan 24 - synchronize MMPO and claim process",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-129",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "EN-518",
-        "url": "https://magmutual.atlassian.net/browse/EN-518",
-        "summary": "Monthly Account Performance Dashboard",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-309",
-            "summary": "Account Performance Report > Incident and Claim Activity Updates",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-298",
-            "summary": "Create Design Document for Monthly Account Performance Report",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-297",
-            "summary": "Monthly Account Performance Report > Update to 3 Components Based on New MyMagMutual Account Access Object in Salesforce",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-288",
-            "summary": "Modify Monthly Account Performance Report",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-134",
-            "summary": "Monthly Account Performance Report > Resource Utilization - Courses Complete Component > Update Based on New CME Content & CME Activity Objects",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
-      },
-      {
-        "key": "EN-533",
-        "url": "https://magmutual.atlassian.net/browse/EN-533",
-        "summary": "Update Logic for Persistency Changes",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-621",
-            "summary": "Create Definitions Document for Executive Dashboard",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-345",
-            "summary": "Update logic for Persistency Calculation",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
-      }
-    ],
-    "4.4": [
-      {
-        "key": "ADVICE-93",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-93",
-        "summary": "MOC for CME Assignments",
-        "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1541",
-            "summary": "Update the My/Team Assignments tables to show MOC related fields",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-1540",
-            "summary": "MOC Board(s) Dropdown in assign activity modal filters pos",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-1539",
-            "summary": "Add MOC Board(s) dropdown to Assign Activity Modal",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-1538",
-            "summary": "Update Assign Activity Text to support MOC reporting",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-1527",
-            "summary": "MOC for CME - Assignment endpoint update",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "cad"
-          }
-        ],
-        "team": "OG Team"
-      },
-      {
-        "key": "ADVICE-1021",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-1021",
-        "summary": "Implement HPL indemnity model in Oasis - API portion",
-        "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1528",
-            "summary": "HPL - Sapiens API research",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1526",
-            "summary": "HPL - Validation",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1524",
-            "summary": "CAD - Review R model",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1523",
-            "summary": "HPL - Modify /predict endpoint to send reserve amount to Oasis / staging table",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1484",
-            "summary": "SPIKE - HPL Indemnity model - Python wrapper research",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "cad"
-          }
-        ],
-        "team": "cad"
-      },
-      {
-        "key": "ADVICE-111",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-111",
-        "summary": "Implement HPL indemnity model in Oasis -- Oasis/Appian portion",
-        "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1234",
-            "summary": "SPIKE - cm_transaction table verification",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1199",
-            "summary": "SPIKE - HPL OASIS - Pull Data from Oasis",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1119",
-            "summary": "SPIKE - HPL OASIS - Determine Oasis Data Needs",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1111",
-            "summary": "HPL OASIS - Updating Reserve in Oasis",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1110",
-            "summary": "HPL OASIS - Pull Data from Oasis",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          }
-        ],
-        "team": "Feature Freight"
-      },
-      {
-        "key": "ADVICE-1105",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-1105",
-        "summary": "Key Litigation Events and Dates  (Enabler (MVP): PH emotional support survey support)",
-        "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1536",
-            "summary": "Litigation Dates: Data Upload ",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1525",
-            "summary": "Litigation Dates: SalesForce Field Creation",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1203",
-            "summary": "Litigation Dates: Claims Date View ",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Feature Freight"
-          }
-        ],
-        "team": "Feature Freight"
-      },
-      {
-        "key": "ADVICE-730",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-730",
-        "summary": "Agents' Account Access Management",
-        "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1543",
-            "summary": "Matt - Research Sapiens API",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Other"
-          },
-          {
-            "key": "ADVICE-1537",
-            "summary": "Inquire About Oasis/Velocity API Connection",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1044",
-            "summary": "Connect Oasis/Velocity Producer API to Manage Agents Table",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1042",
-            "summary": "Create Agent Account Relation Modal",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1041",
-            "summary": "Update Agent Management Access Table - Multiple Accounts",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1040",
-            "summary": "Update Agent Access Management Table - Single",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Hogwarts Express"
-          }
-        ],
-        "team": "Hogwarts Express"
-      },
-      {
-        "key": "JPP-4436",
-        "url": "https://magmutual.atlassian.net/browse/JPP-4436",
-        "summary": "Standardized OLQ Notifications ",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "JPP-5176",
-            "summary": "Add Underwriter field to OLQ Opp Layout",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Crazy Train"
-          },
-          {
-            "key": "EN-861",
-            "summary": "OLQ journey - Underwriting",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-860",
-            "summary": "OLQ journey - Assigned owner",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-829",
-            "summary": "OLQ Notifications: Assignment",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-828",
-            "summary": "OLQ Notifications: Underwriting Review",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-827",
-            "summary": "OLQ Notifications: RFQ",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-826",
-            "summary": "OLQ Notifications: Declined",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          }
-        ],
-        "team": "Fox Force"
-      },
-      {
-        "key": "EN-539",
-        "url": "https://magmutual.atlassian.net/browse/EN-539",
-        "summary": "S&P Dashboard Enhancements",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-780",
-            "summary": "MPL Industry Premium for 2024 is not correct in Market Share Dashboard ",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-619",
-            "summary": "S&P Public Financials - MDA Peer Compare and Market Share Q1 2025 Refresh",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-386",
-            "summary": "The Qlik app \"S&P Public Financials - Market Share\" needs to be optimized.",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
-      },
-      {
-        "key": "EN-164",
-        "url": "https://magmutual.atlassian.net/browse/EN-164",
-        "summary": "CRMA: Segmentation Dashboard >  CME Activity object",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [],
-        "team": "Data Divers"
-      }
-    ],
-    "4.5IP": [
-      {
-        "key": "ADVICE-94",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-94",
-        "summary": "MOC for CME Credits",
-        "status": "Ready",
-        "statusCategory": "new",
-        "stories": [],
-        "team": "OG Team"
-      }
-    ],
-    "uncommitted": [
-      {
-        "key": "ADVICE-48",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-48",
-        "summary": "Risk Mitigation Advice Integration - User Interface/Data Management Dashboard",
-        "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1311",
-            "summary": "Update error handling for risk factor repository layer",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1144",
-            "summary": "RMA API - Look into how best to implement Fuzzy Search into the RMA API",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1097",
-            "summary": "RMA API - Create PATCH endpoint to update 'Status'",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1084",
-            "summary": "RMA API - Implement fuzzy search (risk-factor-api)",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1031",
-            "summary": "RMA API - Audit Table*",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1020",
-            "summary": "RMA API - Add pagination class to new POST and PATCH endpoints",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1019",
-            "summary": "RMA API - Create PUT endpoint to update existing mapping records",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1018",
-            "summary": "RMA API - Create POST endpoint to create new mapping records",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "cad"
-          },
-          {
-            "key": "ADVICE-1017",
-            "summary": "RMA API - Add 'status' to endpoint",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "cad"
-          }
-        ],
-        "team": "cad"
-      },
-      {
-        "key": "ADVICE-1289",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-1289",
-        "summary": "Live Integration of Oasis Claims",
-        "status": "Ready",
-        "statusCategory": "new",
-        "stories": [],
-        "team": "cad"
-      },
-      {
-        "key": "ADVICE-720",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-720",
-        "summary": "Learning Center Assignments Improvements",
-        "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1175",
-            "summary": "Completed assignments shown as expired",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-1173",
-            "summary": "Test Learning Center Assignments Improvements",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Other"
-          },
-          {
-            "key": "ADVICE-984",
-            "summary": "Notify User of Expiring/Expired Assignments in Advice Hub COPADO: US-0004347",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Hogwarts Express"
-          },
-          {
-            "key": "ADVICE-983",
-            "summary": "Add expiration timestamp to cme activites from bridge webhook",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-980",
-            "summary": "Configure bridge course expiration in dev and test with new users",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "OG Team"
-          },
-          {
-            "key": "ADVICE-833",
-            "summary": "Add CreateActivity Endpoint to sf-lc-auth FAST API service",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "OG Team"
-          }
-        ],
-        "team": "OG Team"
-      },
-      {
-        "key": "ADVICE-700",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-700",
-        "summary": "Automate getting SIR Bordereaux into the system",
-        "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "CLAIM-1026",
-            "summary": "External file number was replaced by CLAIM-885",
-            "status": "Deployed",
-            "statusCategory": "done",
-            "team": "Other"
-          },
-          {
-            "key": "CLAIM-885",
-            "summary": "FIX --- Create new file type \"SIR Potential Claim\"",
-            "status": "Deployed",
-            "statusCategory": "done",
-            "team": "Other"
-          },
-          {
-            "key": "CLAIM-722",
-            "summary": "SD-29278 Create new file type \"SIR Potential Claim\"",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Other"
-          },
-          {
-            "key": "BI-7571",
-            "summary": "Exclude new file type \"Potential Claim\" from loss runs and credentialing",
-            "status": "Closed",
-            "statusCategory": "done",
-            "team": "Other"
-          },
-          {
-            "key": "ADVICE-1123",
-            "summary": "SIR - Bordereaux Data Requirements",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1122",
-            "summary": "SIR - Automate SIR Bordereaux into Oasis ",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1120",
-            "summary": "SPIKE - SIR - Automation Research",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          }
-        ],
-        "team": "Feature Freight"
-      },
-      {
-        "key": "ADVICE-1172",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-1172",
-        "summary": "Include Account as MyMagMutual Experience Driver",
-        "status": "Feasibility Review",
-        "statusCategory": "new",
-        "stories": [],
-        "team": "Feature Freight"
+        "key": "ADVICE-128",
+        "summary": "Strat Plan 23 - PO experience videos (litigation)",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-128",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
         "key": "ADVICE-127",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-127",
         "summary": "Update Jury Scorecard",
         "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "ADVICE-1588",
-            "summary": "Implement Salesforce Relationship Object for Firm/Attorney/Paralegal Linking",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Claims"
-          },
-          {
-            "key": "ADVICE-1405",
-            "summary": "Scorecard - Create Custom Notes Component",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1404",
-            "summary": "Scorecard - Create Custom Dropdown Component",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1403",
-            "summary": "Scorecard - Internal Jury Selection Dashboard",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1402",
-            "summary": "SPIKE - Scorecard - List View Page Design ",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1401",
-            "summary": "SPIKE - Scorecard - Card View Page Design ",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1400",
-            "summary": "SPIKE - Scorecard - Condensed View Page Design ",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1399",
-            "summary": "SPIKE - Scorecard - Start/Create Page Design",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1398",
-            "summary": "SPIKE - Scorecard - Help Page Design ",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1200",
-            "summary": "SPIKE - Scorecard - Data",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1153",
-            "summary": "SPIKE - Jury Scorecard - Data Review and Planning",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1032",
-            "summary": "SPIKE - Attorney Authentication",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-1000",
-            "summary": "Scorecard - Email Automation",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-999",
-            "summary": "Scorecard - Data Model",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          },
-          {
-            "key": "ADVICE-998",
-            "summary": "Scorecard - New Jury Scorecard",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Feature Freight"
-          }
-        ],
-        "team": "Feature Freight"
+        "statusCategory": "To Do",
+        "team": "Jamie Clements",
+        "url": "https://jira.atlassian.com/browse/ADVICE-127",
+        "relationships": {
+          "blockedBy": [
+            "PBS-502"
+          ],
+          "blocks": [],
+          "related": [
+            "ADVICE-1034",
+            "ADVICE-57"
+          ],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "JPP-4786",
-        "url": "https://magmutual.atlassian.net/browse/JPP-4786",
-        "summary": "EA Email Comms: Remove Physician",
-        "status": "Analyzing",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-820",
-            "summary": "EA | Remove Physician Journey",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-819",
-            "summary": "EA | Remove Physician SQL query + DE",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          },
-          {
-            "key": "EN-817",
-            "summary": "EA | Remove Physician Change Request Email",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          }
-        ],
-        "team": "Fox Force"
+        "key": "ADVICE-126",
+        "summary": "Strat Plan 22 - Trial playbook creation",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-126",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "JPP-4785",
-        "url": "https://magmutual.atlassian.net/browse/JPP-4785",
-        "summary": "Tail Offer Generation: Remove Physician",
+        "key": "ADVICE-125",
+        "summary": "Strat Plan 21 - identifying files for success vs not success negotiation occurred",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-125",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-124",
+        "summary": "Strat Plan 21 - identify ways to store relevant negotiation documents for utilizations",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-124",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-29"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-759",
+        "summary": "Make jury selection training materials accessible in defense portal",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-759",
+        "relationships": {
+          "blockedBy": [
+            "PBS-294"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-122",
+        "summary": "Strat Plan 20 - Feedback loop created for defense counsel and claim analysts",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-122",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-121",
+        "summary": "Technical way to analyze the mock jury data",
         "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "JPP-5138",
-            "summary": "EA | Tail offer notification",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Fox Force"
-          },
-          {
-            "key": "JPP-5114",
-            "summary": "EA- Generate Tail Offer",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "LOCOMotive Legends"
-          },
-          {
-            "key": "JPP-5113",
-            "summary": "EA Admin-Internal Users Access to Tail Offer Documentation",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "LOCOMotive Legends"
-          },
-          {
-            "key": "EN-812",
-            "summary": "Tail Offer notification process [research]",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Fox Force"
-          }
-        ],
-        "team": "LOCOMotive Legends"
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-121",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-19",
+            "RCHTCTR-22"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "ADVICE-767",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-767",
-        "summary": "Create a Risk Report Dashboard for All Reports",
+        "key": "ADVICE-119",
+        "summary": "Strat Plan 19 - Define our ideal defense panel characteristics",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-119",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-118",
+        "summary": "Strat Plan 19 - Defining performance metrics for our external defense firms",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-118",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-116",
+        "summary": "Strat Plan 18 - MFR documents saved to a central folder",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-116",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "MED-309"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-115",
+        "summary": "Strat Plan 18 - Updating the medical faculty form",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-115",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1034"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-114",
+        "summary": "09 MFR - Track Reviewers in a System (Move the medical faculty list into a tool that supports better efficiency)",
         "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-843",
-            "summary": "Build Data Model for Risk Reports Dashboard",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-842",
-            "summary": "Investigate Tables and Views used for Risk Reports",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-841",
-            "summary": "Review Tables/Data used in all Risk Reports",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-810",
-            "summary": "Establish Data Connection to DRATST and DRADEV in Qlik Dev",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-772",
-            "summary": "Identify Solution for Using Dev Risk Data in Qlik",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-114",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-18",
+            "RCHTCTR-22"
+          ],
+          "blocks": [
+            "ADVICE-1034"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-111",
+        "summary": "Implement HPL indemnity model in Oasis -- Oasis/Appian portion",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-111",
+        "relationships": {
+          "blockedBy": [
+            "PBS-290"
+          ],
+          "blocks": [],
+          "related": [
+            "ADVICE-1021"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-110",
+        "summary": "Learning Center UX and styling errors",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-110",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-109",
+        "summary": "Create a DCC model for expense management",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-109",
+        "relationships": {
+          "blockedBy": [
+            "PBS-286"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-108",
+        "summary": "MyMagMutual UX and styling errors",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-108",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-107",
+        "summary": "Salesforce manage users constraints errors",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-107",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-106",
+        "summary": "Non-Specialty Content Tagging",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-106",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-676"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-681",
+        "summary": "Digital Experience Analytics Dashboard",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-681",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-67",
+            "ADVICE-68"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-104",
+        "summary": "MyMagMutual access related errors",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-104",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-103",
+        "summary": "Get Quote providing NPIs",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-103",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-672"
+          ],
+          "blocks": [],
+          "related": [
+            "ADVICE-672",
+            "EN-589"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-102",
+        "summary": "OneModel Request Form",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-102",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": [
+            "ADVICE-628"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-101",
+        "summary": "Account paperless settings for providers",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-101",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-100",
+        "summary": "MagMutual Cookie Consent",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-100",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-99",
+        "summary": "Salesforce Account/Contact Automation Documentation",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-99",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-98",
+        "summary": "Preserve LC library filtering",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-98",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-97",
+        "summary": "LC full content predictive search",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-97",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-96",
+        "summary": "Automated MOC reporting",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-96",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-95"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-95",
+        "summary": "MOC Dashboard",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-95",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-96"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-94",
+        "summary": "MOC for CME Credits",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-94",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-93",
+        "summary": "MOC for CME Assignments",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-93",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-1157"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-92",
+        "summary": "MOC for Learners",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-92",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-1095"
+          ],
+          "related": [
+            "ADVICE-1157"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-91",
+        "summary": "Manage Claims Feature Grouping",
+        "status": "Ready for Release",
+        "statusCategory": "In Progress",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-91",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-27"
+          ],
+          "blocks": [
+            "ADVICE-61"
+          ],
+          "related": [
+            "ADVICE-1045"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-90",
+        "summary": "Role Based Claims Data Access",
+        "status": "Ready for Release",
+        "statusCategory": "In Progress",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-90",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-27",
+            "ADVICE-60"
+          ],
+          "blocks": [
+            "ADVICE-61"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-88",
+        "summary": "Axia SSO",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-88",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-5",
+            "ADVICE-360",
+            "ADVICE-359",
+            "ADVICE-358",
+            "ADVICE-379"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-87",
+        "summary": "Cause of Loss in Learning Center Search",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-87",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-86",
+        "summary": "Error Alerting",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-86",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-23"
+          ],
+          "blocks": [],
+          "related": [
+            "ADVICE-771"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-84",
+        "summary": "Cyber Center Access - RLP and RLF Only",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-84",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1659"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-83",
+        "summary": "Advice Hub Content Source",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-83",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-80",
+        "summary": "SSO Standard Implementation Model - Large Hospital Groups SSO Connectivity",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-80",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-76",
+        "summary": "Cyber Center Analytics",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-76",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-16"
+          ],
+          "blocks": [],
+          "related": [
+            "SPR-4308"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-72",
+        "summary": "Automated Risk Report Distribution Workflow",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-72",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "EN-270"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-680",
+        "summary": "Segmentation Dashboard Migration to QlikSense",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-680",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-16",
+            "EN-308",
+            "EN-164"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
         "key": "ADVICE-68",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-68",
         "summary": "Digital Experience Analytics Dashboard - DatoCMS",
         "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "MED-683",
-            "summary": "Create Documentation for Website Analytics Data",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-808",
-            "summary": "Validate Logic in Digital Experience Analytics Dashboard",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-806",
-            "summary": "Validate GA4 - Google Analytics Data",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-430",
-            "summary": "Move Website Analytics Dashboard to Qlik Prod - Digital Experience Analytics Dashboard",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-429",
-            "summary": "Validate DatoCMS Data",
-            "status": "Validating",
-            "statusCategory": "indeterminate",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-68",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-681"
+          ],
+          "related": [
+            "BI-8347",
+            "ADVICE-67"
+          ],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
         "key": "ADVICE-67",
-        "url": "https://magmutual.atlassian.net/browse/ADVICE-67",
         "summary": "Digital Experience Analytics Dashboard - Builder.io",
         "status": "Ready",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-807",
-            "summary": "Validate Builder.io Data",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-438",
-            "summary": "Establish API Connection from Builder.IO to Qlik",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-67",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-16"
+          ],
+          "blocks": [
+            "ADVICE-681"
+          ],
+          "related": [
+            "ADVICE-68"
+          ],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "JPP-2949",
-        "url": "https://magmutual.atlassian.net/browse/JPP-2949",
-        "summary": "CSA DB : Factor Holiday Hours into Call Metrics",
-        "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-486",
-            "summary": "Investigate Dataflow for Missed Call Flag - CSA DB",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-485",
-            "summary": "CSA DB: Update Missed Calls Flag to Factor in Holiday",
-            "status": "Ready",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
+        "key": "ADVICE-676",
+        "summary": "Push Advice",
+        "status": "UAT",
+        "statusCategory": "Done",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-676",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "MED-244",
+            "ADVICE-106",
+            "ADVICE-976"
+          ],
+          "subtasks": []
+        },
+        "stories": []
       },
       {
-        "key": "EN-530",
-        "url": "https://magmutual.atlassian.net/browse/EN-530",
-        "summary": "COI, Loss Run, and Credentialing Report Enhancements",
+        "key": "ADVICE-65",
+        "summary": "CME Assignments",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-65",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "SD-40725"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-64",
+        "summary": "REIN as a Qualifying UTD Policy Type",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-64",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-61",
+        "summary": "Manage Claims details",
+        "status": "Feasibility Review",
+        "statusCategory": "To Do",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-61",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-90",
+            "ADVICE-91"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-60",
+        "summary": "Manage Claims List",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-60",
+        "relationships": {
+          "blockedBy": [
+            "END-256"
+          ],
+          "blocks": [
+            "ADVICE-90"
+          ],
+          "related": [
+            "ADVICE-1668",
+            "ADVICE-1289"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-59",
+        "summary": "Updated Claim Submission",
+        "status": "Ready for Release",
+        "statusCategory": "In Progress",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-59",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-58",
+        "summary": "Claims Homepage",
+        "status": "Ready for Release",
+        "statusCategory": "In Progress",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-58",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-57"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-57",
+        "summary": "MyMagMutual Defending",
+        "status": "Ready for Release",
+        "statusCategory": "In Progress",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-57",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-58",
+            "RCHTCTR-22",
+            "ADVICE-127"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-675",
+        "summary": "Learning Center Recruitment & M3 Access Permissions",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Angie Flegel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-675",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-55",
+        "summary": "UpToDate Instructions Update",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-55",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-54",
+        "summary": "EHR Integration",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-54",
+        "relationships": {
+          "blockedBy": [
+            "RCHTCTR-24"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-51",
+        "summary": "Risk Mitigation Strategy Report Dashboard",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-51",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "TPS-253",
+        "summary": "Mag.app/.dev CERTS expire July 2025 and gcp.magmutual.com expires Dec 2025",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Ron Freeman",
+        "url": "https://jira.atlassian.com/browse/TPS-253",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "TPS-258",
+            "JPP-3791"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "SFDC-5168",
+        "summary": "2024 Production Support",
+        "status": "In Progress",
+        "statusCategory": "In Progress",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/SFDC-5168",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "MED-196",
+        "summary": "Presentation - SurgeryNet",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Stephanie Zercher",
+        "url": "https://jira.atlassian.com/browse/MED-196",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "MAV-686",
+        "summary": "Learning Center Regression Testing Stories",
+        "status": "To Do",
+        "statusCategory": "To Do",
+        "team": "Blake Patterson",
+        "url": "https://jira.atlassian.com/browse/MAV-686",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-422"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-187",
+        "summary": "24a) Quickly merge the whole department ",
         "status": "Creating",
-        "statusCategory": "new",
-        "stories": [
-          {
-            "key": "EN-700",
-            "summary": "Update COI Nprinting form - BI-8335",
-            "status": "Backlog",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-385",
-            "summary": "Incorrect Retro Date on Qlik Sense Policy History ",
-            "status": "Creating",
-            "statusCategory": "new",
-            "team": "Data Divers"
-          },
-          {
-            "key": "EN-173",
-            "summary": "CIS Number Connection Request in Qlik Sense",
-            "status": "Done",
-            "statusCategory": "done",
-            "team": "Data Divers"
-          }
-        ],
-        "team": "Data Divers"
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/EP-187",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-186",
+        "summary": "23c) Create the optimal delivery system through which to deploy these solutions",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/EP-186",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-184",
+        "summary": "23a) Develop a system which identifies all needs as they arise",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/EP-184",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-182",
+        "summary": "11b) Develop a standard, simple format to track juror characteristics and establish the styles and forms of communication which best resonate with individual and collective characteristics",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/EP-182",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-171",
+        "summary": "20b) Develop a training/jury selection approach which maximizes probability of securing the ideal profile (by identifying and removing the riskiest jurors and identifying and securing the most defense sympathetic ones",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/EP-171",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-168",
+        "summary": "19c) When designing how we assess team member desirability, we need to establish a process which works equally well with outside counsel",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/EP-168",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-164",
+        "summary": "16a) Create a more sophisticated usage measurement capture system",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/EP-164",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-163",
+        "summary": "15b) Establish an effective method by which to get into the EHR systems of most practitioners",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/EP-163",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-162",
+        "summary": "15a) Expand into UpToDate for enough specialties to ensure that we are covering the majority of PolicyOwners",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/EP-162",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-160",
+        "summary": "18d) We need to improve the consistency, efficacy and accuracy of all human judgment inputs",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/EP-160",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-159",
+        "summary": "18c) We need to build and implement the HPL model",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/EP-159",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-158",
+        "summary": "18b) We need to build and implement the DCC model",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/EP-158",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-147",
+        "summary": "14b) Develop an ‘evidence based’ and ranked library of administrative behavioral changes necessary to reduce all identified risks and improve expected future outcomes",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Tanner Colegrove",
+        "url": "https://jira.atlassian.com/browse/EP-147",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-146",
+        "summary": "14a) Develop an ‘evidence based’ and ranked library of clinical behavioral changes necessary to reduce all identified risks and improve expected future outcomes",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Tanner Colegrove",
+        "url": "https://jira.atlassian.com/browse/EP-146",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-145",
+        "summary": "17e) Will position and brand the institute so that it becomes seen as the leading advisor for healthcare liability risk",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Allyson Houser",
+        "url": "https://jira.atlassian.com/browse/EP-145",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-143",
+        "summary": "17c) Will include the desired repeatable, impactful process",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Brandie Szuda",
+        "url": "https://jira.atlassian.com/browse/EP-143",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-121",
+        "summary": "12a) Develop a plan to eliminate the identified errors",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Rick Mages",
+        "url": "https://jira.atlassian.com/browse/EP-121",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-105",
+        "summary": "10b) Deliver the total support experience/reality that should likewise exist and present through the right source(s) in the correct place(s)",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/EP-105",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "EP-104",
+        "summary": "10a) Ensure that the totality of our product is expressed clearly and concisely in the right place(s) and through the correct source(s)",
+        "status": "Analyzing",
+        "statusCategory": "To Do",
+        "team": "Renee Kratz",
+        "url": "https://jira.atlassian.com/browse/EP-104",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1584",
+        "summary": "Release Readiness > Sample",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1584",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1669"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1540",
+        "summary": "MOC Board(s) Dropdown in assign activity modal filters ",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Unassigned",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1540",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": [
+            "ADVICE-1706"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1538",
+        "summary": "Update Assign Activity Text to support MOC reporting",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Christopher Roman",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1538",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": [
+            "ADVICE-1617",
+            "ADVICE-1616"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1533",
+        "summary": "Create CME Activity from Survey Completion",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "An Nguyen",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1533",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": [
+            "ADVICE-1700"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1531",
+        "summary": "Move Surveys into SF from SurveyMonkey",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Solomon Alford",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1531",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": [
+            "ADVICE-1667"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1467",
+        "summary": "Manage Claims: Create New Field for Oasis Created Date",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Melanie Villiesse",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1467",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-1307"
+          ],
+          "blocks": [
+            "ADVICE-1307",
+            "ADVICE-1306"
+          ],
+          "related": [],
+          "subtasks": [
+            "ADVICE-1615"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1307",
+        "summary": "Manage Claims - 5 Years Worth of Oasis Data - Admin",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Melanie Villiesse",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1307",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-1467"
+          ],
+          "blocks": [
+            "ADVICE-1467"
+          ],
+          "related": [
+            "ADVICE-1306",
+            "ADVICE-1666"
+          ],
+          "subtasks": [
+            "ADVICE-1614",
+            "ADVICE-1661"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1306",
+        "summary": "Manage Claims - 5 Years Worth of Oasis Data(Advice-60)",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Melanie Villiesse",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1306",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-1467",
+            "END-256"
+          ],
+          "blocks": [],
+          "related": [
+            "ADVICE-1307",
+            "ADVICE-1693"
+          ],
+          "subtasks": [
+            "ADVICE-1503",
+            "ADVICE-1694"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1298",
+        "summary": "Learning Center redirect wcv",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Christopher Roman",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1298",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-785"
+          ],
+          "subtasks": [
+            "ADVICE-1691",
+            "ADVICE-1692"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1242",
+        "summary": "Move HCI date to the bottom of the page",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Christopher Roman",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1242",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": [
+            "ADVICE-1658"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1203",
+        "summary": "Litigation Dates: Claims Date View ",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Melanie Villiesse",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1203",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-1105"
+          ],
+          "related": [
+            "ADVICE-1665"
+          ],
+          "subtasks": [
+            "ADVICE-1650",
+            "ADVICE-1663"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1169",
+        "summary": "Course Survey Automation and Simplification",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Clint Casteel",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1169",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1105",
+        "summary": "Key Litigation Events and Dates  (Enabler (MVP): PH emotional support survey support)",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Jamie Clements",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1105",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-1203"
+          ],
+          "blocks": [
+            "ADVICE-797",
+            "ADVICE-1164"
+          ],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1084",
+        "summary": "RMA API - Implement fuzzy search (risk-factor-api)",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Hamilton Bradford",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1084",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1709"
+          ],
+          "subtasks": [
+            "ADVICE-1489",
+            "ADVICE-1567",
+            "ADVICE-1705"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1017",
+        "summary": "RMA API - Add 'status' to endpoint",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Grant Wesley",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1017",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "ADVICE-1018"
+          ],
+          "subtasks": [
+            "ADVICE-1131",
+            "ADVICE-1553",
+            "ADVICE-1578",
+            "ADVICE-1695"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1002",
+        "summary": "Learning Center/M3 Tech Debt/Enhancements",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Blake Patterson",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1002",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "SPR-2661",
+            "SPR-2686",
+            "SPR-3583",
+            "SPR-3543",
+            "SPR-3542",
+            "SPR-3887",
+            "JPP-2220"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-1001",
+        "summary": "M2/HCI Tech Debt/Enhancements",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Blake Patterson",
+        "url": "https://jira.atlassian.com/browse/ADVICE-1001",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-897",
+        "summary": "Update magnify.magmutual (Magnify frontend) to use mag approved domain",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Hamilton Bradford",
+        "url": "https://jira.atlassian.com/browse/ADVICE-897",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "TPS-92"
+          ],
+          "subtasks": [
+            "ADVICE-1708"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-894",
+        "summary": "Update api.magnify.magmutual (Magnify Server) applications to use mag approved domain",
+        "status": "Validating",
+        "statusCategory": "In Progress",
+        "team": "Hamilton Bradford",
+        "url": "https://jira.atlassian.com/browse/ADVICE-894",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "TPS-85"
+          ],
+          "subtasks": [
+            "ADVICE-1707"
+          ]
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-760",
+        "summary": "Create a structured database for jury profiling storage",
+        "status": "Backlog",
+        "statusCategory": "To Do",
+        "team": "Caitlin Dodd",
+        "url": "https://jira.atlassian.com/browse/ADVICE-760",
+        "relationships": {
+          "blockedBy": [
+            "PBS-297"
+          ],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-11",
+        "summary": "Builder.io setup",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-11",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-10",
+        "summary": "DatoCMS to Bulder.io APIs",
+        "status": "Released",
+        "statusCategory": "Done",
+        "team": "Nenad Samardzic",
+        "url": "https://jira.atlassian.com/browse/ADVICE-10",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      }
+    ],
+    "MAV-686": [
+      {
+        "key": "ADVICE-385",
+        "summary": "Regression Test: Create cypress regression test to ensure no agent users can select quoting from within the portal",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Sindhubala Sethrabalan",
+        "url": "https://jira.atlassian.com/browse/ADVICE-385",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-406",
+        "summary": "Create Confluence doc to keep track of LC regression test by environment",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "E Kathuria",
+        "url": "https://jira.atlassian.com/browse/ADVICE-406",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-390",
+        "summary": "Regression Test: Create auth0 login test for Provider Without Team Learning DEV",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Rodney Fowlkes",
+        "url": "https://jira.atlassian.com/browse/ADVICE-390",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "MAV-756",
+            "MAV-758"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "ADVICE-393",
+        "summary": "Regression Test: Create auth0 login test for Agency Manager DEV",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "E Kathuria",
+        "url": "https://jira.atlassian.com/browse/ADVICE-393",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "MAV-690",
+            "MAV-755"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      }
+    ],
+    "SFDC-5168": [
+      {
+        "key": "ADVICE-516",
+        "summary": "\"Technical Support\" Case Page Layout Update - Copado US-0003970",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Samuel McLaughlin",
+        "url": "https://jira.atlassian.com/browse/ADVICE-516",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "SFAO-2227"
+          ],
+          "related": [
+            "SFDC-5922",
+            "SFAO-2227",
+            "SD-38225",
+            "SD-38283"
+          ],
+          "subtasks": []
+        },
+        "stories": []
+      }
+    ],
+    "CAD-876": [
+      {
+        "key": "ADVICE-874",
+        "summary": "Kafka Producer - Stage Two - Retry process",
+        "status": "Creating",
+        "statusCategory": "To Do",
+        "team": "Ben Hood",
+        "url": "https://jira.atlassian.com/browse/ADVICE-874",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": [
+            "CAD-751",
+            "ADVICE-1620",
+            "ADVICE-1621"
+          ],
+          "subtasks": [
+            "ADVICE-1620",
+            "ADVICE-1621"
+          ]
+        },
+        "stories": []
       }
     ]
-  },
-  "title": "Advice and Claims"
+  }
 }

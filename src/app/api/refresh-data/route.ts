@@ -15,7 +15,7 @@ async function fetchProjectData(projectKey: string) {
   do {
     // Use a simpler JQL query that's more likely to work across different projects
     const jql = `project = ${projectKey} ORDER BY created DESC`;
-    const url = `${baseUrl}/api/jira?endpoint=search&jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${maxResults}&fields=summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001`;
+    const url = `${baseUrl}/api/jira?endpoint=search&jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${maxResults}&fields=summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001,issuelinks,subtasks`;
     
     console.log(`Fetching from: ${url}`);
     const res = await fetch(url);
@@ -47,7 +47,7 @@ async function fetchProjectData(projectKey: string) {
     for (let i = 0; i < missingParentKeys.length; i += 50) {
       const batch = missingParentKeys.slice(i, i + 50);
       const jql = `key in (${batch.map(k => `'${k}'`).join(',')})`;
-      const url = `${baseUrl}/api/jira?endpoint=search&jql=${encodeURIComponent(jql)}&fields=summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001`;
+      const url = `${baseUrl}/api/jira?endpoint=search&jql=${encodeURIComponent(jql)}&fields=summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001,issuelinks,subtasks`;
       
       try {
         const res = await fetch(url);
@@ -89,7 +89,44 @@ function organizeIssuesIntoColumns(issues: any[]) {
       columns[columnKey] = [];
     }
     
-    // Create epic structure
+    // Extract relationship information
+    const relationships = {
+      blockedBy: [] as string[],
+      blocks: [] as string[],
+      related: [] as string[],
+      subtasks: [] as string[]
+    };
+    
+    // Process issue links
+    if (issue.fields.issuelinks) {
+      issue.fields.issuelinks.forEach((link: any) => {
+        if (link.inwardIssue) {
+          // This issue is blocked by the inward issue
+          if (link.type.inward === 'is blocked by') {
+            relationships.blockedBy.push(link.inwardIssue.key);
+          } else {
+            relationships.related.push(link.inwardIssue.key);
+          }
+        }
+        if (link.outwardIssue) {
+          // This issue blocks the outward issue
+          if (link.type.outward === 'blocks') {
+            relationships.blocks.push(link.outwardIssue.key);
+          } else {
+            relationships.related.push(link.outwardIssue.key);
+          }
+        }
+      });
+    }
+    
+    // Process subtasks
+    if (issue.fields.subtasks) {
+      issue.fields.subtasks.forEach((subtask: any) => {
+        relationships.subtasks.push(subtask.key);
+      });
+    }
+    
+    // Create epic structure with relationships
     const epic = {
       key: issue.key,
       summary: issue.fields.summary,
@@ -97,6 +134,7 @@ function organizeIssuesIntoColumns(issues: any[]) {
       statusCategory: issue.fields.status.statusCategory.name,
       team: issue.fields.assignee?.displayName || 'Unassigned',
       url: `https://jira.atlassian.com/browse/${issue.key}`,
+      relationships,
       stories: []
     };
     

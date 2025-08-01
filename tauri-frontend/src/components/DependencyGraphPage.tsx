@@ -26,12 +26,19 @@ function getColorForTeam(team: string) {
   return '#' + '00000'.substring(0, 6 - c.length) + c;
 }
 
-// Preview Card Component
-function PreviewCard({ node, onClose }: { node: any; onClose: () => void }) {
-  const team = node.team || 'Other';
-  const doneCount = node.stories ? node.stories.filter((s: any) => s.statusCategory === 'done').length : 0;
-  const totalCount = node.stories ? node.stories.length : 0;
+// Enhanced Preview Card Component with child issues
+function PreviewCard({ node, onClose, teamFilter }: { node: any; onClose: () => void; teamFilter?: string[] }) {
+  // Filter child stories by teamFilter if provided
+  const filteredStories = useMemo(() => {
+    if (!Array.isArray(node.stories)) return [];
+    if (!teamFilter || teamFilter.length === 0) return node.stories;
+    return node.stories.filter((story: any) => teamFilter.includes(story.team));
+  }, [node.stories, teamFilter]);
+
+  const doneCount = filteredStories.filter((s: any) => s.statusCategory === 'done').length || 0;
+  const totalCount = filteredStories.length || 0;
   const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+  const team = node.team || 'Other';
 
   return (
     <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 2, position: 'relative' }}>
@@ -93,6 +100,45 @@ function PreviewCard({ node, onClose }: { node: any; onClose: () => void }) {
             </Box>
             <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545' } }} />
           </>
+        )}
+        
+        {filteredStories && filteredStories.length > 0 && (
+          <Box mt={2}>
+            <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mb: 1 }}>Child work items</Typography>
+            <Box component="ul" sx={{ pl: 2, m: 0 }}>
+              {filteredStories.map((story: any) => (
+                <li key={story.key} style={{ marginBottom: 4 }}>
+                  <a 
+                    href={'https://magmutual.atlassian.net/browse/' + story.key}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ 
+                      fontWeight: 600, 
+                      color: '#0d6efd', 
+                      marginRight: 8,
+                      textDecoration: 'none'
+                    }}
+                  >
+                    {story.key}
+                  </a>
+                  <span style={{ color: '#495057', marginRight: 8 }}>{story.summary}</span>
+                  <Tooltip title={story.team} placement="top">
+                    <span style={{
+                      display: 'inline-block',
+                      width: 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      background: getColorForTeam(story.team),
+                      border: '1px solid #fff',
+                      boxShadow: '0 0 0 1px #dee2e6',
+                      marginRight: 4
+                    }} />
+                  </Tooltip>
+                  <Chip label={story.status} size="small" sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500, borderRadius: 1 }} />
+                </li>
+              ))}
+            </Box>
+          </Box>
         )}
         
         {node.iteration && (
@@ -221,6 +267,7 @@ export default function DependencyGraphPage() {
             >
               <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
               <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
+              <MenuItem value="test-relationships">Test Relationships (Demo)</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -351,9 +398,9 @@ export default function DependencyGraphPage() {
             )}
           </Box>
           
-          {/* Preview Panel - Directly adjacent to graph viewport */}
+          {/* Preview Panel - 20% width with child issues */}
           <Box sx={{ 
-            width: 320,
+            width: '20%',
             flexShrink: 0,
             backgroundColor: '#fff',
             borderLeft: '1px solid #e0e0e0',
@@ -364,11 +411,12 @@ export default function DependencyGraphPage() {
             <Typography variant="h6" gutterBottom sx={{ color: '#212529', fontWeight: 600, mb: 2, p: 2, pb: 0, borderBottom: '1px solid #e0e0e0' }}>
               Node Preview
             </Typography>
-            <Box sx={{ flex: 1, overflowY: 'auto' }}>
+            <Box sx={{ flex: 1, overflowY: 'auto', p: 2 }}>
               {selectedNode ? (
                 <PreviewCard 
                   node={selectedNode} 
-                  onClose={() => setSelectedNode(null)} 
+                  onClose={() => setSelectedNode(null)}
+                  teamFilter={teamFilter}
                 />
               ) : (
                 <Box sx={{ 
@@ -377,8 +425,7 @@ export default function DependencyGraphPage() {
                   alignItems: 'center', 
                   height: '200px',
                   bgcolor: '#fff',
-                  color: '#6c757d',
-                  p: 2
+                  color: '#6c757d'
                 }}>
                   <Typography variant="body2" sx={{ textAlign: 'center' }}>
                     Click on a node in the graph to see details
@@ -403,7 +450,16 @@ export default function DependencyGraphPage() {
             • <strong>Border colors</strong> represent teams
           </Typography>
           <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
-            • <strong>Lines</strong> show dependencies between epics and their stories
+            • <strong>Gray lines</strong> show epic-to-story relationships
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Red arrows</strong> show "blocked by" relationships
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Orange arrows</strong> show "blocks" relationships
+          </Typography>
+          <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
+            • <strong>Blue dashed lines</strong> show "related to" relationships
           </Typography>
           <Typography variant="body2" paragraph sx={{ color: '#6c757d' }}>
             • <strong>Drag nodes</strong> to rearrange the graph layout

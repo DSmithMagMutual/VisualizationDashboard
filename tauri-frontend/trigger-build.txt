@@ -1,3 +1,0 @@
-# This file triggers the Windows build workflow
-# Last updated: $(date)
-# Build trigger: Windows build workflow 
