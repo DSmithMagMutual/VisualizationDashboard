@@ -1,7 +1,7 @@
 {
   "name": "tauri-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,7 +14,8 @@
     "build:all": "./build-all.sh",
     "build:quick": "./quick-build.sh",
     "build:macos": "tauri build",
-    "build:windows": "tauri build --target x86_64-pc-windows-gnu"
+    "build:windows": "tauri build --target x86_64-pc-windows-gnu",
+    "version:update": "node scripts/update-version.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
