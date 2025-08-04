@@ -11,12 +11,6 @@ interface Issue {
   statusCategory: string;
   team?: string;
   url?: string;
-  relationships?: {
-    blockedBy: string[];
-    blocks: string[];
-    related: string[];
-    subtasks: string[];
-  };
 }
 
 interface Epic {
@@ -26,12 +20,6 @@ interface Epic {
   statusCategory: string;
   team?: string;
   url?: string;
-  relationships?: {
-    blockedBy: string[];
-    blocks: string[];
-    related: string[];
-    subtasks: string[];
-  };
   stories: Issue[];
 }
 
@@ -132,7 +120,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
     const links: Array<{
       source: string;
       target: string;
-      type: 'epic-story' | 'blocked-by' | 'blocks' | 'related';
+      type: 'epic-story';
     }> = [];
 
     // Process all epics and their stories with iteration information
@@ -182,36 +170,6 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
               type: 'epic-story'
             });
           });
-
-          // Add relationship links for epics
-          if (epic.relationships) {
-            // Add blocked-by relationships (red arrows pointing to this epic)
-            epic.relationships.blockedBy.forEach(blockingKey => {
-              links.push({
-                source: blockingKey,
-                target: epic.key,
-                type: 'blocked-by'
-              });
-            });
-
-            // Add blocks relationships (orange arrows pointing from this epic)
-            epic.relationships.blocks.forEach(blockedKey => {
-              links.push({
-                source: epic.key,
-                target: blockedKey,
-                type: 'blocks'
-              });
-            });
-
-            // Add related relationships (blue dashed lines)
-            epic.relationships.related.forEach(relatedKey => {
-              links.push({
-                source: epic.key,
-                target: relatedKey,
-                type: 'related'
-              });
-            });
-          }
         }
       });
     });
@@ -256,49 +214,15 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force('collision', d3.forceCollide().radius(40));
 
-    // Create the links with different styles for each relationship type
+    // Create the links
     const link = g.append('g')
       .selectAll('line')
       .data(graphData.links)
       .enter()
       .append('line')
-      .attr('stroke', (d: any) => {
-        switch (d.type) {
-          case 'epic-story':
-            return '#999';
-          case 'blocked-by':
-            return '#dc3545'; // Red for blocked-by
-          case 'blocks':
-            return '#fd7e14'; // Orange for blocks
-          case 'related':
-            return '#0d6efd'; // Blue for related
-          default:
-            return '#999';
-        }
-      })
-      .attr('stroke-opacity', 0.8)
-      .attr('stroke-width', (d: any) => {
-        switch (d.type) {
-          case 'epic-story':
-            return 2;
-          case 'blocked-by':
-            return 3; // Thicker for blocked-by
-          case 'blocks':
-            return 3; // Thicker for blocks
-          case 'related':
-            return 2;
-          default:
-            return 2;
-        }
-      })
-      .attr('stroke-dasharray', (d: any) => {
-        switch (d.type) {
-          case 'related':
-            return '5,5'; // Dashed for related
-          default:
-            return 'none';
-        }
-      });
+      .attr('stroke', '#999')
+      .attr('stroke-opacity', 0.6)
+      .attr('stroke-width', 2);
 
     // Create the nodes
     const node = g.append('g')
@@ -340,28 +264,11 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
       .attr('fill', '#666')
       .attr('font-weight', '500');
 
-    // Add tooltips with iteration and relationship information
+    // Add tooltips with iteration information
     node.append('title')
-      .text((d: any) => {
-        let tooltipText = `${d.label}\n${d.summary}\nStatus: ${d.status}\nTeam: ${d.team || 'N/A'}\nIteration: ${d.iteration || 'N/A'}`;
-        
-        // Find the epic data to get relationships
-        const epicData = Object.values(data.columns).flat().find((epic: any) => epic.key === d.id);
-        if (epicData && epicData.relationships) {
-          const rel = epicData.relationships;
-          if (rel.blockedBy.length > 0) {
-            tooltipText += `\nBlocked by: ${rel.blockedBy.join(', ')}`;
-          }
-          if (rel.blocks.length > 0) {
-            tooltipText += `\nBlocks: ${rel.blocks.join(', ')}`;
-          }
-          if (rel.related.length > 0) {
-            tooltipText += `\nRelated: ${rel.related.join(', ')}`;
-          }
-        }
-        
-        return tooltipText;
-      });
+      .text((d: any) => 
+        `${d.label}\n${d.summary}\nStatus: ${d.status}\nTeam: ${d.team || 'N/A'}\nIteration: ${d.iteration || 'N/A'}`
+      );
 
     // Update positions on simulation tick
     simulation.on('tick', () => {
@@ -403,13 +310,6 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
     { label: 'To Do', status: 'To Do', color: statusColors['To Do'] },
     { label: 'In Progress', status: 'In Progress', color: statusColors['In Progress'] },
     { label: 'Done', status: 'Done', color: statusColors['Done'] },
-  ];
-
-  const relationshipLegendData = [
-    { label: 'Epic → Story', type: 'epic-story', color: '#999', style: 'solid' },
-    { label: 'Blocked By', type: 'blocked-by', color: '#dc3545', style: 'solid' },
-    { label: 'Blocks', type: 'blocks', color: '#fd7e14', style: 'solid' },
-    { label: 'Related', type: 'related', color: '#0d6efd', style: 'dashed' },
   ];
 
   const teams = Array.from(new Set(graphData.nodes.map(node => node.team).filter(Boolean)));
@@ -513,39 +413,6 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
                 ))}
               </Box>
             </Box>
-
-            {/* Relationship Legend */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, color: '#212529', fontWeight: 600 }}>
-                Relationship Types:
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {relationshipLegendData.map((item, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 0.5,
-                      fontSize: '0.75rem',
-                      color: '#212529'
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        width: 20,
-                        height: 2,
-                        backgroundColor: item.color,
-                        borderStyle: item.style === 'dashed' ? 'dashed' : 'solid',
-                        borderWidth: item.style === 'dashed' ? '1px' : '0',
-                        borderColor: item.color
-                      }}
-                    />
-                    <span>{item.label}</span>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
             
             {/* Teams Legend */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -615,16 +482,10 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
               Total Issues: {graphData.nodes.length}
             </Typography>
             <Typography variant="body2" sx={{ color: '#6c757d' }}>
-              Epic-Story: {graphData.links.filter(l => l.type === 'epic-story').length}
+              Dependencies: {graphData.links.length}
             </Typography>
             <Typography variant="body2" sx={{ color: '#6c757d' }}>
-              Blocked By: {graphData.links.filter(l => l.type === 'blocked-by').length}
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#6c757d' }}>
-              Blocks: {graphData.links.filter(l => l.type === 'blocks').length}
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#6c757d' }}>
-              Related: {graphData.links.filter(l => l.type === 'related').length}
+              Iterations: {iterations.length}
             </Typography>
             <Typography variant="body2" sx={{ color: '#6c757d' }}>
               Teams: {teams.length}

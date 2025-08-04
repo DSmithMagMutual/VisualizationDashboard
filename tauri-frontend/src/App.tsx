@@ -9,7 +9,6 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import DemoPage from './components/DemoPage';
 import DependencyGraphPage from './components/DependencyGraphPage';
 import JiraConfigDialog from './components/JiraConfigDialog';
-import GlobalRefreshButton from './components/GlobalRefreshButton';
 
 const theme = createTheme({
   palette: {
@@ -267,22 +266,6 @@ function Navigation({ onOpenSettings }: { onOpenSettings: () => void }) {
                 </Typography>
               </IconButton>
             </Tooltip>
-          </Box>
-          
-          {/* Global Refresh Button */}
-          <Box sx={{ ml: 2 }}>
-            <GlobalRefreshButton
-              variant="outlined"
-              size="small"
-              color="primary"
-              showText={false}
-              onRefreshComplete={(success) => {
-                if (success) {
-                  // Optionally reload the page or refresh components
-                  console.log('Data refresh completed successfully');
-                }
-              }}
-            />
           </Box>
           
           <Tooltip title="Jira Settings">
