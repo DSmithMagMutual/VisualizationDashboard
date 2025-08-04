@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText } from '@mui/material';
-import { Close, Refresh, ExpandMore, ExpandLess } from '@mui/icons-material';
+import { Close, Refresh, ExpandMore, ExpandLess, FileUpload } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { loadDataSource } from '../lib/dataService';
+import { loadDataSource, addDynamicDataSource, getAllDataSources, getAllDynamicDataSources } from '../lib/dataService';
 import JiraConfigDialog from './JiraConfigDialog';
+import FileImportDialog from './FileImportDialog';
 
 const ITERATIONS = [
   { key: "4.1", label: "2025 Iteration 4.1", range: "July 9 - July 22" },
@@ -283,6 +284,11 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, tea
             ) : card.name}
           </Typography>
         </Box>
+        {card.summary && (
+          <Typography variant="body2" sx={{ color: '#495057', mb: 1, lineHeight: 1.4 }}>
+            {card.summary}
+          </Typography>
+        )}
         <Box display="flex" alignItems="center" gap={1} mb={1} sx={{ flexWrap: 'wrap' }}>
           <Tooltip title={team} placement="top">
             <span style={{
@@ -361,7 +367,7 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, tea
 }
 
 export default function DemoPage() {
-  const [selectedDataSource, setSelectedDataSource] = useState('');
+
   const [columns, setColumns] = useState(() =>
     ITERATIONS.reduce((acc, iter) => {
       acc[iter.key] = [];
@@ -381,6 +387,9 @@ export default function DemoPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [teamFilter, setTeamFilter] = useState<string[]>([]);
   const [showJiraConfig, setShowJiraConfig] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('board-saveAdvice');
+  const [availableDataSources, setAvailableDataSources] = useState<Record<string, string>>({});
 
   // Debug effect to log when showJiraConfig changes
   useEffect(() => {
@@ -416,35 +425,51 @@ export default function DemoPage() {
   // Function to load data from selected data source
   const loadDataSourceData = async (dataSourceKey: string) => {
     try {
+      console.log('Loading data source:', dataSourceKey);
       setLoading(true);
       const dataSource = await loadDataSource(dataSourceKey);
+      console.log('Data source loaded:', dataSourceKey, 'Structure:', dataSource ? Object.keys(dataSource) : 'null');
+      
       if (dataSource && dataSource.columns) {
         // Ensure all iteration keys are present in the loaded state
         const initializedColumns = ITERATIONS.reduce((acc, iter) => {
           acc[iter.key] = (dataSource.columns as Record<string, any[]>)?.[iter.key] || [];
           return acc;
         }, {} as Record<string, any[]>);
+        console.log('Initialized columns:', Object.keys(initializedColumns));
+        console.log('Cards in uncommitted:', initializedColumns.uncommitted?.length || 0);
+        console.log('Sample cards:', initializedColumns.uncommitted?.slice(0, 3));
         setColumns(initializedColumns);
         setBoardTitle(`Demo Iteration Board - ${dataSourceKey}`);
         setTeamFilter([]); // Reset team filter when data source changes
+      } else {
+        console.warn('Data source does not have expected structure:', dataSource);
+        // Set empty columns if no valid data
+        const emptyColumns = ITERATIONS.reduce((acc, iter) => {
+          acc[iter.key] = [];
+          return acc;
+        }, {} as Record<string, any[]>);
+        setColumns(emptyColumns);
+        setBoardTitle(`Demo Iteration Board - ${dataSourceKey} (No Data)`);
       }
     } catch (error) {
       console.error('Failed to load data source:', error);
+      setError(`Failed to load data source ${dataSourceKey}: ${error}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // Effect to load data when data source changes
-  useEffect(() => {
-    if (selectedDataSource) {
-      loadDataSourceData(selectedDataSource);
-    }
-  }, [selectedDataSource]);
+
 
   useEffect(() => {
     setLoading(false);
   }, []);
+
+  // Load initial data source on component mount
+  useEffect(() => {
+    loadDataSourceData(selectedDataSource);
+  }, [selectedDataSource]);
 
   const handleAddCard = async (colKey: string) => {
     const cardName = inputs[colKey].trim();
@@ -579,6 +604,39 @@ export default function DemoPage() {
     setIsEditingTitle(false);
   };
 
+  const handleImportData = async (data: any, fileName: string) => {
+    try {
+      addDynamicDataSource(fileName, data);
+      setSelectedDataSource(fileName);
+      await loadDataSourceData(fileName);
+      // Update available data sources
+      const staticSources = getAllDataSources();
+      const dynamicSources = getAllDynamicDataSources();
+      const allSources = { ...staticSources, ...dynamicSources };
+      setAvailableDataSources(allSources);
+    } catch (error) {
+      console.error('Error importing data:', error);
+      setError(`Failed to import ${fileName}: ${error}`);
+    }
+  };
+
+  // Update available data sources on mount and load initial data
+  useEffect(() => {
+    const staticSources = getAllDataSources();
+    const dynamicSources = getAllDynamicDataSources();
+    const allSources = { ...staticSources, ...dynamicSources };
+    console.log('Available data sources:', allSources);
+    setAvailableDataSources(allSources);
+    
+    // Load the default data source (board-saveAdvice) on mount
+    if (Object.keys(allSources).length > 0) {
+      const defaultSource = Object.keys(allSources)[0];
+      console.log('Loading default data source:', defaultSource);
+      setSelectedDataSource(defaultSource);
+      loadDataSourceData(defaultSource);
+    }
+  }, []);
+
   if (loading) {
     return (
       <Box sx={{ background: '#f8f9fa', minHeight: '100vh', p: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -689,6 +747,7 @@ export default function DemoPage() {
       </Box>
       {/* Data Source and Team Filter Controls */}
       <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', mb: 3, alignItems: 'flex-end' }}>
+
         {/* Data Source Selector */}
         <Box sx={{ minWidth: 250 }}>
           <FormControl fullWidth size="small">
@@ -710,8 +769,13 @@ export default function DemoPage() {
             <Select
               labelId="data-source-label"
               value={selectedDataSource}
-              label="Data Source"
-              onChange={(e) => setSelectedDataSource(e.target.value)}
+              onChange={e => {
+                const newSource = e.target.value as string;
+                console.log('Data source changed to:', newSource);
+                setSelectedDataSource(newSource);
+                loadDataSourceData(newSource);
+              }}
+              input={<OutlinedInput label="Data Source" />}
               sx={{
                 backgroundColor: '#ffffff',
                 '& .MuiOutlinedInput-notchedOutline': {
@@ -728,10 +792,36 @@ export default function DemoPage() {
                 },
               }}
             >
-              <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
-              <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
+              {Object.entries(availableDataSources).map(([key, label]) => (
+                <MenuItem key={key} value={key}>
+                  {label}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
+        </Box>
+
+        {/* Import Button */}
+        <Box>
+          <Button
+            variant="outlined"
+            size="small"
+            color="primary"
+            onClick={() => setShowImportDialog(true)}
+            startIcon={<FileUpload />}
+            sx={{ 
+              fontWeight: 600, 
+              borderRadius: 1,
+              borderColor: '#28a745',
+              color: '#28a745',
+              '&:hover': {
+                borderColor: '#1e7e34',
+                backgroundColor: 'rgba(40, 167, 69, 0.04)'
+              }
+            }}
+          >
+            Import JSON
+          </Button>
         </Box>
 
         {/* Team Filter */}
@@ -886,21 +976,25 @@ export default function DemoPage() {
               );
             })()}
             <Box flex={1} mb={2}>
-              {columns[iter.key].filter(cardMatchesTeamFilter).map((card, idx) => {
-                const cardId = `${iter.key}-${card.key}-${idx}`;
-                const isMinimized = minimizedCards.has(cardId);
-                return (
-                  <DemoCard 
-                    key={idx} 
-                    card={card} 
-                    onDelete={() => handleDeleteCard(iter.key, idx)}
-                    onReload={() => handleReloadCard(iter.key, idx)}
-                    isMinimized={isMinimized}
-                    onToggleMinimize={() => handleToggleMinimize(iter.key, idx)}
-                    teamFilter={teamFilter}
-                  />
-                );
-              })}
+              {(() => {
+                const filteredCards = columns[iter.key].filter(cardMatchesTeamFilter);
+                console.log(`Rendering ${filteredCards.length} cards for column ${iter.key}:`, filteredCards.slice(0, 2));
+                return filteredCards.map((card, idx) => {
+                  const cardId = `${iter.key}-${card.key}-${idx}`;
+                  const isMinimized = minimizedCards.has(cardId);
+                  return (
+                    <DemoCard 
+                      key={idx} 
+                      card={card} 
+                      onDelete={() => handleDeleteCard(iter.key, idx)}
+                      onReload={() => handleReloadCard(iter.key, idx)}
+                      isMinimized={isMinimized}
+                      onToggleMinimize={() => handleToggleMinimize(iter.key, idx)}
+                      teamFilter={teamFilter}
+                    />
+                  );
+                });
+              })()}
             </Box>
             <Box mt="auto" pt={2}>
               <TextField
@@ -944,6 +1038,13 @@ export default function DemoPage() {
           // Optionally trigger refresh after config is saved
           // handleRefreshAllCards();
         }}
+      />
+      
+      {/* File Import Dialog */}
+      <FileImportDialog
+        open={showImportDialog}
+        onClose={() => setShowImportDialog(false)}
+        onImport={handleImportData}
       />
     </Box>
   );

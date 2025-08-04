@@ -152,7 +152,7 @@ function PreviewCard({ node, onClose, teamFilter }: { node: any; onClose: () => 
 }
 
 export default function DependencyGraphPage() {
-  const [selectedDataSource, setSelectedDataSource] = useState('');
+
   const [currentData, setCurrentData] = useState<any>(null);
   const [teamFilter, setTeamFilter] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -164,24 +164,7 @@ export default function DependencyGraphPage() {
     console.log('DependencyGraph showJiraConfig changed to:', showJiraConfig);
   }, [showJiraConfig]);
 
-  useEffect(() => {
-    if (selectedDataSource) {
-      setIsLoading(true);
-      loadDataSource(selectedDataSource)
-        .then((data) => {
-          if (data) {
-            setCurrentData(data);
-            setTeamFilter([]); // Reset team filter when data source changes
-          }
-        })
-        .catch((error) => {
-          console.error('Failed to load data:', error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
-  }, [selectedDataSource]);
+
 
   // Get all unique teams from current data
   const allTeams = useMemo(() => {
@@ -226,51 +209,7 @@ export default function DependencyGraphPage() {
           </Typography>
         
         <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', mb: 3, alignItems: 'flex-end' }}>
-                  {/* Data Source Selector */}
-        <Box sx={{ minWidth: 250 }}>
-          <FormControl fullWidth size="small">
-            <InputLabel 
-              id="data-source-label" 
-              sx={{ 
-                color: '#495057', 
-                fontWeight: 500,
-                '&.Mui-focused': {
-                  color: '#0d6efd',
-                },
-                '&.MuiInputLabel-shrink': {
-                  color: '#0d6efd',
-                }
-              }}
-            >
-              Data Source
-            </InputLabel>
-            <Select
-              labelId="data-source-label"
-              value={selectedDataSource}
-              label="Data Source"
-              onChange={(e) => setSelectedDataSource(e.target.value)}
-              sx={{
-                backgroundColor: '#ffffff',
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#dee2e6',
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#adb5bd',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#0d6efd',
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#0d6efd',
-                },
-              }}
-            >
-              <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
-              <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
-              <MenuItem value="test-relationships">Test Relationships (Demo)</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
+
 
         {/* Team Filter */}
         <Box sx={{ minWidth: 300 }}>
@@ -342,19 +281,8 @@ export default function DependencyGraphPage() {
               }
               
               // Proceed with refresh if credentials are available
-              if (selectedDataSource) {
-                try {
-                  setIsLoading(true);
-                  const data = await loadDataSource(selectedDataSource);
-                  if (data) {
-                    setCurrentData(data);
-                  }
-                } catch (error) {
-                  console.error('Failed to reload data:', error);
-                } finally {
-                  setIsLoading(false);
-                }
-              }
+              // Note: Data refresh now handled through the import system
+              console.log('Refresh functionality moved to import system');
             }}
             startIcon={<RefreshIcon />}
             sx={{ 
@@ -385,7 +313,7 @@ export default function DependencyGraphPage() {
             ) : currentData ? (
               <DependencyGraphWidget 
                 data={currentData} 
-                title={`Dependency Graph - ${selectedDataSource}`}
+                title="Dependency Graph"
                 teamFilter={teamFilter}
                 onNodeClick={setSelectedNode}
               />
