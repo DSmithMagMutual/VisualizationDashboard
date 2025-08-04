@@ -1,10 +1,11 @@
+'use client'
+
 import React, { useState, useEffect } from "react";
 import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText } from '@mui/material';
 import { Close, Refresh, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { loadDataSource } from '../lib/dataService';
-import JiraConfigDialog from './JiraConfigDialog';
+import { loadDataSource, dataSources } from '@/lib/dataService';
 
 const ITERATIONS = [
   { key: "4.1", label: "2025 Iteration 4.1", range: "July 9 - July 22" },
@@ -210,6 +211,225 @@ function StatusChart({ columns }: { columns: Record<string, any[]> }) {
   );
 }
 
+function TimeInStatusWidget({ columns }: { columns: Record<string, any[]> }) {
+  // Calculate time in status data per iteration by team
+  const calculateTimeInStatus = () => {
+    const teams = new Set<string>();
+    const statuses = new Set<string>();
+    const timeData: Record<string, Record<string, Record<string, number[]>>> = {};
+    
+    // Collect all teams and statuses from each iteration
+    Object.entries(columns).forEach(([iteration, cards]) => {
+      cards.forEach(card => {
+        if (card.stories && card.stories.length > 0) {
+          card.stories.forEach((story: any) => {
+            const team = story.team || card.team || 'Other';
+            const status = story.status || 'Unknown';
+            teams.add(team);
+            statuses.add(status);
+            
+            if (!timeData[iteration]) {
+              timeData[iteration] = {};
+            }
+            if (!timeData[iteration][team]) {
+              timeData[iteration][team] = {};
+            }
+            if (!timeData[iteration][team][status]) {
+              timeData[iteration][team][status] = [];
+            }
+            
+            // Simulate time in status (in days) - in real implementation, this would come from Jira
+            const timeInStatus = Math.floor(Math.random() * 30) + 1; // 1-30 days for demo
+            timeData[iteration][team][status].push(timeInStatus);
+          });
+        }
+      });
+    });
+    
+      // Calculate averages per team across all iterations
+  const teamAverages: Record<string, Record<string, number>> = {};
+  
+  Object.entries(timeData).forEach(([iteration, teamData]) => {
+    Object.entries(teamData).forEach(([team, statusData]) => {
+      if (!teamAverages[team]) {
+        teamAverages[team] = {};
+      }
+      
+      Object.entries(statusData).forEach(([status, times]) => {
+        if (times.length > 0) {
+          const avgTime = times.reduce((sum, time) => sum + time, 0) / times.length;
+          if (!teamAverages[team][status]) {
+            teamAverages[team][status] = 0;
+          }
+          // Accumulate and average across iterations
+          teamAverages[team][status] = (teamAverages[team][status] + avgTime) / 2;
+        }
+      });
+    });
+  });
+  
+  // Convert to array format for display
+  const averages: Array<{
+    team: string;
+    done: number;
+    creating: number;
+    validating: number;
+    ready: number;
+  }> = [];
+  
+  Object.entries(teamAverages).forEach(([team, statusData]) => {
+    averages.push({
+      team,
+      done: Math.round((statusData['Done'] || 0) * 10) / 10,
+      creating: Math.round((statusData['Creating'] || 0) * 10) / 10,
+      validating: Math.round((statusData['Validating'] || 0) * 10) / 10,
+      ready: Math.round((statusData['Ready'] || 0) * 10) / 10,
+    });
+  });
+  
+  return averages;
+};
+
+const timeData = calculateTimeInStatus();
+const teams = Array.from(new Set(timeData.map(item => item.team)));
+  
+  // Get color for team - using the same function as the rest of the page
+  const getTeamColor = (team: string) => {
+    return getColorForTeam(team);
+  };
+  
+
+  
+  return (
+    <Card sx={{ 
+      bgcolor: '#fff', 
+      border: '1px solid #dee2e6', 
+      borderRadius: 1, 
+      boxShadow: 1, 
+      mb: 4,
+      maxWidth: '50%',
+      mx: 'auto'
+    }}>
+      <CardContent sx={{ p: 3 }}>
+        <Typography variant="h6" fontWeight={600} sx={{ color: '#212529', mb: 3 }}>
+          Flow Time by Team and Status
+        </Typography>
+        
+        {/* Table */}
+        <Box sx={{ overflowX: 'auto' }}>
+          <Box sx={{ 
+            display: 'table', 
+            width: '100%', 
+            borderCollapse: 'collapse',
+            border: '1px solid #dee2e6'
+          }}>
+            {/* Header */}
+            <Box sx={{ display: 'table-row', bgcolor: '#f8f9fa' }}>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, color: '#212529' }}>
+                Team
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, textAlign: 'center', color: '#212529' }}>
+                Done
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, textAlign: 'center', color: '#212529' }}>
+                Creating
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, textAlign: 'center', color: '#212529' }}>
+                Validating
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, textAlign: 'center', color: '#212529' }}>
+                Ready
+              </Box>
+            </Box>
+            
+            {/* Data Rows */}
+            {timeData.map((item, index) => (
+              <Box key={index} sx={{ display: 'table-row' }}>
+                <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', color: '#212529' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box
+                      sx={{
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        bgcolor: getTeamColor(item.team)
+                      }}
+                    />
+                    {item.team}
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
+                  <Typography sx={{ color: statusColors['Done'], fontWeight: 500 }}>
+                    {isNaN(item.done) ? 0 : item.done}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
+                  <Typography sx={{ color: statusColors['Creating'], fontWeight: 500 }}>
+                    {isNaN(item.creating) ? 0 : item.creating}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
+                  <Typography sx={{ color: statusColors['Validating'], fontWeight: 500 }}>
+                    {isNaN(item.validating) ? 0 : item.validating}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', color: '#212529' }}>
+                  <Typography sx={{ color: statusColors['Ready'], fontWeight: 500 }}>
+                    {isNaN(item.ready) ? 0 : item.ready}
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+            
+            {/* Total Row */}
+            <Box sx={{ display: 'table-row', bgcolor: '#f8f9fa' }}>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', fontWeight: 600, color: '#212529' }}>
+                Total (Time in Status - Average - Days)
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
+                <Typography sx={{ color: statusColors['Done'] }}>
+                  {timeData.length > 0 ? (() => {
+                    const total = timeData.reduce((sum, item) => sum + (isNaN(item.done) ? 0 : item.done), 0);
+                    const avg = total / timeData.length;
+                    return isNaN(avg) ? 0 : Math.round(avg * 10) / 10;
+                  })() : 0}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
+                <Typography sx={{ color: statusColors['Creating'] }}>
+                  {timeData.length > 0 ? (() => {
+                    const total = timeData.reduce((sum, item) => sum + (isNaN(item.creating) ? 0 : item.creating), 0);
+                    const avg = total / timeData.length;
+                    return isNaN(avg) ? 0 : Math.round(avg * 10) / 10;
+                  })() : 0}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
+                <Typography sx={{ color: statusColors['Validating'] }}>
+                  {timeData.length > 0 ? (() => {
+                    const total = timeData.reduce((sum, item) => sum + (isNaN(item.validating) ? 0 : item.validating), 0);
+                    const avg = total / timeData.length;
+                    return isNaN(avg) ? 0 : Math.round(avg * 10) / 10;
+                  })() : 0}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'table-cell', p: 2, border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 600 }}>
+                <Typography sx={{ color: statusColors['Ready'] }}>
+                  {timeData.length > 0 ? (() => {
+                    const total = timeData.reduce((sum, item) => sum + (isNaN(item.ready) ? 0 : item.ready), 0);
+                    const avg = total / timeData.length;
+                    return isNaN(avg) ? 0 : Math.round(avg * 10) / 10;
+                  })() : 0}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
 function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, teamFilter }: { 
   card: any; 
   onDelete: () => void; 
@@ -322,7 +542,7 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, tea
                   {filteredStories.map((story: any) => (
                     <li key={story.key} style={{ marginBottom: 4 }}>
                       <a 
-                        href={'https://magmutual.atlassian.net/browse/' + story.key}
+                        href={(process.env.NEXT_PUBLIC_JIRA_BASE_URL || 'https://magmutual.atlassian.net') + '/browse/' + story.key}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ 
@@ -360,7 +580,77 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, tea
   );
 }
 
-export default function DemoPage() {
+async function saveBoardState(columns: Record<string, any[]>, title?: string) {
+  await fetch('/api/board-save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ columns, title }),
+  });
+}
+
+async function loadBoardState(): Promise<{ columns: Record<string, any[]>; title?: string } | null> {
+  try {
+    const response = await fetch('/api/board-save');
+    if (response.ok) {
+      const data = await response.json();
+      return data || null;
+    }
+  } catch (error) {
+    console.error('Error loading board state:', error);
+  }
+  return null;
+}
+
+async function fetchJiraIssueWithStories(key: string) {
+  // Fetch parent issue
+  const res = await fetch(`/api/jira?endpoint=issue/${key}`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  if (!data || !data.key) return null;
+  // Fetch child issues (stories/subtasks)
+  const jql = encodeURIComponent(`parent=${key}`);
+  const resStories = await fetch(`/api/jira?endpoint=search&jql=${jql}&fields=key,summary,status,issuetype,customfield_10001`);
+  let stories: any[] = [];
+  if (resStories.ok) {
+    const dataStories = await resStories.json();
+    stories = (dataStories.issues || []).map((s: any) => {
+      // Extract team from customfield_10001 for child stories
+      let storyTeam = 'Other';
+      const field = s.fields.customfield_10001;
+      if (typeof field === 'object' && field?.name) {
+        storyTeam = field.name;
+      } else if (typeof field === 'string' && field) {
+        storyTeam = field;
+      }
+      return {
+        key: s.key,
+        summary: s.fields.summary,
+        status: s.fields.status.name,
+        statusCategory: s.fields.status.statusCategory.key,
+        team: storyTeam,
+      };
+    });
+  }
+  // Extract team from customfield_10001
+  let team = 'Other';
+  const field = data.fields?.customfield_10001;
+  if (typeof field === 'object' && field?.name) {
+    team = field.name;
+  } else if (typeof field === 'string' && field) {
+    team = field;
+  }
+  return {
+    key: data.key,
+    url: (process.env.NEXT_PUBLIC_JIRA_BASE_URL || 'https://magmutual.atlassian.net') + '/browse/' + data.key,
+    summary: data.fields?.summary,
+    status: data.fields?.status?.name,
+    statusCategory: data.fields?.status?.statusCategory?.key,
+    stories,
+    team,
+  };
+}
+
+export default function DemoKanban() {
   const [selectedDataSource, setSelectedDataSource] = useState('');
   const [columns, setColumns] = useState(() =>
     ITERATIONS.reduce((acc, iter) => {
@@ -380,12 +670,6 @@ export default function DemoPage() {
   const [boardTitle, setBoardTitle] = useState("Demo Iteration Board");
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [teamFilter, setTeamFilter] = useState<string[]>([]);
-  const [showJiraConfig, setShowJiraConfig] = useState(false);
-
-  // Debug effect to log when showJiraConfig changes
-  useEffect(() => {
-    console.log('showJiraConfig changed to:', showJiraConfig);
-  }, [showJiraConfig]);
 
   // Collect all unique teams from current board data
   const allTeams = React.useMemo(() => {
@@ -426,7 +710,6 @@ export default function DemoPage() {
         }, {} as Record<string, any[]>);
         setColumns(initializedColumns);
         setBoardTitle(`Demo Iteration Board - ${dataSourceKey}`);
-        setTeamFilter([]); // Reset team filter when data source changes
       }
     } catch (error) {
       console.error('Failed to load data source:', error);
@@ -443,7 +726,30 @@ export default function DemoPage() {
   }, [selectedDataSource]);
 
   useEffect(() => {
-    setLoading(false);
+    const loadSavedState = async () => {
+      try {
+        setLoading(true);
+        const savedData = await loadBoardState();
+        if (savedData) {
+          // Load board title
+          if (savedData.title) {
+            setBoardTitle(savedData.title);
+          }
+          // Ensure all iteration keys are present in the loaded state
+          const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+            acc[iter.key] = savedData.columns?.[iter.key] || [];
+            return acc;
+          }, {} as Record<string, any[]>);
+          setColumns(initializedColumns);
+        }
+      } catch (error) {
+        console.error('Error loading saved board state:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSavedState();
   }, []);
 
   const handleAddCard = async (colKey: string) => {
@@ -459,26 +765,21 @@ export default function DemoPage() {
       return;
     }
     
-    // For demo purposes, create a mock card
-    const mockCard = {
-      key: cardName,
-      url: `https://magmutual.atlassian.net/browse/${cardName}`,
-      summary: `Mock summary for ${cardName}`,
-      status: 'To Do',
-      statusCategory: 'todo',
-      team: 'OG Team',
-      stories: []
-    };
-    
+    const jira = await fetchJiraIssueWithStories(cardName);
+    if (!jira) {
+      setError(`Jira issue '${cardName}' not found.`);
+      return;
+    }
     const newColumns = {
       ...columns,
       [colKey]: [
         ...columns[colKey],
-        mockCard,
+        jira,
       ],
     };
     setColumns(newColumns);
     setInputs(inputs => ({ ...inputs, [colKey]: "" }));
+    await saveBoardState(newColumns, boardTitle);
   };
 
   const handleDeleteCard = async (colKey: string, cardIndex: number) => {
@@ -497,66 +798,85 @@ export default function DemoPage() {
       newSet.delete(cardId);
       return newSet;
     });
+    
+    await saveBoardState(newColumns, boardTitle);
   };
 
   const handleReloadCard = async (colKey: string, cardIndex: number) => {
     const card = columns[colKey][cardIndex];
     if (!card.key) return;
     
-    console.log(`Reload card button clicked for: ${card.key}`);
     setError(null);
-    
-    // Check if Jira credentials are configured
-    const hasCredentials = await checkJiraCredentials();
-    console.log('Has credentials for card reload:', hasCredentials);
-    
-    if (!hasCredentials) {
-      console.log('No credentials found, showing config dialog for card reload');
-      setShowJiraConfig(true);
+    const updatedCard = await fetchJiraIssueWithStories(card.key);
+    if (!updatedCard) {
+      setError(`Failed to reload data for '${card.key}'.`);
       return;
     }
     
-    // Proceed with card refresh if credentials are available
-    console.log(`Proceeding with card refresh - credentials available for: ${card.key}`);
-    
-    // TODO: Implement actual card refresh logic here
-    // For now, just show a success message
-    console.log(`Card refresh completed for: ${card.key}`);
-  };
-
-  // Function to check if Jira credentials are configured
-  const checkJiraCredentials = async (): Promise<boolean> => {
-    try {
-      // TODO: Implement when Tauri is properly configured
-      // For now, return true to test refresh functionality
-      // When Tauri is ready, this should call: const config = await invoke('load_jira_config');
-      return true; // Temporarily return true to test refresh
-    } catch (error) {
-      console.error('Error checking Jira credentials:', error);
-      return false;
-    }
+    const newColumns = {
+      ...columns,
+      [colKey]: columns[colKey].map((c, index) => index === cardIndex ? updatedCard : c)
+    };
+    setColumns(newColumns);
+    await saveBoardState(newColumns, boardTitle);
   };
 
   const handleRefreshAllCards = async () => {
-    console.log('Refresh button clicked!');
     setError(null);
+    let successCount = 0;
+    let errorCount = 0;
+    const errors: string[] = [];
     
-    // Check if Jira credentials are configured
-    const hasCredentials = await checkJiraCredentials();
-    console.log('Has credentials:', hasCredentials);
+    // Collect all cards that need refreshing
+    const cardsToRefresh: Array<{colKey: string, cardIndex: number, cardKey: string}> = [];
+    ITERATIONS.forEach(iter => {
+      const cards = columns[iter.key] || [];
+      cards.forEach((card, cardIndex) => {
+        if (card.key) {
+          cardsToRefresh.push({
+            colKey: iter.key,
+            cardIndex,
+            cardKey: card.key
+          });
+        }
+      });
+    });
     
-    if (!hasCredentials) {
-      console.log('No credentials found, showing config dialog');
-      setShowJiraConfig(true);
+    if (cardsToRefresh.length === 0) {
+      setError('No cards to refresh.');
       return;
     }
     
-    // Proceed with refresh if credentials are available
-    console.log('Proceeding with refresh - credentials available');
+    // Refresh each card one by one
+    for (const { colKey, cardIndex, cardKey } of cardsToRefresh) {
+      try {
+        const updatedCard = await fetchJiraIssueWithStories(cardKey);
+        if (updatedCard) {
+          const newColumns = {
+            ...columns,
+            [colKey]: columns[colKey].map((c, index) => index === cardIndex ? updatedCard : c)
+          };
+          setColumns(newColumns);
+          successCount++;
+        } else {
+          errorCount++;
+          errors.push(`Failed to reload data for '${cardKey}'`);
+        }
+      } catch (error) {
+        errorCount++;
+        errors.push(`Error reloading '${cardKey}': ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
     
-    // TODO: Implement actual refresh logic here
-    // For now, just show a success message
-    console.log('Refresh completed successfully');
+    // Save the final state
+    await saveBoardState(columns, boardTitle);
+    
+    // Show results
+    if (errorCount > 0) {
+      setError(`Refreshed ${successCount} cards successfully. ${errorCount} cards failed: ${errors.slice(0, 3).join(', ')}${errors.length > 3 ? '...' : ''}`);
+    } else {
+      setError(null);
+    }
   };
 
   const handleToggleMinimize = (colKey: string, cardIndex: number) => {
@@ -577,6 +897,7 @@ export default function DemoPage() {
   const handleTitleChange = async (newTitle: string) => {
     setBoardTitle(newTitle);
     setIsEditingTitle(false);
+    await saveBoardState(columns, newTitle);
   };
 
   if (loading) {
@@ -930,21 +1251,184 @@ export default function DemoPage() {
         ))}
       </Box>
       <StatusChart columns={columns} />
-      
-      {/* Jira Configuration Dialog */}
-      <JiraConfigDialog
-        open={showJiraConfig}
-        onClose={() => {
-          console.log('Closing Jira config dialog');
-          setShowJiraConfig(false);
-        }}
-        onConfigSaved={(config) => {
-          console.log('Jira configuration saved:', config);
-          setShowJiraConfig(false);
-          // Optionally trigger refresh after config is saved
-          // handleRefreshAllCards();
-        }}
-      />
+      <TimeInStatusWidget columns={columns} />
+      <Box sx={{ mt: 6 }}>
+        <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: '#212529' }}>Team Insights</Typography>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 4 }}>
+          {/* 1. Team Throughput Trend */}
+          <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3, mb: 4 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#212529' }}>Team Throughput Trend</Typography>
+            <BarChart
+              xAxis={[{ data: ITERATIONS.map(i => i.label), scaleType: 'band', label: 'Iteration' }]}
+              yAxis={[{ label: 'Completed Stories' }]}
+              series={(() => {
+                const teamSet = new Set<string>();
+                ITERATIONS.forEach(iter => {
+                  (columns[iter.key] || []).forEach(card => {
+                    (card.stories || []).forEach((story: any) => {
+                      if (story.team) teamSet.add(story.team);
+                    });
+                  });
+                });
+                const teams = Array.from(teamSet);
+                return teams.map(team => ({
+                  label: team,
+                  data: ITERATIONS.map(iter => {
+                    let count = 0;
+                    (columns[iter.key] || []).forEach(card => {
+                      (card.stories || []).forEach((story: any) => {
+                        if (story.team === team && getStatusCategory(story.status) === 'Done') count++;
+                      });
+                    });
+                    return count;
+                  }),
+                  color: getColorForTeam(team)
+                }));
+              })()}
+              height={250}
+              sx={{
+                maxWidth: '100%',
+                bgcolor: '#fff',
+                borderRadius: 1,
+                border: '1px solid #dee2e6',
+                p: 1,
+                '& .MuiChartsAxis-tickLabel, & .MuiChartsAxis-label, & .MuiChartsLegend-root, & .MuiChartsBar-label': {
+                  color: '#212529',
+                  fill: '#212529',
+                  fontWeight: 600
+                }
+              }}
+            />
+          </Card>
+          {/* 2. Bottleneck Status Heatmap */}
+          <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3, mb: 4 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#212529' }}>Bottleneck Status Heatmap</Typography>
+            {(() => {
+              const statusList = ['Ready', 'Creating', 'Validating', 'Done'];
+              const teamSet = new Set<string>();
+              ITERATIONS.forEach(iter => {
+                (columns[iter.key] || []).forEach(card => {
+                  (card.stories || []).forEach((story: any) => {
+                    if (story.team) teamSet.add(story.team);
+                  });
+                });
+              });
+              const teams = Array.from(teamSet);
+              const matrix = teams.map(team =>
+                statusList.map(status => {
+                  let count = 0;
+                  ITERATIONS.forEach(iter => {
+                    (columns[iter.key] || []).forEach(card => {
+                      (card.stories || []).forEach((story: any) => {
+                        if (story.team === team && getStatusCategory(story.status) === status) count++;
+                      });
+                    });
+                  });
+                  return count;
+                })
+              );
+              return (
+                <Box sx={{ overflowX: 'auto', borderRadius: 1, border: '1px solid #dee2e6', bgcolor: '#f8f9fa', mt: 1 }}>
+                  <Box sx={{ display: 'table', width: '100%', borderCollapse: 'collapse' }}>
+                    <Box sx={{ display: 'table-row' }}>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529' }}></Box>
+                      {statusList.map(status => (
+                        <Box key={status} sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>{status}</Box>
+                      ))}
+                    </Box>
+                    {teams.map((team, i) => (
+                      <Box key={team} sx={{ display: 'table-row', '&:hover': { bgcolor: '#f3f4f6' } }}>
+                        <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: getColorForTeam(team), borderBottom: '1px solid #dee2e6' }}>{team}</Box>
+                        {matrix[i].map((count, j) => (
+                          <Box key={statusList[j]} sx={{ display: 'table-cell', p: 1, textAlign: 'center', color: '#212529', bgcolor: count > 0 ? '#ffe5e5' : '#fff', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{count}</Box>
+                        ))}
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              );
+            })()}
+          </Card>
+          {/* 3. Aging Work Items */}
+          <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3, mb: 4 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#212529' }}>Aging Work Items</Typography>
+            {(() => {
+              const teamStories: Record<string, any[]> = {};
+              ITERATIONS.forEach(iter => {
+                (columns[iter.key] || []).forEach(card => {
+                  (card.stories || []).forEach((story: any) => {
+                    if (!teamStories[story.team]) teamStories[story.team] = [];
+                    if (getStatusCategory(story.status) !== 'Done') {
+                      teamStories[story.team].push({ ...story, daysOpen: Math.floor(Math.random() * 30) + 1 });
+                    }
+                  });
+                });
+              });
+              return (
+                <Box sx={{ overflowX: 'auto', borderRadius: 1, border: '1px solid #dee2e6', bgcolor: '#f8f9fa', mt: 1 }}>
+                  <Box sx={{ display: 'table', width: '100%', borderCollapse: 'collapse' }}>
+                    <Box sx={{ display: 'table-row', bgcolor: '#f3f4f6' }}>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Team</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Key</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Summary</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Status</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Days Open</Box>
+                    </Box>
+                    {Object.entries(teamStories).map(([team, stories]) =>
+                      stories
+                        .sort((a, b) => b.daysOpen - a.daysOpen)
+                        .slice(0, 2)
+                        .map(story => (
+                          <Box key={story.key} sx={{ display: 'table-row', '&:hover': { bgcolor: '#f3f4f6' } }}>
+                            <Box sx={{ display: 'table-cell', p: 1, color: getColorForTeam(team), fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{team}</Box>
+                            <Box sx={{ display: 'table-cell', p: 1, borderBottom: '1px solid #dee2e6' }}><a href={(process.env.NEXT_PUBLIC_JIRA_BASE_URL || 'https://magmutual.atlassian.net') + '/browse/' + story.key} target="_blank" rel="noopener noreferrer" style={{ color: '#0d6efd', fontWeight: 600 }}>{story.key}</a></Box>
+                            <Box sx={{ display: 'table-cell', p: 1, color: '#212529', borderBottom: '1px solid #dee2e6' }}>{story.summary}</Box>
+                            <Box sx={{ display: 'table-cell', p: 1, color: '#212529', borderBottom: '1px solid #dee2e6' }}>{story.status}</Box>
+                            <Box sx={{ display: 'table-cell', p: 1, color: story.daysOpen > 14 ? '#dc3545' : '#212529', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{story.daysOpen}</Box>
+                          </Box>
+                        ))
+                    )}
+                  </Box>
+                </Box>
+              );
+            })()}
+          </Card>
+          {/* 5. WIP Limits */}
+          <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3, mb: 4 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#212529' }}>WIP (Work In Progress) Limits</Typography>
+            {(() => {
+              const WIP_LIMIT = 5;
+              const teamWip: Record<string, number> = {};
+              ITERATIONS.forEach(iter => {
+                (columns[iter.key] || []).forEach(card => {
+                  (card.stories || []).forEach((story: any) => {
+                    if (!teamWip[story.team]) teamWip[story.team] = 0;
+                    if (getStatusCategory(story.status) === 'In Progress') teamWip[story.team]++;
+                  });
+                });
+              });
+              return (
+                <Box sx={{ overflowX: 'auto', borderRadius: 1, border: '1px solid #dee2e6', bgcolor: '#f8f9fa', mt: 1 }}>
+                  <Box sx={{ display: 'table', width: '100%', borderCollapse: 'collapse' }}>
+                    <Box sx={{ display: 'table-row', bgcolor: '#f3f4f6' }}>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Team</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>In Progress</Box>
+                      <Box sx={{ display: 'table-cell', p: 1, fontWeight: 600, color: '#212529', borderBottom: '1px solid #dee2e6' }}>Limit</Box>
+                    </Box>
+                    {Object.entries(teamWip).map(([team, wip]) => (
+                      <Box key={team} sx={{ display: 'table-row', '&:hover': { bgcolor: '#f3f4f6' } }}>
+                        <Box sx={{ display: 'table-cell', p: 1, color: getColorForTeam(team), fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{team}</Box>
+                        <Box sx={{ display: 'table-cell', p: 1, color: wip > WIP_LIMIT ? '#dc3545' : '#212529', fontWeight: 600, borderBottom: '1px solid #dee2e6' }}>{wip}</Box>
+                        <Box sx={{ display: 'table-cell', p: 1, color: '#212529', borderBottom: '1px solid #dee2e6' }}>{WIP_LIMIT}</Box>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              );
+            })()}
+          </Card>
+        </Box>
+      </Box>
     </Box>
   );
 } 

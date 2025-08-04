@@ -44,13 +44,12 @@ test-data/
 fixtures/credentials/
 
 # Node modules and build artifacts
-node_modules/
-dist/
-build/
-
-# Tauri specific
-src-tauri/target/
-src-tauri/Cargo.lock
+/node_modules
+/.next
+/.next
+/.next/cache
+/.next/cache/webpack/client-development
+*.gz
 
 # IDE and editor files
 .vscode/

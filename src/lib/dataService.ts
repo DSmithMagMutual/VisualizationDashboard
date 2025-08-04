@@ -5,6 +5,7 @@ export interface DataSource {
 export const dataSources: Record<string, string> = {
   'board-saveAdvice': 'board-saveAdvice.json',
   'board-savePDD': 'board-savePDD.json',
+  'test-relationships': 'test-relationships.json',
 };
 
 export async function loadDataSource(sourceKey: string): Promise<DataSource | null> {
@@ -31,7 +32,7 @@ export async function loadDataSource(sourceKey: string): Promise<DataSource | nu
 export async function loadAllDataSources(): Promise<Record<string, DataSource>> {
   const results: Record<string, DataSource> = {};
   
-  for (const [key] of Object.entries(dataSources)) {
+  for (const [key, fileName] of Object.entries(dataSources)) {
     try {
       const data = await loadDataSource(key);
       if (data) {

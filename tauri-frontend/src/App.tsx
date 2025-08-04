@@ -10,7 +10,6 @@ import DemoPage from './components/DemoPage';
 import DependencyGraphPage from './components/DependencyGraphPage';
 import JiraConfigDialog from './components/JiraConfigDialog';
 import GlobalRefreshButton from './components/GlobalRefreshButton';
-import VersionDisplay from './components/VersionDisplay';
 
 const theme = createTheme({
   palette: {
@@ -374,7 +373,6 @@ function App() {
           onClose={() => setSettingsOpen(false)}
           onConfigSaved={handleConfigSaved}
         />
-        <VersionDisplay position="bottom-right" />
       </Router>
     </ThemeProvider>
   );

@@ -1,0 +1,128 @@
+{
+  "columns": {
+    "4.1": [
+      {
+        "key": "TEST-001",
+        "summary": "Main Feature Epic",
+        "status": "In Progress",
+        "statusCategory": "In Progress",
+        "team": "Team Alpha",
+        "url": "https://jira.atlassian.com/browse/TEST-001",
+        "relationships": {
+          "blockedBy": ["TEST-003"],
+          "blocks": ["TEST-002"],
+          "related": ["TEST-004"],
+          "subtasks": ["TEST-001-1", "TEST-001-2"]
+        },
+        "stories": [
+          {
+            "key": "TEST-001-1",
+            "summary": "Subtask 1",
+            "status": "Done",
+            "statusCategory": "Done",
+            "team": "Team Alpha",
+            "url": "https://jira.atlassian.com/browse/TEST-001-1"
+          },
+          {
+            "key": "TEST-001-2",
+            "summary": "Subtask 2",
+            "status": "To Do",
+            "statusCategory": "To Do",
+            "team": "Team Alpha",
+            "url": "https://jira.atlassian.com/browse/TEST-001-2"
+          }
+        ]
+      },
+      {
+        "key": "TEST-002",
+        "summary": "Blocked Feature",
+        "status": "To Do",
+        "statusCategory": "To Do",
+        "team": "Team Beta",
+        "url": "https://jira.atlassian.com/browse/TEST-002",
+        "relationships": {
+          "blockedBy": ["TEST-001"],
+          "blocks": [],
+          "related": ["TEST-005"],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "TEST-003",
+        "summary": "Blocking Issue",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Team Gamma",
+        "url": "https://jira.atlassian.com/browse/TEST-003",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": ["TEST-001"],
+          "related": ["TEST-006"],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "TEST-004",
+        "summary": "Related Feature",
+        "status": "In Progress",
+        "statusCategory": "In Progress",
+        "team": "Team Delta",
+        "url": "https://jira.atlassian.com/browse/TEST-004",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": ["TEST-001", "TEST-007"],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "TEST-005",
+        "summary": "Another Related Issue",
+        "status": "Ready",
+        "statusCategory": "To Do",
+        "team": "Team Beta",
+        "url": "https://jira.atlassian.com/browse/TEST-005",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "related": ["TEST-002"],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "TEST-006",
+        "summary": "Complex Dependency",
+        "status": "Done",
+        "statusCategory": "Done",
+        "team": "Team Gamma",
+        "url": "https://jira.atlassian.com/browse/TEST-006",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": ["TEST-007"],
+          "related": ["TEST-003"],
+          "subtasks": []
+        },
+        "stories": []
+      },
+      {
+        "key": "TEST-007",
+        "summary": "Final Dependency",
+        "status": "To Do",
+        "statusCategory": "To Do",
+        "team": "Team Delta",
+        "url": "https://jira.atlassian.com/browse/TEST-007",
+        "relationships": {
+          "blockedBy": ["TEST-006"],
+          "blocks": [],
+          "related": ["TEST-004"],
+          "subtasks": []
+        },
+        "stories": []
+      }
+    ]
+  }
+} 
