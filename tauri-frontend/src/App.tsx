@@ -10,6 +10,7 @@ import DemoPage from './components/DemoPage';
 import DependencyGraphPage from './components/DependencyGraphPage';
 import JiraConfigDialog from './components/JiraConfigDialog';
 import VersionDisplay from './components/VersionDisplay';
+// import { initializeDataSystem } from './lib/localDataService';
 
 const theme = createTheme({
   palette: {
@@ -301,6 +302,20 @@ function App() {
     console.log('Jira configuration saved:', config);
     // You can add additional logic here, like refreshing data
   };
+
+  // Initialize data system on app startup
+  useEffect(() => {
+    const initData = async () => {
+      try {
+        // await initializeDataSystem();
+        console.log('Data system initialization disabled for now');
+      } catch (error) {
+        console.error('Failed to initialize data system:', error);
+      }
+    };
+
+    initData();
+  }, []);
 
   // Add keyboard shortcuts for zoom
   useEffect(() => {

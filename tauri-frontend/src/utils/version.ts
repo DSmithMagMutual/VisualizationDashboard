@@ -18,6 +18,6 @@ export const getVersionInfo = () => {
   return {
     version: APP_VERSION,
     buildDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
-    environment: process.env.NODE_ENV || 'development'
+    environment: import.meta.env.MODE || 'development'
   };
 }; 
