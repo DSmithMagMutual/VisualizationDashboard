@@ -1,0 +1,163 @@
+// import { invoke } from '@tauri-apps/api';
+
+export interface JiraConfig {
+  base_url: string;
+  email: string;
+  api_token: string;
+}
+
+export interface JiraIssue {
+  id: string;
+  key: string;
+  fields: {
+    summary: string;
+    status: {
+      name: string;
+    };
+    issuetype: {
+      name: string;
+    };
+    assignee?: {
+      displayName: string;
+    };
+    parent?: {
+      key: string;
+    };
+    customfield_10014?: string; // Team field
+    customfield_10001?: string; // Sprint field
+  };
+}
+
+export interface JiraResponse {
+  issues: JiraIssue[];
+  total: number;
+}
+
+export interface BoardData {
+  columns: {
+    [key: string]: any[];
+  };
+  lastUpdated?: string;
+  source?: 'jira' | 'static';
+  projectKey?: string;
+}
+
+// Test Jira connection
+export async function testJiraConnection(_config: JiraConfig): Promise<{ success: boolean; message: string }> {
+  // TODO: Implement when Tauri invoke is working
+  return {
+    success: true,
+    message: 'Connection test not yet implemented'
+  };
+}
+
+// Save Jira configuration
+export async function saveJiraConfig(config: JiraConfig): Promise<void> {
+  // TODO: Implement when Tauri invoke is working
+  console.log('Saving Jira config:', config);
+}
+
+// Load Jira configuration
+export async function loadJiraConfig(): Promise<JiraConfig | null> {
+  // TODO: Implement when Tauri invoke is working
+  return null;
+}
+
+// Fetch Jira data for a project
+export async function fetchJiraData(_config: JiraConfig, _projectKey: string): Promise<JiraResponse> {
+  // TODO: Implement when Tauri invoke is working
+  throw new Error('Jira data fetching not yet implemented');
+}
+
+// Transform Jira data to board format
+export function transformJiraDataToBoard(jiraData: JiraResponse, projectKey?: string): BoardData {
+  const boardData: BoardData = {
+    columns: {
+      '4.1': [],
+      '4.2': [],
+      '4.3': [],
+      '4.4': [],
+      '4.5IP': [],
+      'uncommitted': []
+    },
+    lastUpdated: new Date().toISOString(),
+    source: 'jira',
+    projectKey
+  };
+
+  // Group issues by sprint/iteration
+  const issuesBySprint: { [key: string]: JiraIssue[] } = {};
+  
+  jiraData.issues.forEach(issue => {
+    const sprint = issue.fields.customfield_10001 || 'uncommitted';
+    if (!issuesBySprint[sprint]) {
+      issuesBySprint[sprint] = [];
+    }
+    issuesBySprint[sprint].push(issue);
+  });
+
+  // Transform issues into board cards
+  Object.entries(issuesBySprint).forEach(([sprint, issues]) => {
+    const columnKey = mapSprintToColumn(sprint);
+    
+    // Group issues by parent (epics)
+    const issuesByParent: { [key: string]: JiraIssue[] } = {};
+    issues.forEach(issue => {
+      const parentKey = issue.fields.parent?.key || issue.key;
+      if (!issuesByParent[parentKey]) {
+        issuesByParent[parentKey] = [];
+      }
+      issuesByParent[parentKey].push(issue);
+    });
+
+    // Create board cards
+    Object.entries(issuesByParent).forEach(([parentKey, childIssues]) => {
+      const parentIssue = childIssues.find(issue => issue.key === parentKey) || childIssues[0];
+      
+      const card = {
+        id: parentKey,
+        title: parentIssue.fields.summary,
+        team: parentIssue.fields.customfield_10014 || 'Unknown Team',
+        stories: childIssues.map(issue => ({
+          id: issue.key,
+          title: issue.fields.summary,
+          status: issue.fields.status.name,
+          type: issue.fields.issuetype.name,
+          assignee: issue.fields.assignee?.displayName || 'Unassigned',
+          team: issue.fields.customfield_10014 || 'Unknown Team'
+        }))
+      };
+
+      if (!boardData.columns[columnKey]) {
+        boardData.columns[columnKey] = [];
+      }
+      boardData.columns[columnKey].push(card);
+    });
+  });
+
+  return boardData;
+}
+
+// Map sprint names to column keys
+function mapSprintToColumn(sprint: string): string {
+  const sprintLower = sprint.toLowerCase();
+  
+  if (sprintLower.includes('4.1') || sprintLower.includes('iteration 4.1')) return '4.1';
+  if (sprintLower.includes('4.2') || sprintLower.includes('iteration 4.2')) return '4.2';
+  if (sprintLower.includes('4.3') || sprintLower.includes('iteration 4.3')) return '4.3';
+  if (sprintLower.includes('4.4') || sprintLower.includes('iteration 4.4')) return '4.4';
+  if (sprintLower.includes('4.5ip') || sprintLower.includes('iteration 4.5ip')) return '4.5IP';
+  
+  return 'uncommitted';
+}
+
+// Fetch and transform Jira data for a project
+export async function fetchAndTransformJiraData(projectKey: string): Promise<BoardData> {
+  const config = await loadJiraConfig();
+  if (!config) {
+    throw new Error('Jira configuration not found. Please configure Jira settings first.');
+  }
+
+  const jiraData = await fetchJiraData(config, projectKey);
+  return transformJiraDataToBoard(jiraData, projectKey);
+} 

@@ -4,7 +4,9 @@ import { Close, Refresh, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource } from '../lib/dataService';
+import { fetchAndTransformJiraData } from '../lib/jiraDataService';
 import JiraConfigDialog from './JiraConfigDialog';
+import LastUpdatedIndicator from './LastUpdatedIndicator';
 
 const ITERATIONS = [
   { key: "4.1", label: "2025 Iteration 4.1", range: "July 9 - July 22" },
@@ -376,11 +378,15 @@ export default function DemoPage() {
   );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [minimizedCards, setMinimizedCards] = useState<Set<string>>(new Set());
   const [boardTitle, setBoardTitle] = useState("Demo Iteration Board");
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [teamFilter, setTeamFilter] = useState<string[]>([]);
   const [showJiraConfig, setShowJiraConfig] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<string | undefined>();
+  const [dataSource, setDataSource] = useState<'jira' | 'static' | undefined>();
+  const [projectKey, setProjectKey] = useState<string | undefined>();
 
   // Debug effect to log when showJiraConfig changes
   useEffect(() => {
@@ -427,6 +433,11 @@ export default function DemoPage() {
         setColumns(initializedColumns);
         setBoardTitle(`Demo Iteration Board - ${dataSourceKey}`);
         setTeamFilter([]); // Reset team filter when data source changes
+        
+        // Update metadata
+        setLastUpdated(dataSource.lastUpdated);
+        setDataSource(dataSource.source);
+        setProjectKey(dataSource.projectKey);
       }
     } catch (error) {
       console.error('Failed to load data source:', error);
@@ -579,6 +590,36 @@ export default function DemoPage() {
     setIsEditingTitle(false);
   };
 
+  const handleRefreshData = async () => {
+    if (!selectedDataSource) return;
+    
+    try {
+      setRefreshing(true);
+      setError(null);
+      
+      if (dataSource === 'jira' && projectKey) {
+        // Refresh Jira data
+        const jiraData = await fetchAndTransformJiraData(projectKey);
+        const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+          acc[iter.key] = jiraData.columns[iter.key] || [];
+          return acc;
+        }, {} as Record<string, any[]>);
+        setColumns(initializedColumns);
+        setLastUpdated(jiraData.lastUpdated);
+        setDataSource(jiraData.source);
+        setProjectKey(jiraData.projectKey);
+      } else {
+        // Refresh static data
+        await loadDataSourceData(selectedDataSource);
+      }
+    } catch (error) {
+      console.error('Failed to refresh data:', error);
+      setError(error instanceof Error ? error.message : 'Failed to refresh data');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   if (loading) {
     return (
       <Box sx={{ background: '#f8f9fa', minHeight: '100vh', p: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -597,6 +638,13 @@ export default function DemoPage() {
       {/* Board Title UI */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <LastUpdatedIndicator
+            lastUpdated={lastUpdated}
+            source={dataSource}
+            projectKey={projectKey}
+            onRefresh={handleRefreshData}
+            loading={refreshing}
+          />
           {isEditingTitle ? (
             <TextField
               value={boardTitle}
@@ -735,6 +783,59 @@ export default function DemoPage() {
         </Box>
 
 
+
+        {/* Project Key Input (for Jira) */}
+        <Box sx={{ minWidth: 200 }}>
+          <TextField
+            fullWidth
+            size="small"
+            label="Project Key"
+            placeholder="e.g., ADVICE"
+            value={projectKey || ''}
+            onChange={(e) => setProjectKey(e.target.value)}
+            sx={{
+              backgroundColor: '#ffffff',
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#dee2e6',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#adb5bd',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#0d6efd',
+                },
+              },
+            }}
+            helperText="Jira project key (e.g., ADVICE)"
+          />
+        </Box>
+
+        {/* Fetch from Jira Button */}
+        <Box>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleRefreshData}
+            disabled={!projectKey || refreshing}
+            startIcon={refreshing ? <CircularProgress size={16} /> : <RefreshIcon />}
+            sx={{
+              backgroundColor: '#0d6efd',
+              color: '#ffffff',
+              fontWeight: 600,
+              '&:hover': {
+                backgroundColor: '#0b5ed7',
+              },
+              '&:disabled': {
+                backgroundColor: '#6c757d',
+                color: '#ffffff',
+              },
+              textTransform: 'none',
+            }}
+          >
+            {refreshing ? 'Fetching...' : 'Fetch from Jira'}
+          </Button>
+        </Box>
 
         {/* Team Filter */}
         <Box sx={{ minWidth: 300 }}>
@@ -943,8 +1044,10 @@ export default function DemoPage() {
         onConfigSaved={(config) => {
           console.log('Jira configuration saved:', config);
           setShowJiraConfig(false);
-          // Optionally trigger refresh after config is saved
-          // handleRefreshAllCards();
+          // Refresh data if we have a Jira data source selected
+          if (dataSource === 'jira' && projectKey) {
+            handleRefreshData();
+          }
         }}
       />
     </Box>

@@ -12,6 +12,7 @@ import {
   Typography,
   Link,
 } from '@mui/material';
+import { testJiraConnection, saveJiraConfig, loadJiraConfig } from '../lib/jiraDataService';
 
 interface JiraConfig {
   base_url: string;
@@ -44,8 +45,14 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
   }, [open]);
 
   const loadExistingConfig = async () => {
-    // TODO: Implement when Tauri is properly configured
-    console.log('Loading existing config - not yet implemented');
+    try {
+      const existingConfig = await loadJiraConfig();
+      if (existingConfig) {
+        setConfig(existingConfig);
+      }
+    } catch (error) {
+      console.error('Failed to load existing config:', error);
+    }
   };
 
   const handleTestConnection = async () => {
@@ -58,11 +65,18 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
     setError(null);
     setSuccess(null);
 
-    // TODO: Implement when Tauri is properly configured
-    setTimeout(() => {
-      setSuccess('Connection test not yet implemented');
+    try {
+      const result = await testJiraConnection(config);
+      if (result.success) {
+        setSuccess(result.message);
+      } else {
+        setError(result.message);
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Connection test failed');
+    } finally {
       setTesting(false);
-    }, 1000);
+    }
   };
 
   const handleSave = async () => {
@@ -74,17 +88,20 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
     setLoading(true);
     setError(null);
 
-    // TODO: Implement when Tauri is properly configured
-    setTimeout(() => {
-      setSuccess('Configuration saved successfully! (Demo mode)');
+    try {
+      await saveJiraConfig(config);
+      setSuccess('Configuration saved successfully!');
       onConfigSaved(config);
-      setLoading(false);
       
       // Auto-close after a short delay
       setTimeout(() => {
         onClose();
       }, 1500);
-    }, 1000);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to save configuration');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {

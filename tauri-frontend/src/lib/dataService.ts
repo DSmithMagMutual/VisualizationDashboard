@@ -1,5 +1,8 @@
 export interface DataSource {
   [key: string]: any;
+  lastUpdated?: string;
+  source?: 'jira' | 'static';
+  projectKey?: string;
 }
 
 export const dataSources: Record<string, string> = {
@@ -21,6 +24,18 @@ export async function loadDataSource(sourceKey: string): Promise<DataSource | nu
     }
 
     const data = await response.json();
+    
+    // Add metadata if not present
+    if (!data.lastUpdated) {
+      data.lastUpdated = new Date().toISOString();
+    }
+    if (!data.source) {
+      data.source = 'static';
+    }
+    if (!data.projectKey) {
+      data.projectKey = sourceKey;
+    }
+    
     return data;
   } catch (error) {
     console.error(`Error loading data source ${sourceKey}:`, error);
