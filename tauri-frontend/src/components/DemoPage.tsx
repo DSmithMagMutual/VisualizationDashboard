@@ -569,27 +569,7 @@ export default function DemoPage() {
     }
   };
 
-  const handleRefreshAllCards = async () => {
-    console.log('Refresh button clicked!');
-    setError(null);
-    
-    // Check if Jira credentials are configured
-    const hasCredentials = await checkJiraCredentials();
-    console.log('Has credentials:', hasCredentials);
-    
-    if (!hasCredentials) {
-      console.log('No credentials found, showing config dialog');
-      setShowJiraConfig(true);
-      return;
-    }
-    
-    // Proceed with refresh if credentials are available
-    console.log('Proceeding with refresh - credentials available');
-    
-    // TODO: Implement actual refresh logic here
-    // For now, just show a success message
-    console.log('Refresh completed successfully');
-  };
+
 
   const handleToggleMinimize = (colKey: string, cardIndex: number) => {
     const card = columns[colKey][cardIndex];
@@ -989,64 +969,6 @@ export default function DemoPage() {
 
 
 
-        {/* Refresh Cards Button */}
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={handleRefreshData}
-            disabled={refreshing}
-            startIcon={refreshing ? <CircularProgress size={16} /> : <RefreshIcon />}
-            sx={{
-              backgroundColor: '#0d6efd',
-              color: '#ffffff',
-              fontWeight: 600,
-              '&:hover': {
-                backgroundColor: '#0b5ed7',
-              },
-              '&:disabled': {
-                backgroundColor: '#6c757d',
-                color: '#ffffff',
-              },
-              textTransform: 'none',
-            }}
-          >
-            {refreshing ? 'Refreshing...' : 'Refresh Cards'}
-          </Button>
-          
-          {/* Test Notification Button */}
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => {
-              console.log('Test notification button clicked');
-              setNotification({
-                open: true,
-                message: 'Test notification - this should appear in bottom right!',
-                severity: 'info'
-              });
-              console.log('Notification state set:', {
-                open: true,
-                message: 'Test notification - this should appear in bottom right!',
-                severity: 'info'
-              });
-            }}
-            sx={{
-              borderColor: '#28a745',
-              color: '#28a745',
-              fontWeight: 600,
-              '&:hover': {
-                backgroundColor: '#28a745',
-                color: '#ffffff',
-                borderColor: '#28a745',
-              },
-              textTransform: 'none',
-            }}
-          >
-            Test Notification
-          </Button>
-        </Box>
-
         {/* Team Filter */}
         <Box sx={{ minWidth: 300 }}>
           <FormControl fullWidth size="small">
@@ -1098,28 +1020,35 @@ export default function DemoPage() {
           </FormControl>
         </Box>
 
-        {/* Refresh Button */}
-        <Box>
+        {/* Refresh Cards Button */}
+        <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
-            variant="outlined"
+            variant="contained"
             size="small"
-            color="primary"
-            onClick={handleRefreshAllCards}
-            startIcon={<RefreshIcon />}
-            sx={{ 
-              fontWeight: 600, 
-              borderRadius: 1,
-              borderColor: '#0d6efd',
-              color: '#0d6efd',
+            onClick={handleRefreshData}
+            disabled={refreshing}
+            startIcon={refreshing ? <CircularProgress size={16} /> : <RefreshIcon />}
+            sx={{
+              backgroundColor: '#0d6efd',
+              color: '#ffffff',
+              fontWeight: 600,
               '&:hover': {
-                borderColor: '#0b5ed7',
-                backgroundColor: 'rgba(13, 110, 253, 0.04)'
-              }
+                backgroundColor: '#0b5ed7',
+              },
+              '&:disabled': {
+                backgroundColor: '#6c757d',
+                color: '#ffffff',
+              },
+              textTransform: 'none',
             }}
           >
-            Refresh All Cards
+            {refreshing ? 'Refreshing...' : 'Refresh Cards'}
           </Button>
+          
+
         </Box>
+
+
       </Box>
       {/* PI Status Summary Box */}
       <Box sx={{ mb: 4, maxWidth: 600, bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3 }}>
