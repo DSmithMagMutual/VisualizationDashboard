@@ -5,7 +5,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource } from '../lib/dataService';
 import { invoke } from '@tauri-apps/api/core';
-import { fetchCardData } from '../lib/jiraDataService';
+import { fetchCardData, saveBoardData } from '../lib/jiraDataService';
 import JiraConfigDialog from './JiraConfigDialog';
 import LastUpdatedIndicator from './LastUpdatedIndicator';
 
@@ -757,15 +757,39 @@ export default function DemoPage() {
         }
       }
       
-      // Force a re-render by creating a new columns object
-      console.log('Forcing re-render with updated columns:', columns);
+      // Create updated columns object
+      console.log('Creating updated columns object');
       const updatedColumns = { ...columns };
       Object.keys(updatedColumns).forEach(colKey => {
         updatedColumns[colKey] = [...updatedColumns[colKey]];
       });
-      setColumns(updatedColumns);
       
-      // Update the last updated timestamp
+      // Save the updated board data to JSON file BEFORE updating state
+      try {
+        const boardData = {
+          columns: updatedColumns,
+          lastUpdated: new Date().toISOString(),
+          source: 'jira',
+          projectKey: projectKey
+        };
+        
+        // Determine the file name based on the current data source
+        let fileName = 'board-savePDD.json'; // default
+        if (selectedDataSource === 'board-saveAdvice') {
+          fileName = 'board-saveAdvice.json';
+        }
+        
+        console.log(`Saving updated board data to ${fileName}`);
+        await saveBoardData(boardData, fileName);
+        console.log('Board data saved successfully');
+      } catch (error) {
+        console.error('Failed to save board data:', error);
+        // Don't show error notification for save failures, just log it
+      }
+      
+      // Now update the state (this triggers the UI updates and button animation)
+      console.log('Updating state with refreshed data');
+      setColumns(updatedColumns);
       setLastUpdated(new Date().toISOString());
       
       // Show success notification

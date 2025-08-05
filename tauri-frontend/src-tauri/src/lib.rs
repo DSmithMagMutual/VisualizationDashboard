@@ -157,6 +157,50 @@ async fn fetch_card_data(config: JiraConfig, issue_key: String) -> Result<serde_
 }
 
 #[tauri::command]
+async fn save_board_data(board_data: serde_json::Value, file_name: String) -> Result<(), String> {
+    let home_dir = std::env::var("HOME")
+        .map_err(|_| "Could not determine home directory")?;
+    
+    let config_dir = std::path::Path::new(&home_dir).join(".jira-dashboard");
+    if !config_dir.exists() {
+        fs::create_dir_all(&config_dir)
+            .map_err(|e| format!("Failed to create config directory: {}", e))?;
+    }
+    
+    let board_file = config_dir.join(&file_name);
+    let board_json = serde_json::to_string_pretty(&board_data)
+        .map_err(|e| format!("Failed to serialize board data: {}", e))?;
+    
+    fs::write(&board_file, board_json)
+        .map_err(|e| format!("Failed to write board file: {}", e))?;
+    
+    println!("Board data saved to: {:?}", board_file);
+    Ok(())
+}
+
+#[tauri::command]
+async fn load_board_data(file_name: String) -> Result<Option<serde_json::Value>, String> {
+    let home_dir = std::env::var("HOME")
+        .map_err(|_| "Could not determine home directory")?;
+    
+    let board_file = std::path::Path::new(&home_dir).join(".jira-dashboard").join(&file_name);
+    
+    if !board_file.exists() {
+        println!("Board file does not exist: {:?}", board_file);
+        return Ok(None);
+    }
+    
+    let board_content = fs::read_to_string(&board_file)
+        .map_err(|e| format!("Failed to read board file: {}", e))?;
+    
+    let board_data: serde_json::Value = serde_json::from_str(&board_content)
+        .map_err(|e| format!("Failed to parse board data: {}", e))?;
+    
+    println!("Board data loaded from: {:?}", board_file);
+    Ok(Some(board_data))
+}
+
+#[tauri::command]
 async fn initialize_data_directory(app: tauri::AppHandle) -> Result<String, String> {
     let app_dir = app.path().app_data_dir()
         .map_err(|_| "Could not determine app data directory")?;
@@ -339,6 +383,8 @@ pub fn run() {
       test_jira_connection,
       fetch_jira_data,
       fetch_card_data,
+      save_board_data,
+      load_board_data,
       initialize_data_directory,
       copy_json_files_to_data_directory,
       read_json_file_from_data_directory,

@@ -191,4 +191,24 @@ export async function fetchCardData(issueKey: string): Promise<any> {
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to fetch card data');
   }
+}
+
+// Save board data to JSON file
+export async function saveBoardData(boardData: any, fileName: string): Promise<void> {
+  try {
+    await invoke('save_board_data', { boardData, fileName });
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to save board data');
+  }
+}
+
+// Load saved board data from JSON file
+export async function loadBoardData(fileName: string): Promise<any | null> {
+  try {
+    const result = await invoke('load_board_data', { fileName });
+    return result;
+  } catch (error) {
+    console.error('Failed to load board data:', error);
+    return null;
+  }
 } 

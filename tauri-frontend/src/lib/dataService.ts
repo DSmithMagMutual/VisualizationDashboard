@@ -1,3 +1,5 @@
+import { loadBoardData } from './jiraDataService';
+
 export interface DataSource {
   [key: string]: any;
   lastUpdated?: string;
@@ -18,6 +20,17 @@ export async function loadDataSource(sourceKey: string): Promise<DataSource | nu
       return null;
     }
 
+    // First, try to load saved board data
+    console.log(`Checking for saved board data: ${fileName}`);
+    const savedData = await loadBoardData(fileName);
+    
+    if (savedData) {
+      console.log(`Found saved board data for ${sourceKey}, loading from saved file`);
+      return savedData as DataSource;
+    }
+
+    // If no saved data, load from original public files
+    console.log(`No saved data found for ${sourceKey}, loading from original file`);
     const response = await fetch(`/${fileName}`);
     if (!response.ok) {
       throw new Error(`Failed to load ${fileName}: ${response.statusText}`);
