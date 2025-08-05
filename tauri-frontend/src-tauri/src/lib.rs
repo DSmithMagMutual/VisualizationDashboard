@@ -19,16 +19,48 @@ pub struct JiraTestResponse {
 
 #[tauri::command]
 async fn save_jira_config(config: JiraConfig) -> Result<(), String> {
-  // TODO: Implement secure storage when store plugin is properly configured
-  println!("Saving config: {:?}", config);
-  Ok(())
+    // Use standard system directories for config storage
+    let home_dir = std::env::var("HOME")
+        .map_err(|_| "Could not determine home directory")?;
+    
+    let config_dir = std::path::Path::new(&home_dir).join(".jira-dashboard");
+    if !config_dir.exists() {
+        fs::create_dir_all(&config_dir)
+            .map_err(|e| format!("Failed to create config directory: {}", e))?;
+    }
+    
+    let config_file = config_dir.join("jira-config.json");
+    let config_json = serde_json::to_string_pretty(&config)
+        .map_err(|e| format!("Failed to serialize config: {}", e))?;
+    
+    fs::write(&config_file, config_json)
+        .map_err(|e| format!("Failed to write config file: {}", e))?;
+    
+    println!("Jira config saved to: {:?}", config_file);
+    Ok(())
 }
 
 #[tauri::command]
 async fn load_jira_config() -> Result<Option<JiraConfig>, String> {
-  // TODO: Implement secure storage when store plugin is properly configured
-  println!("Loading config - not yet implemented");
-  Ok(None)
+    // Use standard system directories for config storage
+    let home_dir = std::env::var("HOME")
+        .map_err(|_| "Could not determine home directory")?;
+    
+    let config_file = std::path::Path::new(&home_dir).join(".jira-dashboard").join("jira-config.json");
+    
+    if !config_file.exists() {
+        println!("Config file does not exist: {:?}", config_file);
+        return Ok(None);
+    }
+    
+    let config_content = fs::read_to_string(&config_file)
+        .map_err(|e| format!("Failed to read config file: {}", e))?;
+    
+    let config: JiraConfig = serde_json::from_str(&config_content)
+        .map_err(|e| format!("Failed to parse config: {}", e))?;
+    
+    println!("Jira config loaded from: {:?}", config_file);
+    Ok(Some(config))
 }
 
 #[tauri::command]
@@ -91,6 +123,36 @@ async fn fetch_jira_data(config: JiraConfig, project_key: String) -> Result<serd
         let status = response.status();
         let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
         Err(format!("Failed to fetch data: {} - {}", status, error_text))
+    }
+}
+
+#[tauri::command]
+async fn fetch_card_data(config: JiraConfig, issue_key: String) -> Result<serde_json::Value, String> {
+    let client = reqwest::Client::new();
+    
+    // Fetch specific issue data
+    let url = format!("{}/rest/api/3/issue/{}", config.base_url.trim_end_matches('/'), issue_key);
+    
+    let params = [
+        ("fields", "summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001,subtasks,issuelinks"),
+    ];
+    
+    let response = client
+        .get(&url)
+        .header("Authorization", format!("Basic {}", base64::engine::general_purpose::STANDARD.encode(format!("{}:{}", config.email, config.api_token))))
+        .header("Accept", "application/json")
+        .query(&params)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if response.status().is_success() {
+        let data: serde_json::Value = response.json().await.map_err(|e| e.to_string())?;
+        Ok(data)
+    } else {
+        let status = response.status();
+        let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+        Err(format!("Failed to fetch card data: {} - {}", status, error_text))
     }
 }
 
@@ -276,6 +338,7 @@ pub fn run() {
       load_jira_config,
       test_jira_connection,
       fetch_jira_data,
+      fetch_card_data,
       initialize_data_directory,
       copy_json_files_to_data_directory,
       read_json_file_from_data_directory,

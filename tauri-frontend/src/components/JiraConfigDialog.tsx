@@ -11,6 +11,7 @@ import {
   Box,
   Typography,
   Link,
+  Snackbar,
 } from '@mui/material';
 import { testJiraConnection, saveJiraConfig, loadJiraConfig } from '../lib/jiraDataService';
 
@@ -36,6 +37,15 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
   const [testing, setTesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error' | 'info' | 'warning';
+  }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
 
 
   useEffect(() => {
@@ -69,11 +79,27 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
       const result = await testJiraConnection(config);
       if (result.success) {
         setSuccess(result.message);
+        setNotification({
+          open: true,
+          message: 'Jira connection test successful!',
+          severity: 'success'
+        });
       } else {
         setError(result.message);
+        setNotification({
+          open: true,
+          message: `Connection test failed: ${result.message}`,
+          severity: 'error'
+        });
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Connection test failed');
+      const errorMessage = error instanceof Error ? error.message : 'Connection test failed';
+      setError(errorMessage);
+      setNotification({
+        open: true,
+        message: `Connection test failed: ${errorMessage}`,
+        severity: 'error'
+      });
     } finally {
       setTesting(false);
     }
@@ -91,6 +117,11 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
     try {
       await saveJiraConfig(config);
       setSuccess('Configuration saved successfully!');
+      setNotification({
+        open: true,
+        message: 'Jira configuration saved successfully!',
+        severity: 'success'
+      });
       onConfigSaved(config);
       
       // Auto-close after a short delay
@@ -98,7 +129,13 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
         onClose();
       }, 1500);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to save configuration');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save configuration';
+      setError(errorMessage);
+      setNotification({
+        open: true,
+        message: `Failed to save configuration: ${errorMessage}`,
+        severity: 'error'
+      });
     } finally {
       setLoading(false);
     }
@@ -110,8 +147,13 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
     onClose();
   };
 
+  const handleCloseNotification = () => {
+    setNotification(prev => ({ ...prev, open: false }));
+  };
+
   return (
-    <Dialog 
+    <>
+      <Dialog 
       open={open} 
       onClose={handleClose} 
       maxWidth="sm" 
@@ -209,6 +251,29 @@ export default function JiraConfigDialog({ open, onClose, onConfigSaved }: JiraC
           {loading ? 'Saving...' : 'Save Configuration'}
         </Button>
       </DialogActions>
-    </Dialog>
+      </Dialog>
+
+      {/* Notification Snackbar */}
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        sx={{
+          bottom: '20px !important', // Position above the version display
+          right: '20px !important',
+          zIndex: 9999, // Ensure it's above other elements
+        }}
+      >
+        <Alert
+          onClose={handleCloseNotification}
+          severity={notification.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
+    </>
   );
 } 

@@ -1,4 +1,4 @@
-// import { invoke } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 export interface JiraConfig {
   base_url: string;
@@ -43,30 +43,46 @@ export interface BoardData {
 }
 
 // Test Jira connection
-export async function testJiraConnection(_config: JiraConfig): Promise<{ success: boolean; message: string }> {
-  // TODO: Implement when Tauri invoke is working
-  return {
-    success: true,
-    message: 'Connection test not yet implemented'
-  };
+export async function testJiraConnection(config: JiraConfig): Promise<{ success: boolean; message: string }> {
+  try {
+    const result = await invoke('test_jira_connection', { config });
+    return result as { success: boolean; message: string };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
 }
 
 // Save Jira configuration
 export async function saveJiraConfig(config: JiraConfig): Promise<void> {
-  // TODO: Implement when Tauri invoke is working
-  console.log('Saving Jira config:', config);
+  try {
+    await invoke('save_jira_config', { config });
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to save configuration');
+  }
 }
 
 // Load Jira configuration
 export async function loadJiraConfig(): Promise<JiraConfig | null> {
-  // TODO: Implement when Tauri invoke is working
-  return null;
+  try {
+    const result = await invoke('load_jira_config');
+    return result as JiraConfig | null;
+  } catch (error) {
+    console.error('Failed to load Jira config:', error);
+    return null;
+  }
 }
 
 // Fetch Jira data for a project
-export async function fetchJiraData(_config: JiraConfig, _projectKey: string): Promise<JiraResponse> {
-  // TODO: Implement when Tauri invoke is working
-  throw new Error('Jira data fetching not yet implemented');
+export async function fetchJiraData(config: JiraConfig, projectKey: string): Promise<JiraResponse> {
+  try {
+    const result = await invoke('fetch_jira_data', { config, projectKey });
+    return result as JiraResponse;
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to fetch Jira data');
+  }
 }
 
 // Transform Jira data to board format
@@ -160,4 +176,19 @@ export async function fetchAndTransformJiraData(projectKey: string): Promise<Boa
 
   const jiraData = await fetchJiraData(config, projectKey);
   return transformJiraDataToBoard(jiraData, projectKey);
+}
+
+// Fetch individual card data from Jira
+export async function fetchCardData(issueKey: string): Promise<any> {
+  const config = await loadJiraConfig();
+  if (!config) {
+    throw new Error('Jira configuration not found. Please configure Jira settings first.');
+  }
+
+  try {
+    const result = await invoke('fetch_card_data', { config, issueKey });
+    return result;
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to fetch card data');
+  }
 } 

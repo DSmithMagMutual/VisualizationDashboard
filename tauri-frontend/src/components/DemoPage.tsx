@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText } from '@mui/material';
+import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Snackbar, Alert } from '@mui/material';
 import { Close, Refresh, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource } from '../lib/dataService';
-import { fetchAndTransformJiraData } from '../lib/jiraDataService';
+import { invoke } from '@tauri-apps/api/core';
+import { fetchCardData } from '../lib/jiraDataService';
 import JiraConfigDialog from './JiraConfigDialog';
 import LastUpdatedIndicator from './LastUpdatedIndicator';
 
@@ -42,7 +43,7 @@ function getStatusCategory(status: string): string {
       statusLower.includes('complete') || 
       statusLower.includes('closed') ||
       statusLower.includes('resolved')) {
-    return 'Done';
+    return 'done';
   } 
   
   // In Progress statuses
@@ -54,7 +55,7 @@ function getStatusCategory(status: string): string {
            statusLower.includes('review') ||
            statusLower.includes('development') ||
            statusLower.includes('in development')) {
-    return 'In Progress';
+    return 'indeterminate';
   } 
   
   // To Do statuses (including Ready statuses that haven't started)
@@ -65,12 +66,12 @@ function getStatusCategory(status: string): string {
            statusLower.includes('backlog') ||
            statusLower.includes('selected for development') ||
            statusLower.includes('ready for development')) {
-    return 'To Do';
+    return 'new';
   } 
   
-  // Default to To Do for any unrecognized status
+  // Default to new for any unrecognized status
   else {
-    return 'To Do';
+    return 'new';
   }
 }
 
@@ -86,12 +87,12 @@ function getColorForTeam(team: string) {
 }
 
 function StatusChart({ columns }: { columns: Record<string, any[]> }) {
-  const statusCategories = ['To Do', 'In Progress', 'Done'];
+  const statusCategories = ['new', 'indeterminate', 'done'];
   
   // Calculate data for each iteration
   const chartData = ITERATIONS.map(iter => {
     const cards = columns[iter.key] || [];
-    const statusCounts: Record<string, number> = { 'To Do': 0, 'In Progress': 0, 'Done': 0 };
+    const statusCounts: Record<string, number> = { 'new': 0, 'indeterminate': 0, 'done': 0 };
     
     cards.forEach(card => {
       // Count child stories instead of parent stories
@@ -114,9 +115,9 @@ function StatusChart({ columns }: { columns: Record<string, any[]> }) {
     return {
       iteration: iter.label,
       key: iter.key,
-      'To Do': statusCounts['To Do'],
-      'In Progress': statusCounts['In Progress'],
-      'Done': statusCounts['Done']
+      'new': statusCounts['new'],
+      'indeterminate': statusCounts['indeterminate'],
+      'done': statusCounts['done']
     };
   });
 
@@ -202,7 +203,7 @@ function StatusChart({ columns }: { columns: Record<string, any[]> }) {
             })}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 'auto' }}>
               <Typography variant="body2" sx={{ color: '#212529', fontWeight: 600 }}>
-                Total: {chartData.reduce((sum, data) => sum + data['To Do'] + data['In Progress'] + data['Done'], 0)}
+                Total: {chartData.reduce((sum, data) => sum + data['new'] + data['indeterminate'] + data['done'], 0)}
               </Typography>
             </Box>
           </Box>
@@ -222,14 +223,17 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, tea
 }) {
   // Filter child stories by teamFilter if provided
   const filteredStories = React.useMemo(() => {
+    console.log(`DemoCard re-rendering for ${card.key}, stories:`, card.stories);
     if (!Array.isArray(card.stories)) return [];
     if (!teamFilter || teamFilter.length === 0) return card.stories;
     return card.stories.filter((story: any) => teamFilter.includes(story.team));
-  }, [card.stories, teamFilter]);
+  }, [card.stories, teamFilter, card.key]);
 
   const doneCount = filteredStories.filter((s: any) => s.statusCategory === 'done').length || 0;
   const totalCount = filteredStories.length || 0;
   const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+  
+  console.log(`Progress for ${card.key}: ${doneCount}/${totalCount} = ${pct}%`);
   const team = card.team || 'Other';
   return (
     <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, mb: 2, position: 'relative' }}>
@@ -349,7 +353,12 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, tea
                           marginRight: 4
                         }} />
                       </Tooltip>
-                      <Chip label={story.status} size="small" sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500, borderRadius: 1 }} />
+                      <Chip 
+                        label={story.status} 
+                        size="small" 
+                        sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500, borderRadius: 1 }} 
+                        onClick={() => console.log(`Story ${story.key} status:`, story.status, 'statusCategory:', story.statusCategory)}
+                      />
                     </li>
                   ))}
                 </Box>
@@ -387,11 +396,25 @@ export default function DemoPage() {
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
   const [dataSource, setDataSource] = useState<'jira' | 'static' | undefined>();
   const [projectKey, setProjectKey] = useState<string | undefined>();
+  const [notification, setNotification] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error' | 'info' | 'warning';
+  }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
 
   // Debug effect to log when showJiraConfig changes
   useEffect(() => {
     console.log('showJiraConfig changed to:', showJiraConfig);
   }, [showJiraConfig]);
+
+  // Debug effect to log when notification changes
+  useEffect(() => {
+    console.log('Notification state changed:', notification);
+  }, [notification]);
 
   // Collect all unique teams from current board data
   const allTeams = React.useMemo(() => {
@@ -538,10 +561,8 @@ export default function DemoPage() {
   // Function to check if Jira credentials are configured
   const checkJiraCredentials = async (): Promise<boolean> => {
     try {
-      // TODO: Implement when Tauri is properly configured
-      // For now, return true to test refresh functionality
-      // When Tauri is ready, this should call: const config = await invoke('load_jira_config');
-      return true; // Temporarily return true to test refresh
+      const config = await invoke('load_jira_config');
+      return config !== null;
     } catch (error) {
       console.error('Error checking Jira credentials:', error);
       return false;
@@ -590,31 +611,189 @@ export default function DemoPage() {
     setIsEditingTitle(false);
   };
 
+  const handleCloseNotification = () => {
+    setNotification(prev => ({ ...prev, open: false }));
+  };
+
   const handleRefreshData = async () => {
-    if (!selectedDataSource) return;
-    
     try {
       setRefreshing(true);
       setError(null);
       
-      if (dataSource === 'jira' && projectKey) {
-        // Refresh Jira data
-        const jiraData = await fetchAndTransformJiraData(projectKey);
-        const initializedColumns = ITERATIONS.reduce((acc, iter) => {
-          acc[iter.key] = jiraData.columns[iter.key] || [];
-          return acc;
-        }, {} as Record<string, any[]>);
-        setColumns(initializedColumns);
-        setLastUpdated(jiraData.lastUpdated);
-        setDataSource(jiraData.source);
-        setProjectKey(jiraData.projectKey);
-      } else {
-        // Refresh static data
-        await loadDataSourceData(selectedDataSource);
+      // Check if Jira credentials are configured
+      const hasCredentials = await checkJiraCredentials();
+      if (!hasCredentials) {
+        setNotification({
+          open: true,
+          message: 'Please configure Jira credentials first',
+          severity: 'warning'
+        });
+        setShowJiraConfig(true);
+        return;
       }
+      
+      // Get all cards from the current board
+      const allCards = Object.values(columns).flat();
+      if (allCards.length === 0) {
+        setNotification({
+          open: true,
+          message: 'No cards to refresh on the current board',
+          severity: 'info'
+        });
+        return;
+      }
+      
+      console.log(`Refreshing ${allCards.length} cards on the board`);
+      
+      // Refresh each card individually
+      let refreshedCount = 0;
+      let errorCount = 0;
+      
+      for (const card of allCards) {
+        if (card.key) {
+          try {
+            console.log(`Refreshing card: ${card.key}`);
+            console.log(`Original card structure:`, card);
+            
+            // Fetch fresh data from Jira
+            const freshCardData = await fetchCardData(card.key);
+            console.log(`Fresh data for ${card.key}:`, freshCardData);
+            console.log(`Fresh data fields for ${card.key}:`, freshCardData?.fields);
+            console.log(`Status field for ${card.key}:`, freshCardData?.fields?.status);
+            
+            // Update the card with fresh data
+            if (freshCardData && freshCardData.fields) {
+              const fields = freshCardData.fields;
+              
+              // Update card status
+              if (fields.status && fields.status.name) {
+                const newStatus = fields.status.name;
+                const newStatusCategory = getStatusCategory(newStatus);
+                console.log(`Updating status for ${card.key}:`, {
+                  oldStatus: card.status,
+                  newStatus: newStatus,
+                  oldStatusCategory: card.statusCategory,
+                  newStatusCategory: newStatusCategory
+                });
+                card.status = newStatus;
+                card.statusCategory = newStatusCategory;
+              } else {
+                console.log(`No status found in fresh data for ${card.key}`);
+              }
+              
+              // Update card summary
+              if (fields.summary) {
+                card.summary = fields.summary;
+              }
+              
+              // Update assignee
+              if (fields.assignee && fields.assignee.displayName) {
+                card.assignee = fields.assignee.displayName;
+              }
+              
+              // Update team if available
+              if (fields.customfield_10014) {
+                card.team = fields.customfield_10014;
+              }
+              
+              // Update child work items (stories) if they exist
+              if (card.stories && Array.isArray(card.stories) && card.stories.length > 0) {
+                console.log(`Refreshing ${card.stories.length} existing child work items for ${card.key}`);
+                console.log(`Original stories for ${card.key}:`, card.stories);
+                
+                const storyPromises = card.stories.map(async (existingStory: any) => {
+                  try {
+                    const issueKey = existingStory.key;
+                    console.log(`Fetching fresh data for existing child issue: ${issueKey}`);
+                    const storyData = await fetchCardData(issueKey);
+                    console.log(`Fresh data for child issue ${issueKey}:`, storyData);
+                    
+                    if (storyData && storyData.fields) {
+                      const newStatus = storyData.fields.status?.name || 'Unknown';
+                      const newStatusCategory = getStatusCategory(newStatus);
+                      const newSummary = storyData.fields.summary || issueKey;
+                      const newTeam = storyData.fields.customfield_10014 || 'Unknown Team';
+                      
+                      console.log(`Updating existing child issue ${issueKey}:`, {
+                        oldStatus: existingStory.status,
+                        newStatus: newStatus,
+                        oldStatusCategory: existingStory.statusCategory,
+                        newStatusCategory: newStatusCategory,
+                        newSummary: newSummary,
+                        newTeam: newTeam
+                      });
+                      
+                      return {
+                        key: issueKey,
+                        summary: newSummary,
+                        status: newStatus,
+                        statusCategory: newStatusCategory,
+                        team: newTeam
+                      };
+                    } else {
+                      console.log(`No valid fields found for child issue ${issueKey}, keeping existing data`);
+                      return existingStory; // Keep existing data if API fails
+                    }
+                  } catch (error) {
+                    console.error(`Failed to fetch child issue ${existingStory.key}:`, error);
+                    return existingStory; // Keep existing data if API fails
+                  }
+                });
+                
+                const updatedStories = await Promise.all(storyPromises);
+                card.stories = updatedStories;
+                console.log(`Updated ${updatedStories.length} child work items for ${card.key}:`, updatedStories);
+                console.log(`Final stories array for ${card.key}:`, card.stories);
+              } else {
+                console.log(`No existing child work items found for ${card.key}`);
+              }
+              
+              refreshedCount++;
+            }
+          } catch (error) {
+            console.error(`Failed to refresh card ${card.key}:`, error);
+            errorCount++;
+          }
+        }
+      }
+      
+      // Force a re-render by creating a new columns object
+      console.log('Forcing re-render with updated columns:', columns);
+      const updatedColumns = { ...columns };
+      Object.keys(updatedColumns).forEach(colKey => {
+        updatedColumns[colKey] = [...updatedColumns[colKey]];
+      });
+      setColumns(updatedColumns);
+      
+      // Update the last updated timestamp
+      setLastUpdated(new Date().toISOString());
+      
+      // Show success notification
+      if (errorCount === 0) {
+        setNotification({
+          open: true,
+          message: `Successfully refreshed ${refreshedCount} cards on the board`,
+          severity: 'success'
+        });
+      } else {
+        setNotification({
+          open: true,
+          message: `Refreshed ${refreshedCount} cards, ${errorCount} failed`,
+          severity: 'warning'
+        });
+      }
+      
     } catch (error) {
-      console.error('Failed to refresh data:', error);
-      setError(error instanceof Error ? error.message : 'Failed to refresh data');
+      console.error('Failed to refresh cards:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to refresh cards';
+      setError(errorMessage);
+      
+      // Show error notification
+      setNotification({
+        open: true,
+        message: `Failed to refresh cards: ${errorMessage}`,
+        severity: 'error'
+      });
     } finally {
       setRefreshing(false);
     }
@@ -784,40 +963,15 @@ export default function DemoPage() {
 
 
 
-        {/* Project Key Input (for Jira) */}
-        <Box sx={{ minWidth: 200 }}>
-          <TextField
-            fullWidth
-            size="small"
-            label="Project Key"
-            placeholder="e.g., ADVICE"
-            value={projectKey || ''}
-            onChange={(e) => setProjectKey(e.target.value)}
-            sx={{
-              backgroundColor: '#ffffff',
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#dee2e6',
-                },
-                '&:hover fieldset': {
-                  borderColor: '#adb5bd',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: '#0d6efd',
-                },
-              },
-            }}
-            helperText="Jira project key (e.g., ADVICE)"
-          />
-        </Box>
 
-        {/* Fetch from Jira Button */}
-        <Box>
+
+        {/* Refresh Cards Button */}
+        <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
             variant="contained"
             size="small"
             onClick={handleRefreshData}
-            disabled={!projectKey || refreshing}
+            disabled={refreshing}
             startIcon={refreshing ? <CircularProgress size={16} /> : <RefreshIcon />}
             sx={{
               backgroundColor: '#0d6efd',
@@ -833,7 +987,39 @@ export default function DemoPage() {
               textTransform: 'none',
             }}
           >
-            {refreshing ? 'Fetching...' : 'Fetch from Jira'}
+            {refreshing ? 'Refreshing...' : 'Refresh Cards'}
+          </Button>
+          
+          {/* Test Notification Button */}
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => {
+              console.log('Test notification button clicked');
+              setNotification({
+                open: true,
+                message: 'Test notification - this should appear in bottom right!',
+                severity: 'info'
+              });
+              console.log('Notification state set:', {
+                open: true,
+                message: 'Test notification - this should appear in bottom right!',
+                severity: 'info'
+              });
+            }}
+            sx={{
+              borderColor: '#28a745',
+              color: '#28a745',
+              fontWeight: 600,
+              '&:hover': {
+                backgroundColor: '#28a745',
+                color: '#ffffff',
+                borderColor: '#28a745',
+              },
+              textTransform: 'none',
+            }}
+          >
+            Test Notification
           </Button>
         </Box>
 
@@ -921,9 +1107,9 @@ export default function DemoPage() {
             return card.stories.filter((story: any) => teamFilter.includes(story.team));
           });
           const total = allStories.length;
-          const done = allStories.filter((s: any) => getStatusCategory(s.status) === 'Done').length;
-          const inProgress = allStories.filter((s: any) => getStatusCategory(s.status) === 'In Progress').length;
-          const notStarted = allStories.filter((s: any) => getStatusCategory(s.status) === 'To Do').length;
+          const done = allStories.filter((s: any) => getStatusCategory(s.status) === 'done').length;
+          const inProgress = allStories.filter((s: any) => getStatusCategory(s.status) === 'indeterminate').length;
+          const notStarted = allStories.filter((s: any) => getStatusCategory(s.status) === 'new').length;
           const pct = total > 0 ? Math.round((done / total) * 100) : 0;
           let barColor = '#e9ecef';
           if (pct === 100 && total > 0) barColor = '#198754';
@@ -969,7 +1155,7 @@ export default function DemoPage() {
               const cards = columns[iter.key] || [];
               const allStories = cards.flatMap(card => card.stories || []);
               const total = allStories.length;
-              const done = allStories.filter((s: any) => getStatusCategory(s.status) === 'Done').length;
+              const done = allStories.filter((s: any) => getStatusCategory(s.status) === 'done').length;
               const pct = total > 0 ? Math.round((done / total) * 100) : 0;
               let barColor = '#e9ecef';
               if (pct === 100 && total > 0) barColor = '#198754';
@@ -1050,6 +1236,28 @@ export default function DemoPage() {
           }
         }}
       />
+
+      {/* Notification Snackbar */}
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        sx={{
+          bottom: '20px !important', // Position above the version display
+          right: '20px !important',
+          zIndex: 9999, // Ensure it's above other elements
+        }}
+      >
+        <Alert
+          onClose={handleCloseNotification}
+          severity={notification.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 } 
