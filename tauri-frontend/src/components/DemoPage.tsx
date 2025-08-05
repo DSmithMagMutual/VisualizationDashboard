@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Snackbar, Alert } from '@mui/material';
-import { Close, Refresh, ExpandMore, ExpandLess } from '@mui/icons-material';
+import { Close, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource } from '../lib/dataService';
@@ -8,6 +8,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { fetchCardData, saveBoardData } from '../lib/jiraDataService';
 import JiraConfigDialog from './JiraConfigDialog';
 import LastUpdatedIndicator from './LastUpdatedIndicator';
+import { useAppState } from '../contexts/AppStateContext';
 
 const ITERATIONS = [
   { key: "4.1", label: "2025 Iteration 4.1", range: "July 9 - July 22" },
@@ -213,21 +214,18 @@ function StatusChart({ columns }: { columns: Record<string, any[]> }) {
   );
 }
 
-function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, teamFilter }: { 
+function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
   card: any; 
   onDelete: () => void; 
-  onReload: () => void;
   isMinimized: boolean;
   onToggleMinimize: () => void;
-  teamFilter?: string[];
 }) {
-  // Filter child stories by teamFilter if provided
+  // Show all child stories when card is visible (team filtering is handled at card level)
   const filteredStories = React.useMemo(() => {
     console.log(`DemoCard re-rendering for ${card.key}, stories:`, card.stories);
     if (!Array.isArray(card.stories)) return [];
-    if (!teamFilter || teamFilter.length === 0) return card.stories;
-    return card.stories.filter((story: any) => teamFilter.includes(story.team));
-  }, [card.stories, teamFilter, card.key]);
+    return card.stories; // Show all stories when card is visible
+  }, [card.stories, card.key]);
 
   const doneCount = filteredStories.filter((s: any) => s.statusCategory === 'done').length || 0;
   const totalCount = filteredStories.length || 0;
@@ -252,6 +250,7 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, tea
             {isMinimized ? <ExpandMore fontSize="small" /> : <ExpandLess fontSize="small" />}
           </IconButton>
         </Tooltip>
+        {/* Individual refresh button disabled
         <Tooltip title="Refresh card data">
           <IconButton
             size="small"
@@ -266,6 +265,7 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, tea
             <Refresh fontSize="small" />
           </IconButton>
         </Tooltip>
+        */}
         <Tooltip title="Remove card">
           <IconButton
             size="small"
@@ -372,7 +372,7 @@ function DemoCard({ card, onDelete, onReload, isMinimized, onToggleMinimize, tea
 }
 
 export default function DemoPage() {
-  const [selectedDataSource, setSelectedDataSource] = useState('');
+  const { selectedDataSource, setSelectedDataSource, teamFilter, setTeamFilter } = useAppState();
   const [columns, setColumns] = useState(() =>
     ITERATIONS.reduce((acc, iter) => {
       acc[iter.key] = [];
@@ -391,7 +391,6 @@ export default function DemoPage() {
   const [minimizedCards, setMinimizedCards] = useState<Set<string>>(new Set());
   const [boardTitle, setBoardTitle] = useState("Demo Iteration Board");
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [teamFilter, setTeamFilter] = useState<string[]>([]);
   const [showJiraConfig, setShowJiraConfig] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
   const [dataSource, setDataSource] = useState<'jira' | 'static' | undefined>();
@@ -533,30 +532,7 @@ export default function DemoPage() {
     });
   };
 
-  const handleReloadCard = async (colKey: string, cardIndex: number) => {
-    const card = columns[colKey][cardIndex];
-    if (!card.key) return;
-    
-    console.log(`Reload card button clicked for: ${card.key}`);
-    setError(null);
-    
-    // Check if Jira credentials are configured
-    const hasCredentials = await checkJiraCredentials();
-    console.log('Has credentials for card reload:', hasCredentials);
-    
-    if (!hasCredentials) {
-      console.log('No credentials found, showing config dialog for card reload');
-      setShowJiraConfig(true);
-      return;
-    }
-    
-    // Proceed with card refresh if credentials are available
-    console.log(`Proceeding with card refresh - credentials available for: ${card.key}`);
-    
-    // TODO: Implement actual card refresh logic here
-    // For now, just show a success message
-    console.log(`Card refresh completed for: ${card.key}`);
-  };
+
 
   // Function to check if Jira credentials are configured
   const checkJiraCredentials = async (): Promise<boolean> => {
@@ -1056,8 +1032,11 @@ export default function DemoPage() {
           // Gather all child stories across all iterations, filtered by team if filter is applied
           const allStories = Object.values(columns).flat().flatMap(card => {
             if (!card.stories) return [];
-            if (!teamFilter || teamFilter.length === 0) return card.stories;
-            return card.stories.filter((story: any) => teamFilter.includes(story.team));
+            // Only include stories from cards that match the team filter
+            if (cardMatchesTeamFilter(card)) {
+              return card.stories;
+            }
+            return [];
           });
           const total = allStories.length;
           const done = allStories.filter((s: any) => getStatusCategory(s.status) === 'done').length;
@@ -1104,9 +1083,10 @@ export default function DemoPage() {
               <Typography variant="caption" sx={{ color: '#6c757d' }}>{iter.range}</Typography>
             </Box>
             {(() => {
-              // Gather all child stories for this iteration
+              // Gather all child stories for this iteration (filtered by team)
               const cards = columns[iter.key] || [];
-              const allStories = cards.flatMap(card => card.stories || []);
+              const filteredCards = cards.filter(cardMatchesTeamFilter);
+              const allStories = filteredCards.flatMap(card => card.stories || []);
               const total = allStories.length;
               const done = allStories.filter((s: any) => getStatusCategory(s.status) === 'done').length;
               const pct = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -1136,10 +1116,8 @@ export default function DemoPage() {
                     key={idx} 
                     card={card} 
                     onDelete={() => handleDeleteCard(iter.key, idx)}
-                    onReload={() => handleReloadCard(iter.key, idx)}
                     isMinimized={isMinimized}
                     onToggleMinimize={() => handleToggleMinimize(iter.key, idx)}
-                    teamFilter={teamFilter}
                   />
                 );
               })}
@@ -1171,7 +1149,12 @@ export default function DemoPage() {
           </Box>
         ))}
       </Box>
-      <StatusChart columns={columns} />
+      <StatusChart columns={Object.fromEntries(
+        Object.entries(columns).map(([key, cards]) => [
+          key, 
+          cards.filter(cardMatchesTeamFilter)
+        ])
+      )} />
       
       {/* Jira Configuration Dialog */}
       <JiraConfigDialog

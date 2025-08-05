@@ -5,6 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DependencyGraphWidget from './DependencyGraphWidget';
 import { loadDataSource } from '../lib/dataService';
 import JiraConfigDialog from './JiraConfigDialog';
+import { useAppState } from '../contexts/AppStateContext';
 
 // Helper function to get color for team (copied from DemoPage)
 function getColorForTeam(team: string) {
@@ -106,9 +107,8 @@ function PreviewCard({ node, onClose }: { node: any; onClose: () => void }) {
 }
 
 export default function DependencyGraphPage() {
-  const [selectedDataSource, setSelectedDataSource] = useState('');
+  const { selectedDataSource, setSelectedDataSource, teamFilter, setTeamFilter } = useAppState();
   const [currentData, setCurrentData] = useState<any>(null);
-  const [teamFilter, setTeamFilter] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showJiraConfig, setShowJiraConfig] = useState(false);
   const [selectedNode, setSelectedNode] = useState<any>(null);

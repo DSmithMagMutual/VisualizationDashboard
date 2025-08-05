@@ -10,6 +10,7 @@ import DemoPage from './components/DemoPage';
 import DependencyGraphPage from './components/DependencyGraphPage';
 import JiraConfigDialog from './components/JiraConfigDialog';
 import VersionDisplay from './components/VersionDisplay';
+import { AppStateProvider } from './contexts/AppStateContext';
 // import { initializeDataSystem } from './lib/localDataService';
 
 const theme = createTheme({
@@ -359,21 +360,23 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <Navigation onOpenSettings={() => setSettingsOpen(true)} />
-        <Box id="content-area" sx={{ pt: '64px', minHeight: '100vh' }}> {/* Add padding for fixed navigation */}
-          <Routes>
-            <Route path="/" element={<DemoPage />} />
-            <Route path="/dependency-graph" element={<DependencyGraphPage />} />
-          </Routes>
-        </Box>
-        <JiraConfigDialog
-          open={settingsOpen}
-          onClose={() => setSettingsOpen(false)}
-          onConfigSaved={handleConfigSaved}
-        />
-        <VersionDisplay />
-      </Router>
+      <AppStateProvider>
+        <Router>
+          <Navigation onOpenSettings={() => setSettingsOpen(true)} />
+          <Box id="content-area" sx={{ pt: '64px', minHeight: '100vh' }}> {/* Add padding for fixed navigation */}
+            <Routes>
+              <Route path="/" element={<DemoPage />} />
+              <Route path="/dependency-graph" element={<DependencyGraphPage />} />
+            </Routes>
+          </Box>
+          <JiraConfigDialog
+            open={settingsOpen}
+            onClose={() => setSettingsOpen(false)}
+            onConfigSaved={handleConfigSaved}
+          />
+          <VersionDisplay />
+        </Router>
+      </AppStateProvider>
     </ThemeProvider>
   );
 }
