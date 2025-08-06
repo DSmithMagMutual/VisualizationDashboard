@@ -25,6 +25,39 @@ export interface JiraIssue {
     };
     customfield_10014?: string; // Team field
     customfield_10001?: string; // Sprint field
+    issuelinks?: {
+      id: string;
+      type: {
+        id: string;
+        name: string;
+        inward: string;
+        outward: string;
+      };
+      outwardIssue?: {
+        key: string;
+        fields: {
+          summary: string;
+          status: {
+            name: string;
+          };
+          issuetype: {
+            name: string;
+          };
+        };
+      };
+      inwardIssue?: {
+        key: string;
+        fields: {
+          summary: string;
+          status: {
+            name: string;
+          };
+          issuetype: {
+            name: string;
+          };
+        };
+      };
+    }[];
   };
 }
 
@@ -134,14 +167,50 @@ export function transformJiraDataToBoard(jiraData: JiraResponse, projectKey?: st
         id: parentKey,
         title: parentIssue.fields.summary,
         team: parentIssue.fields.customfield_10014 || 'Unknown Team',
-        stories: childIssues.map(issue => ({
-          id: issue.key,
-          title: issue.fields.summary,
-          status: issue.fields.status.name,
-          type: issue.fields.issuetype.name,
-          assignee: issue.fields.assignee?.displayName || 'Unassigned',
-          team: issue.fields.customfield_10014 || 'Unknown Team'
-        }))
+        stories: childIssues.map(issue => {
+          // Process relationship data
+          const relationships = {
+            relatesTo: [] as string[],
+            blocks: [] as string[],
+            blockedBy: [] as string[]
+          };
+
+          if (issue.fields.issuelinks) {
+            issue.fields.issuelinks.forEach(link => {
+              const relatedIssue = link.outwardIssue || link.inwardIssue;
+              if (relatedIssue) {
+                const relationshipType = link.type.name.toLowerCase();
+                const issueKey = relatedIssue.key;
+                
+                if (relationshipType.includes('relates to') || relationshipType.includes('related')) {
+                  relationships.relatesTo.push(issueKey);
+                } else if (relationshipType.includes('blocks')) {
+                  if (link.outwardIssue) {
+                    relationships.blocks.push(issueKey);
+                  } else {
+                    relationships.blockedBy.push(issueKey);
+                  }
+                } else if (relationshipType.includes('blocked by')) {
+                  if (link.outwardIssue) {
+                    relationships.blockedBy.push(issueKey);
+                  } else {
+                    relationships.blocks.push(issueKey);
+                  }
+                }
+              }
+            });
+          }
+
+          return {
+            id: issue.key,
+            title: issue.fields.summary,
+            status: issue.fields.status.name,
+            type: issue.fields.issuetype.name,
+            assignee: issue.fields.assignee?.displayName || 'Unassigned',
+            team: issue.fields.customfield_10014 || 'Unknown Team',
+            relationships
+          };
+        })
       };
 
       if (!boardData.columns[columnKey]) {

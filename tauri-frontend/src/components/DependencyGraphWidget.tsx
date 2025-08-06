@@ -9,6 +9,11 @@ interface Issue {
   statusCategory: string;
   team?: string;
   url?: string;
+  relationships?: {
+    relatesTo: string[];
+    blocks: string[];
+    blockedBy: string[];
+  };
 }
 
 interface Epic {
@@ -119,7 +124,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
     const links: Array<{
       source: string;
       target: string;
-      type: 'epic-story';
+      type: 'epic-story' | 'relates-to' | 'blocks' | 'blocked-by';
     }> = [];
 
     // Process all epics and their stories with iteration information
@@ -168,6 +173,36 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
               target: story.key,
               type: 'epic-story'
             });
+
+            // Add relationship links if they exist
+            if (story.relationships) {
+              // Add "relates to" links
+              story.relationships.relatesTo.forEach(relatedKey => {
+                links.push({
+                  source: story.key,
+                  target: relatedKey,
+                  type: 'relates-to'
+                });
+              });
+
+              // Add "blocks" links
+              story.relationships.blocks.forEach(blockedKey => {
+                links.push({
+                  source: story.key,
+                  target: blockedKey,
+                  type: 'blocks'
+                });
+              });
+
+              // Add "blocked by" links
+              story.relationships.blockedBy.forEach(blockingKey => {
+                links.push({
+                  source: story.key,
+                  target: blockingKey,
+                  type: 'blocked-by'
+                });
+              });
+            }
           });
         }
       });
@@ -213,15 +248,65 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force('collision', d3.forceCollide().radius(60));
 
-    // Create the links
+    // Create the links with different styles for different relationship types
     const link = g.append('g')
       .selectAll('line')
       .data(graphData.links)
       .enter()
       .append('line')
-      .attr('stroke', '#999')
-      .attr('stroke-opacity', 0.6)
-      .attr('stroke-width', 2);
+      .attr('stroke', (d: any) => {
+        switch (d.type) {
+          case 'epic-story':
+            return '#999';
+          case 'relates-to':
+            return '#666';
+          case 'blocks':
+            return '#dc3545';
+          case 'blocked-by':
+            return '#dc3545';
+          default:
+            return '#999';
+        }
+      })
+      .attr('stroke-opacity', (d: any) => {
+        switch (d.type) {
+          case 'epic-story':
+            return 0.6;
+          case 'relates-to':
+            return 0.4;
+          case 'blocks':
+          case 'blocked-by':
+            return 0.8;
+          default:
+            return 0.6;
+        }
+      })
+      .attr('stroke-width', (d: any) => {
+        switch (d.type) {
+          case 'epic-story':
+            return 2;
+          case 'relates-to':
+            return 1;
+          case 'blocks':
+          case 'blocked-by':
+            return 3;
+          default:
+            return 2;
+        }
+      })
+      .attr('stroke-dasharray', (d: any) => {
+        switch (d.type) {
+          case 'epic-story':
+            return 'none';
+          case 'relates-to':
+            return '5,5';
+          case 'blocks':
+          case 'blocked-by':
+            return 'none';
+          default:
+            return 'none';
+        }
+      });
 
     // Create the nodes
     const node = g.append('g')
@@ -465,6 +550,33 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
                     }}
                   />
                 ))}
+              </Box>
+            </Box>
+
+            {/* Relationship Legend */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, color: '#212529', fontWeight: 600 }}>
+                Relationships:
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ width: 20, height: 2, backgroundColor: '#999' }} />
+                  <Typography variant="caption" sx={{ color: '#6c757d' }}>
+                    Epic → Story
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ width: 20, height: 1, backgroundColor: '#666', borderTop: '1px dashed #666' }} />
+                  <Typography variant="caption" sx={{ color: '#6c757d' }}>
+                    Relates To
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ width: 20, height: 3, backgroundColor: '#dc3545' }} />
+                  <Typography variant="caption" sx={{ color: '#6c757d' }}>
+                    Blocks / Blocked By
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           </Box>

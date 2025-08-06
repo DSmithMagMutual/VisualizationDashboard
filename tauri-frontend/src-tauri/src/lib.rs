@@ -4,6 +4,21 @@ use std::fs;
 use std::path::Path;
 use tauri::Manager;
 
+// Cross-platform function to get home directory
+fn get_home_dir() -> Result<String, String> {
+    #[cfg(target_os = "windows")]
+    {
+        std::env::var("USERPROFILE")
+            .map_err(|_| "Could not determine Windows user profile directory".to_string())
+    }
+    
+    #[cfg(not(target_os = "windows"))]
+    {
+        std::env::var("HOME")
+            .map_err(|_| "Could not determine home directory".to_string())
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct JiraConfig {
     pub base_url: String,
@@ -20,8 +35,7 @@ pub struct JiraTestResponse {
 #[tauri::command]
 async fn save_jira_config(config: JiraConfig) -> Result<(), String> {
     // Use standard system directories for config storage
-    let home_dir = std::env::var("HOME")
-        .map_err(|_| "Could not determine home directory")?;
+    let home_dir = get_home_dir()?;
     
     let config_dir = std::path::Path::new(&home_dir).join(".jira-dashboard");
     if !config_dir.exists() {
@@ -43,8 +57,7 @@ async fn save_jira_config(config: JiraConfig) -> Result<(), String> {
 #[tauri::command]
 async fn load_jira_config() -> Result<Option<JiraConfig>, String> {
     // Use standard system directories for config storage
-    let home_dir = std::env::var("HOME")
-        .map_err(|_| "Could not determine home directory")?;
+    let home_dir = get_home_dir()?;
     
     let config_file = std::path::Path::new(&home_dir).join(".jira-dashboard").join("jira-config.json");
     
@@ -104,7 +117,7 @@ async fn fetch_jira_data(config: JiraConfig, project_key: String) -> Result<serd
     let params = [
         ("jql", jql.as_str()),
         ("maxResults", "1000"),
-        ("fields", "summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001"),
+        ("fields", "summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001,issuelinks"),
     ];
     
     let response = client
@@ -158,8 +171,7 @@ async fn fetch_card_data(config: JiraConfig, issue_key: String) -> Result<serde_
 
 #[tauri::command]
 async fn save_board_data(board_data: serde_json::Value, file_name: String) -> Result<(), String> {
-    let home_dir = std::env::var("HOME")
-        .map_err(|_| "Could not determine home directory")?;
+    let home_dir = get_home_dir()?;
     
     let config_dir = std::path::Path::new(&home_dir).join(".jira-dashboard");
     if !config_dir.exists() {
@@ -180,8 +192,7 @@ async fn save_board_data(board_data: serde_json::Value, file_name: String) -> Re
 
 #[tauri::command]
 async fn load_board_data(file_name: String) -> Result<Option<serde_json::Value>, String> {
-    let home_dir = std::env::var("HOME")
-        .map_err(|_| "Could not determine home directory")?;
+    let home_dir = get_home_dir()?;
     
     let board_file = std::path::Path::new(&home_dir).join(".jira-dashboard").join(&file_name);
     
