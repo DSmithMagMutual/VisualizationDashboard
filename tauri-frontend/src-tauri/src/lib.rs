@@ -170,6 +170,37 @@ async fn fetch_card_data(config: JiraConfig, issue_key: String) -> Result<serde_
 }
 
 #[tauri::command]
+async fn fetch_child_issues(config: JiraConfig, parent_key: String) -> Result<serde_json::Value, String> {
+    let client = reqwest::Client::new();
+    
+    // Fetch child issues for a parent
+    let url = format!("{}/rest/api/3/search", config.base_url.trim_end_matches('/'));
+    
+    let params = [
+        ("jql", &format!("parent = {}", parent_key)),
+        ("fields", &"summary,status,issuetype,key,customfield_10014,customfield_10001".to_string()),
+    ];
+    
+    let response = client
+        .get(&url)
+        .header("Authorization", format!("Basic {}", base64::engine::general_purpose::STANDARD.encode(format!("{}:{}", config.email, config.api_token))))
+        .header("Accept", "application/json")
+        .query(&params)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if response.status().is_success() {
+        let data: serde_json::Value = response.json().await.map_err(|e| e.to_string())?;
+        Ok(data)
+    } else {
+        let status = response.status();
+        let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+        Err(format!("Failed to fetch child issues: {} - {}", status, error_text))
+    }
+}
+
+#[tauri::command]
 async fn save_board_data(board_data: serde_json::Value, file_name: String) -> Result<(), String> {
     let home_dir = get_home_dir()?;
     
@@ -394,6 +425,7 @@ pub fn run() {
       test_jira_connection,
       fetch_jira_data,
       fetch_card_data,
+      fetch_child_issues,
       save_board_data,
       load_board_data,
       initialize_data_directory,

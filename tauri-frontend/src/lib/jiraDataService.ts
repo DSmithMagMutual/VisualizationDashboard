@@ -262,6 +262,21 @@ export async function fetchCardData(issueKey: string): Promise<any> {
   }
 }
 
+// Fetch child issues for a parent card
+export async function fetchChildIssues(parentKey: string): Promise<any> {
+  const config = await loadJiraConfig();
+  if (!config) {
+    throw new Error('Jira configuration not found. Please configure Jira settings first.');
+  }
+
+  try {
+    const result = await invoke('fetch_child_issues', { config, parentKey });
+    return result;
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to fetch child issues');
+  }
+}
+
 // Save board data to JSON file
 export async function saveBoardData(boardData: any, fileName: string): Promise<void> {
   try {

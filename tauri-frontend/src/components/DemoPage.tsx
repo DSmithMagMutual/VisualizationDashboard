@@ -5,7 +5,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource } from '../lib/dataService';
 import { invoke } from '@tauri-apps/api/core';
-import { fetchCardData, saveBoardData } from '../lib/jiraDataService';
+import { fetchCardData, fetchChildIssues, saveBoardData } from '../lib/jiraDataService';
 import JiraConfigDialog from './JiraConfigDialog';
 import LastUpdatedIndicator from './LastUpdatedIndicator';
 import { useAppState } from '../contexts/AppStateContext';
@@ -233,8 +233,20 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
   
   console.log(`Progress for ${card.key}: ${doneCount}/${totalCount} = ${pct}%`);
   const team = card.team || 'Other';
+  // Check if this is a placeholder card (with backward compatibility)
+  // Older JSON files won't have isPlaceholder field, so this will be false for them
+  const isPlaceholder = card.isPlaceholder === true;
+  
   return (
-    <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, mb: 2, position: 'relative' }}>
+    <Card sx={{ 
+      bgcolor: isPlaceholder ? '#f8f9fa' : '#fff', 
+      border: isPlaceholder ? '2px dashed #6c757d' : '1px solid #dee2e6', 
+      borderRadius: 1, 
+      boxShadow: isPlaceholder ? 0 : 1, 
+      mb: 2, 
+      position: 'relative',
+      opacity: isPlaceholder ? 0.8 : 1
+    }}>
       <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 0.5, zIndex: 1 }}>
         <Tooltip title={isMinimized ? "Expand card" : "Minimize card"}>
           <IconButton
@@ -283,11 +295,28 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
       </Box>
       <CardContent sx={{ p: 2, pr: isMinimized ? 8 : 6 }}>
         <Box display="flex" alignItems="center" gap={1} mb={1}>
-          <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#0d6efd', flex: 1, minWidth: 0 }}>
+          <Typography variant="subtitle1" fontWeight={600} sx={{ color: isPlaceholder ? '#6c757d' : '#0d6efd', flex: 1, minWidth: 0 }}>
             {card.key ? (
-              <a href={card.url} target="_blank" rel="noopener noreferrer" style={{ color: '#0d6efd', textDecoration: 'none', fontWeight: 600 }}>{card.key}</a>
+              isPlaceholder ? (
+                <span style={{ color: '#6c757d', fontWeight: 600 }}>{card.key}</span>
+              ) : (
+                <a href={card.url} target="_blank" rel="noopener noreferrer" style={{ color: '#0d6efd', textDecoration: 'none', fontWeight: 600 }}>{card.key}</a>
+              )
             ) : card.name}
           </Typography>
+          {isPlaceholder && (
+            <Chip 
+              label="Placeholder" 
+              size="small" 
+              sx={{ 
+                bgcolor: '#6c757d', 
+                color: '#fff', 
+                fontWeight: 500, 
+                borderRadius: 1,
+                fontSize: '0.7rem'
+              }} 
+            />
+          )}
         </Box>
         <Box display="flex" alignItems="center" gap={1} mb={1} sx={{ flexWrap: 'wrap' }}>
           <Tooltip title={team} placement="top">
@@ -442,6 +471,148 @@ export default function DemoPage() {
   }
 
   // Function to load data from selected data source
+  // Function to process relationship data for all cards (temporarily disabled)
+  // const processRelationshipDataForAllCards = async (columnsData: Record<string, any[]>) => {
+  //   console.log('Processing relationship data for all cards...');
+  //   
+  //   const processedColumns = { ...columnsData };
+  //   
+  //   // Process each column
+  //   for (const [columnKey, cards] of Object.entries(processedColumns)) {
+  //     for (let cardIndex = 0; cardIndex < cards.length; cardIndex++) {
+  //       const card = cards[cardIndex];
+  //       
+  //       // Skip placeholder cards
+  //       if (card.isPlaceholder) {
+  //         console.log(`Skipping placeholder card ${card.key}`);
+  //         continue;
+  //       }
+  //       
+  //       try {
+  //         console.log(`Processing relationships for card: ${card.key}`);
+  //         
+  //         // Fetch fresh data to get relationship information
+  //         const freshCardData = await fetchCardData(card.key);
+  //         
+  //         if (freshCardData && freshCardData.fields && freshCardData.fields.issuelinks) {
+  //           // Process relationship data for the main card
+  //           const relationships = {
+  //             relatesTo: [] as string[],
+  //             blocks: [] as string[],
+  //             blockedBy: [] as string[]
+  //           };
+
+  //           freshCardData.fields.issuelinks.forEach((link: any) => {
+  //             const relatedIssue = link.outwardIssue || link.inwardIssue;
+  //             if (relatedIssue) {
+  //               const relationshipType = link.type.name.toLowerCase();
+  //               const issueKey = relatedIssue.key;
+  //             
+  //               if (relationshipType.includes('relates to') || relationshipType.includes('related')) {
+  //                 relationships.relatesTo.push(issueKey);
+  //               } else if (relationshipType.includes('blocks')) {
+  //                 if (link.outwardIssue) {
+  //                   relationships.blocks.push(issueKey);
+  //               } else {
+  //                   relationships.blockedBy.push(issueKey);
+  //                 }
+  //               } else if (relationshipType.includes('blocked by')) {
+  //                 if (link.outwardIssue) {
+  //                   relationships.blockedBy.push(issueKey);
+  //               } else {
+  //                   relationships.blocks.push(issueKey);
+  //                 }
+  //               }
+  //             }
+  //           });
+  //           
+  //           // Update card with relationship data
+  //           processedColumns[columnKey][cardIndex] = {
+  //             ...card,
+  //             relationships
+  //           };
+  //           
+  //           console.log(`Updated relationships for ${card.key}:`, relationships);
+  //         }
+  //         
+  //         // Process child stories if they exist
+  //         if (card.stories && Array.isArray(card.stories) && card.stories.length > 0) {
+  //           console.log(`Processing relationships for ${card.stories.length} child stories of ${card.key}`);
+  //           
+  //           const updatedStories = [];
+  //           for (const story of card.stories) {
+  //             try {
+  //               const storyData = await fetchCardData(story.key);
+  //               
+  //               if (storyData && storyData.fields && storyData.fields.issuelinks) {
+  //                 const storyRelationships = {
+  //                   relatesTo: [] as string[],
+  //                   blocks: [] as string[],
+  //                   blockedBy: [] as string[]
+  //                 };
+
+  //                 storyData.fields.issuelinks.forEach((link: any) => {
+  //                   const relatedIssue = link.outwardIssue || link.inwardIssue;
+  //                   if (relatedIssue) {
+  //                     const relationshipType = link.type.name.toLowerCase();
+  //                     const issueKey = relatedIssue.key;
+  //                     
+  //                     if (relationshipType.includes('relates to') || relationshipType.includes('related')) {
+  //                       storyRelationships.relatesTo.push(issueKey);
+  //                     } else if (relationshipType.includes('blocks')) {
+  //                       if (link.outwardIssue) {
+  //                         storyRelationships.blocks.push(issueKey);
+  //                       } else {
+  //                         storyRelationships.blockedBy.push(issueKey);
+  //                       }
+  //                     } else if (relationshipType.includes('blocked by')) {
+  //                       if (link.outwardIssue) {
+  //                         storyRelationships.blockedBy.push(issueKey);
+  //                       } else {
+  //                         storyRelationships.blocks.push(issueKey);
+  //                       }
+  //                     }
+  //                   }
+  //                 });
+  //                 
+  //                 updatedStories.push({
+  //                   ...story,
+  //                   relationships: storyRelationships
+  //                 });
+  //                 
+  //                 console.log(`Updated relationships for story ${story.key}:`, storyRelationships);
+  //               } else {
+  //                 updatedStories.push({
+  //                   ...story,
+  //                   relationships: { relatesTo: [], blocks: [], blockedBy: [] }
+  //                 });
+  //               }
+  //             } catch (error) {
+  //               console.error(`Failed to fetch relationship data for story ${story.key}:`, error);
+  //               updatedStories.push({
+  //                 ...story,
+  //                 relationships: { relatesTo: [], blocks: [], blockedBy: [] }
+  //               });
+  //             }
+  //           }
+  //           
+  //           processedColumns[columnKey][cardIndex].stories = updatedStories;
+  //         }
+  //         
+  //       } catch (error) {
+  //         console.error(`Failed to process relationships for card ${card.key}:`, error);
+  //         // Add empty relationships if processing fails
+  //         processedColumns[columnKey][cardIndex] = {
+  //           ...card,
+  //           relationships: { relatesTo: [], blocks: [], blockedBy: [] }
+  //         };
+  //       }
+  //     }
+  //   }
+  //   
+  //   return processedColumns;
+  // };
+
   const loadDataSourceData = async (dataSourceKey: string) => {
     try {
       setLoading(true);
@@ -452,6 +623,8 @@ export default function DemoPage() {
           acc[iter.key] = (dataSource.columns as Record<string, any[]>)?.[iter.key] || [];
           return acc;
         }, {} as Record<string, any[]>);
+        
+        // Set columns immediately to show the board
         setColumns(initializedColumns);
         setBoardTitle(`Demo Iteration Board - ${dataSourceKey}`);
         setTeamFilter([]); // Reset team filter when data source changes
@@ -460,6 +633,29 @@ export default function DemoPage() {
         setLastUpdated(dataSource.lastUpdated);
         setDataSource(dataSource.source);
         setProjectKey(dataSource.projectKey);
+        
+        // Temporarily disable relationship processing to fix white screen issue
+        // setTimeout(async () => {
+        //   try {
+        //     console.log('Starting background relationship processing...');
+        //     const processedColumns = await processRelationshipDataForAllCards(initializedColumns);
+        //     
+        //     // Update columns with relationship data
+        //     setColumns(processedColumns);
+        //     
+        //     // Save the processed data with relationships
+        //     const updatedDataSource = {
+        //       ...dataSource,
+        //       columns: processedColumns,
+        //       lastUpdated: new Date().toISOString()
+        //     };
+        //     const fileName = dataSourceKey === 'board-saveAdvice' ? 'board-saveAdvice.json' : 'board-savePDD.json';
+        //     await saveBoardData(updatedDataSource, fileName);
+        //     console.log(`Saved board data with relationships for ${dataSourceKey}`);
+        //   } catch (error) {
+        //     console.error(`Failed to process relationships in background:`, error);
+        //   }
+        // }, 100); // Small delay to ensure UI is responsive
       }
     } catch (error) {
       console.error('Failed to load data source:', error);
@@ -492,22 +688,23 @@ export default function DemoPage() {
       return;
     }
     
-    // For demo purposes, create a mock card
-    const mockCard = {
+    // Create a placeholder card that will be converted to real data when refreshed
+    const placeholderCard = {
       key: cardName,
       url: `https://magmutual.atlassian.net/browse/${cardName}`,
-      summary: `Mock summary for ${cardName}`,
-      status: 'To Do',
-      statusCategory: 'todo',
-      team: 'OG Team',
-      stories: []
+      summary: `Loading data for ${cardName}...`,
+      status: 'Loading...',
+      statusCategory: 'new',
+      team: 'Loading...',
+      stories: [],
+      isPlaceholder: true // Flag to identify placeholder cards
     };
     
     const newColumns = {
       ...columns,
       [colKey]: [
         ...columns[colKey],
-        mockCard,
+        placeholderCard,
       ],
     };
     setColumns(newColumns);
@@ -612,14 +809,46 @@ export default function DemoPage() {
             console.log(`Original card structure:`, card);
             
             // Fetch fresh data from Jira
-            const freshCardData = await fetchCardData(card.key);
-            console.log(`Fresh data for ${card.key}:`, freshCardData);
-            console.log(`Fresh data fields for ${card.key}:`, freshCardData?.fields);
-            console.log(`Status field for ${card.key}:`, freshCardData?.fields?.status);
+            let freshCardData;
+            try {
+              freshCardData = await fetchCardData(card.key);
+              console.log(`Fresh data for ${card.key}:`, freshCardData);
+              console.log(`Fresh data fields for ${card.key}:`, freshCardData?.fields);
+              console.log(`Status field for ${card.key}:`, freshCardData?.fields?.status);
+            } catch (error) {
+              console.error(`Failed to fetch data for ${card.key}:`, error);
+              if (card.isPlaceholder) {
+                console.log(`Keeping ${card.key} as placeholder - API call failed`);
+              }
+              return; // Don't update the card if the API call failed
+            }
+            
+            // Check if we got a valid response with fields
+            if (!freshCardData || !freshCardData.fields) {
+              console.error(`No valid data received for ${card.key}. Response:`, freshCardData);
+              if (card.isPlaceholder) {
+                console.log(`Keeping ${card.key} as placeholder - no valid response received`);
+              }
+              return; // Don't update the card if we didn't get valid data
+            }
             
             // Update the card with fresh data
             if (freshCardData && freshCardData.fields) {
               const fields = freshCardData.fields;
+              
+              // Check if we got meaningful data (not just empty/error responses)
+              const hasValidStatus = fields.status && fields.status.name && fields.status.name !== 'Loading...';
+              const hasValidSummary = fields.summary && fields.summary !== `Loading data for ${card.key}...`;
+              const hasValidTeam = (fields.customfield_10014 && fields.customfield_10014 !== 'Loading...') || 
+                                   (fields.customfield_10001 && fields.customfield_10001.name && fields.customfield_10001.name !== 'Loading...');
+              
+              // Only convert placeholder card to real card if we got meaningful data
+              if (card.isPlaceholder && (hasValidStatus || hasValidSummary || hasValidTeam)) {
+                console.log(`Converting placeholder card ${card.key} to real card with valid data`);
+                card.isPlaceholder = false;
+              } else if (card.isPlaceholder) {
+                console.log(`Keeping ${card.key} as placeholder - no valid data received`);
+              }
               
               // Update card status
               if (fields.status && fields.status.name) {
@@ -647,68 +876,140 @@ export default function DemoPage() {
                 card.assignee = fields.assignee.displayName;
               }
               
-              // Update team if available
+              // Update team if available (check both possible team fields)
               if (fields.customfield_10014) {
                 card.team = fields.customfield_10014;
+              } else if (fields.customfield_10001 && fields.customfield_10001.name) {
+                card.team = fields.customfield_10001.name;
               }
               
-              // Update child work items (stories) if they exist
-              if (card.stories && Array.isArray(card.stories) && card.stories.length > 0) {
-                console.log(`Refreshing ${card.stories.length} existing child work items for ${card.key}`);
-                console.log(`Original stories for ${card.key}:`, card.stories);
-                
-                const storyPromises = card.stories.map(async (existingStory: any) => {
-                  try {
-                    const issueKey = existingStory.key;
-                    console.log(`Fetching fresh data for existing child issue: ${issueKey}`);
-                    const storyData = await fetchCardData(issueKey);
-                    console.log(`Fresh data for child issue ${issueKey}:`, storyData);
+              // Process relationship data for the main card
+              const relationships = {
+                relatesTo: [] as string[],
+                blocks: [] as string[],
+                blockedBy: [] as string[]
+              };
+
+              if (fields.issuelinks) {
+                fields.issuelinks.forEach((link: any) => {
+                  const relatedIssue = link.outwardIssue || link.inwardIssue;
+                  if (relatedIssue) {
+                    const relationshipType = link.type.name.toLowerCase();
+                    const issueKey = relatedIssue.key;
                     
-                    if (storyData && storyData.fields) {
-                      const newStatus = storyData.fields.status?.name || 'Unknown';
-                      const newStatusCategory = getStatusCategory(newStatus);
-                      const newSummary = storyData.fields.summary || issueKey;
-                      const newTeam = storyData.fields.customfield_10014 || 'Unknown Team';
-                      
-                      console.log(`Updating existing child issue ${issueKey}:`, {
-                        oldStatus: existingStory.status,
-                        newStatus: newStatus,
-                        oldStatusCategory: existingStory.statusCategory,
-                        newStatusCategory: newStatusCategory,
-                        newSummary: newSummary,
-                        newTeam: newTeam
-                      });
-                      
-                      return {
-                        key: issueKey,
-                        summary: newSummary,
-                        status: newStatus,
-                        statusCategory: newStatusCategory,
-                        team: newTeam
-                      };
-                    } else {
-                      console.log(`No valid fields found for child issue ${issueKey}, keeping existing data`);
-                      return existingStory; // Keep existing data if API fails
+                    if (relationshipType.includes('relates to') || relationshipType.includes('related')) {
+                      relationships.relatesTo.push(issueKey);
+                    } else if (relationshipType.includes('blocks')) {
+                      if (link.outwardIssue) {
+                        relationships.blocks.push(issueKey);
+                      } else {
+                        relationships.blockedBy.push(issueKey);
+                      }
+                    } else if (relationshipType.includes('blocked by')) {
+                      if (link.outwardIssue) {
+                        relationships.blockedBy.push(issueKey);
+                      } else {
+                        relationships.blocks.push(issueKey);
+                      }
                     }
-                  } catch (error) {
-                    console.error(`Failed to fetch child issue ${existingStory.key}:`, error);
-                    return existingStory; // Keep existing data if API fails
                   }
                 });
+              }
+              
+              // Update card relationships
+              card.relationships = relationships;
+              
+              // Fetch and update child work items (stories)
+              try {
+                console.log(`Fetching child issues for ${card.key}`);
                 
-                const updatedStories = await Promise.all(storyPromises);
-                card.stories = updatedStories;
-                console.log(`Updated ${updatedStories.length} child work items for ${card.key}:`, updatedStories);
-                console.log(`Final stories array for ${card.key}:`, card.stories);
-              } else {
-                console.log(`No existing child work items found for ${card.key}`);
+                const childIssuesData = await fetchChildIssues(card.key);
+                console.log(`Child issues response for ${card.key}:`, childIssuesData);
+                
+                if (childIssuesData && childIssuesData.issues && Array.isArray(childIssuesData.issues)) {
+                  console.log(`Found ${childIssuesData.issues.length} child issues for ${card.key}:`, childIssuesData.issues);
+                  
+                  const updatedStories = childIssuesData.issues.map((childIssue: any) => {
+                    const newStatus = childIssue.fields.status?.name || 'Unknown';
+                    const newStatusCategory = getStatusCategory(newStatus);
+                    const newSummary = childIssue.fields.summary || childIssue.key;
+                    const newTeam = childIssue.fields.customfield_10014 || 
+                                    (childIssue.fields.customfield_10001 && childIssue.fields.customfield_10001.name) || 
+                                    'Unknown Team';
+                    
+                    // Process relationship data
+                    const relationships = {
+                      relatesTo: [] as string[],
+                      blocks: [] as string[],
+                      blockedBy: [] as string[]
+                    };
+
+                    if (childIssue.fields.issuelinks) {
+                      childIssue.fields.issuelinks.forEach((link: any) => {
+                        const relatedIssue = link.outwardIssue || link.inwardIssue;
+                        if (relatedIssue) {
+                          const relationshipType = link.type.name.toLowerCase();
+                          const issueKey = relatedIssue.key;
+                          
+                          if (relationshipType.includes('relates to') || relationshipType.includes('related')) {
+                            relationships.relatesTo.push(issueKey);
+                          } else if (relationshipType.includes('blocks')) {
+                            if (link.outwardIssue) {
+                              relationships.blocks.push(issueKey);
+                            } else {
+                              relationships.blockedBy.push(issueKey);
+                            }
+                          } else if (relationshipType.includes('blocked by')) {
+                            if (link.outwardIssue) {
+                              relationships.blockedBy.push(issueKey);
+                            } else {
+                              relationships.blocks.push(issueKey);
+                            }
+                          }
+                        }
+                      });
+                    }
+                    
+                    console.log(`Processing child issue ${childIssue.key}:`, {
+                      summary: newSummary,
+                      status: newStatus,
+                      team: newTeam,
+                      relationships
+                    });
+                    
+                    return {
+                      key: childIssue.key,
+                      summary: newSummary,
+                      status: newStatus,
+                      statusCategory: newStatusCategory,
+                      team: newTeam,
+                      relationships
+                    };
+                  });
+                  
+                  card.stories = updatedStories;
+                  console.log(`Updated ${updatedStories.length} child work items for ${card.key}:`, updatedStories);
+                } else {
+                  console.log(`No child issues found for ${card.key}`);
+                  card.stories = [];
+                }
+              } catch (error) {
+                console.error(`Error fetching child issues for ${card.key}:`, error);
+                // Keep existing stories if fetch fails
               }
               
               refreshedCount++;
             }
           } catch (error) {
             console.error(`Failed to refresh card ${card.key}:`, error);
-            errorCount++;
+            
+            // If this is a placeholder card that failed to refresh, keep it as placeholder
+            if (card.isPlaceholder) {
+              console.log(`Keeping ${card.key} as placeholder due to refresh failure`);
+              // Don't increment error count for placeholder cards that fail
+            } else {
+              errorCount++;
+            }
           }
         }
       }
