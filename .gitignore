@@ -44,12 +44,47 @@ test-data/
 fixtures/credentials/
 
 # Node modules and build artifacts
-/node_modules
+node_modules/
 /.next
 /.next
 /.next/cache
 /.next/cache/webpack/client-development
 *.gz
+
+# Build outputs and distributions
+dist/
+dist-ssr/
+build/
+out/
+*.zip
+*.tar.gz
+*.exe
+*.dll
+*.so
+*.dylib
+*.app
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.msi
+
+# Platform-specific build directories
+Jira-Dashboard-Windows-Portable/
+Windows-Portable/
+*-Portable/
+*-Portable.zip
+
+# Tauri build artifacts
+src-tauri/target/
+src-tauri/gen/
+*.app
+*.exe
+*.dmg
+*.deb
+*.rpm
+*.msi
+*.AppImage
 
 # IDE and editor files
 .vscode/
@@ -57,6 +92,11 @@ fixtures/credentials/
 *.swp
 *.swo
 *~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # OS generated files
 .DS_Store
@@ -76,3 +116,68 @@ test-results/
 junit.xml
 *.gz
 jira-issues-cache.json
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Local development files
+*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
