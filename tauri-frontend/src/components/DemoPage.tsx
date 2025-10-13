@@ -496,6 +496,8 @@ export default function DemoPage() {
     message: '',
     severity: 'info'
   });
+  const [savedFiles, setSavedFiles] = useState<string[]>([]);
+  const [selectedSavedFile, setSelectedSavedFile] = useState<string>('');
 
   // Debug effect to log when showJiraConfig changes
   useEffect(() => {
@@ -717,6 +719,50 @@ export default function DemoPage() {
   useEffect(() => {
     setLoading(false);
   }, []);
+
+  // Load list of saved files from app data directory
+  useEffect(() => {
+    (async () => {
+      try {
+        const files = await invoke('list_data_directory_files');
+        if (Array.isArray(files)) {
+          setSavedFiles(files as string[]);
+        }
+      } catch (e) {
+        // Non-fatal; listing may fail if directory is missing
+      }
+    })();
+  }, []);
+
+  const handleLoadSavedFile = async () => {
+    if (!selectedSavedFile) return;
+    try {
+      const content = await invoke('read_json_file_from_data_directory', { fileName: selectedSavedFile });
+      const data = typeof content === 'string' ? JSON.parse(content) : content;
+      if (!data || typeof data !== 'object' || !data.columns) {
+        setNotification({ open: true, message: 'Invalid saved JSON file', severity: 'error' });
+        return;
+      }
+
+      // Ensure all iteration keys exist
+      const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+        acc[iter.key] = (data.columns as Record<string, any[]>)?.[iter.key] || [];
+        return acc;
+      }, {} as Record<string, any[]>);
+
+      setColumns(initializedColumns);
+      setBoardTitle(`Demo Iteration Board - ${selectedSavedFile}`);
+      setTeamFilter([]);
+      setLastUpdated(data.lastUpdated);
+      setDataSource(data.source);
+      setProjectKey(data.projectKey);
+
+      setNotification({ open: true, message: `Loaded ${selectedSavedFile}`, severity: 'success' });
+    } catch (err) {
+      console.error('Failed to load saved file:', err);
+      setNotification({ open: true, message: 'Failed to load saved file', severity: 'error' });
+    }
+  };
 
   const handleAddCard = async (colKey: string) => {
     const cardName = inputs[colKey].trim();
@@ -1285,6 +1331,59 @@ export default function DemoPage() {
           </FormControl>
         </Box>
 
+        {/* Saved Files Loader */}
+        <Box sx={{ minWidth: 320, display: 'flex', gap: 1, alignItems: 'center' }}>
+          <FormControl fullWidth size="small">
+            <InputLabel 
+              id="saved-files-label"
+              sx={{ 
+                color: '#495057', 
+                fontWeight: 500,
+                '&.Mui-focused': { color: '#0d6efd' },
+                '&.MuiInputLabel-shrink': { color: '#0d6efd' }
+              }}
+            >
+              Load saved file
+            </InputLabel>
+            <Select
+              labelId="saved-files-label"
+              value={selectedSavedFile}
+              label="Load saved file"
+              onChange={(e) => setSelectedSavedFile(e.target.value)}
+              sx={{
+                backgroundColor: '#ffffff',
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#dee2e6' },
+                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#adb5bd' },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#0d6efd' },
+              }}
+            >
+              {savedFiles.length === 0 ? (
+                <MenuItem value="" disabled>No saved files</MenuItem>
+              ) : (
+                savedFiles.map(f => (
+                  <MenuItem key={f} value={f}>{f}</MenuItem>
+                ))
+              )}
+            </Select>
+          </FormControl>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={handleLoadSavedFile}
+            disabled={!selectedSavedFile}
+            sx={{
+              borderColor: '#0d6efd',
+              color: '#0d6efd',
+              fontWeight: 600,
+              '&:hover': { backgroundColor: '#0d6efd', color: '#ffffff', borderColor: '#0d6efd' },
+              textTransform: 'none',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            Load
+          </Button>
+        </Box>
+
 
 
 
@@ -1418,6 +1517,82 @@ export default function DemoPage() {
             }}
           >
             Download JSON
+          </Button>
+
+          {/* Import JSON Button and hidden file input */}
+          <input
+            id="import-json-input"
+            type="file"
+            accept="application/json"
+            style={{ display: 'none' }}
+            onChange={async (e) => {
+              try {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                const text = await file.text();
+                const parsed = JSON.parse(text);
+
+                // Basic validation
+                if (!parsed || typeof parsed !== 'object' || !parsed.columns) {
+                  setNotification({
+                    open: true,
+                    message: 'Invalid JSON format: missing columns',
+                    severity: 'error'
+                  });
+                  return;
+                }
+
+                // Choose filename based on current data source
+                let targetFileName = 'board-savePDD.json';
+                if (selectedDataSource === 'board-saveAdvice') {
+                  targetFileName = 'board-saveAdvice.json';
+                }
+
+                // Persist to ~/.jira-dashboard via existing command
+                await saveBoardData(parsed, targetFileName);
+
+                // Reload board from newly saved data
+                await loadDataSourceData(selectedDataSource || 'board-savePDD');
+
+                setNotification({
+                  open: true,
+                  message: `Imported ${file.name} into ${targetFileName}`,
+                  severity: 'success'
+                });
+              } catch (err) {
+                console.error('Failed to import JSON:', err);
+                setNotification({
+                  open: true,
+                  message: 'Failed to import JSON',
+                  severity: 'error'
+                });
+              } finally {
+                // Reset input so the same file can be selected again if needed
+                const input = document.getElementById('import-json-input') as HTMLInputElement | null;
+                if (input) input.value = '';
+              }
+            }}
+          />
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => {
+              const input = document.getElementById('import-json-input') as HTMLInputElement | null;
+              if (input) input.click();
+            }}
+            sx={{
+              borderColor: '#6f42c1',
+              color: '#6f42c1',
+              fontWeight: 600,
+              '&:hover': {
+                backgroundColor: '#6f42c1',
+                color: '#ffffff',
+                borderColor: '#6f42c1',
+              },
+              textTransform: 'none',
+            }}
+          >
+            Import JSON
           </Button>
         </Box>
 
