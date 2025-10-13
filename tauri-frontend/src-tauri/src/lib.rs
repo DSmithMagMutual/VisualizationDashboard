@@ -32,6 +32,20 @@ pub struct JiraTestResponse {
     pub message: String,
 }
 
+// Iterations configuration for frontend (editable in-app)
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct IterationConfigItem {
+    pub key: String,
+    pub label: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub startDate: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub endDate: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct IterationsConfig(pub Vec<IterationConfigItem>);
+
 #[tauri::command]
 async fn save_jira_config(config: JiraConfig) -> Result<(), String> {
     // Use standard system directories for config storage
@@ -74,6 +88,50 @@ async fn load_jira_config() -> Result<Option<JiraConfig>, String> {
     
     println!("Jira config loaded from: {:?}", config_file);
     Ok(Some(config))
+}
+
+// Save iterations configuration to ~/.jira-dashboard/iterations.json
+#[tauri::command]
+async fn save_iterations_config(iterations: IterationsConfig) -> Result<(), String> {
+    let home_dir = get_home_dir()?;
+
+    let config_dir = std::path::Path::new(&home_dir).join(".jira-dashboard");
+    if !config_dir.exists() {
+        fs::create_dir_all(&config_dir)
+            .map_err(|e| format!("Failed to create config directory: {}", e))?;
+    }
+
+    let iterations_file = config_dir.join("iterations.json");
+    let iterations_json = serde_json::to_string_pretty(&iterations)
+        .map_err(|e| format!("Failed to serialize iterations: {}", e))?;
+
+    fs::write(&iterations_file, iterations_json)
+        .map_err(|e| format!("Failed to write iterations file: {}", e))?;
+
+    println!("Iterations config saved to: {:?}", iterations_file);
+    Ok(())
+}
+
+// Load iterations configuration from ~/.jira-dashboard/iterations.json
+#[tauri::command]
+async fn load_iterations_config() -> Result<Option<IterationsConfig>, String> {
+    let home_dir = get_home_dir()?;
+
+    let iterations_file = std::path::Path::new(&home_dir).join(".jira-dashboard").join("iterations.json");
+
+    if !iterations_file.exists() {
+        println!("Iterations file does not exist: {:?}", iterations_file);
+        return Ok(None);
+    }
+
+    let content = fs::read_to_string(&iterations_file)
+        .map_err(|e| format!("Failed to read iterations file: {}", e))?;
+
+    let iterations: IterationsConfig = serde_json::from_str(&content)
+        .map_err(|e| format!("Failed to parse iterations: {}", e))?;
+
+    println!("Iterations config loaded from: {:?}", iterations_file);
+    Ok(Some(iterations))
 }
 
 #[tauri::command]
@@ -462,6 +520,8 @@ pub fn run() {
       fetch_child_issues,
       save_board_data,
       load_board_data,
+      save_iterations_config,
+      load_iterations_config,
       initialize_data_directory,
       copy_json_files_to_data_directory,
       read_json_file_from_data_directory,

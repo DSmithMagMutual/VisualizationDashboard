@@ -1,5 +1,7 @@
 import { useRef, useMemo, useEffect, useState } from 'react';
 import { Card, CardContent, Typography, Box, Button, Chip, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { useAppState } from '../contexts/AppStateContext';
+import { getIterationEndDates } from '../lib/iterationsService';
 import * as d3 from 'd3';
 
 interface Issue {
@@ -107,20 +109,13 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
   const [renderStep, setRenderStep] = useState<string>('Initializing...');
   const [showDebugInfo, setShowDebugInfo] = useState<boolean>(false);
   const [highlightedTeam, setHighlightedTeam] = useState<string | null>(null);
+  const { iterations } = useAppState();
+  const iterationEndDates = useMemo(() => getIterationEndDates(iterations), [iterations]);
 
   const graphData = useMemo(() => {
     // Function to check if a node is overdue based on iteration
     const isNodeOverdue = (statusCategory: string, iteration: string): boolean => {
       if (statusCategory === 'done' || iteration === 'uncommitted') return false;
-      
-      // Define iteration end dates (same as DemoPage)
-      const iterationEndDates: Record<string, Date> = {
-        '4.1': new Date('2025-07-22'),
-        '4.2': new Date('2025-08-05'),
-        '4.3': new Date('2025-08-19'),
-        '4.4': new Date('2025-09-02'),
-        '4.5IP': new Date('2025-09-16')
-      };
       
       const endDate = iterationEndDates[iteration];
       if (!endDate) return false;
@@ -722,7 +717,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
   ];
 
   const teams = Array.from(new Set(graphData.nodes.map(node => node.team).filter(Boolean)));
-  const iterations = Array.from(new Set(graphData.nodes.map(node => node.iteration).filter(Boolean))).sort();
+  const iterationKeys = Array.from(new Set(graphData.nodes.map(node => node.iteration).filter(Boolean))).sort();
 
   // Function to zoom to fit all nodes
   const handleViewAll = () => {
@@ -1117,7 +1112,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
               Dependencies: {graphData.links.length}
             </Typography>
             <Typography variant="body2" sx={{ color: '#6c757d' }}>
-              Iterations: {iterations.length}
+              Iterations: {iterationKeys.length}
             </Typography>
             <Typography variant="body2" sx={{ color: '#6c757d' }}>
               Teams: {teams.length}

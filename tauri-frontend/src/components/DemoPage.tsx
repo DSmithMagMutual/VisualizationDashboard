@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Snackbar, Alert } from '@mui/material';
+import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Close, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -9,15 +9,51 @@ import { fetchCardData, fetchChildIssues, saveBoardData } from '../lib/jiraDataS
 import JiraConfigDialog from './JiraConfigDialog';
 import LastUpdatedIndicator from './LastUpdatedIndicator';
 import { useAppState } from '../contexts/AppStateContext';
+import { getIterationEndDates, type IterationsConfig } from '../lib/iterationsService';
 
-const ITERATIONS = [
-  { key: "4.1", label: "2025 Iteration 4.1", range: "July 9 - July 22" },
-  { key: "4.2", label: "2025 Iteration 4.2", range: "July 23 - August 5" },
-  { key: "4.3", label: "2025 Iteration 4.3", range: "August 6 - August 19" },
-  { key: "4.4", label: "2025 Iteration 4.4", range: "August 20 - September 2" },
-  { key: "4.5IP", label: "2025 Iteration 4.5IP", range: "September 3 - September 16" },
-  { key: "uncommitted", label: "Uncommitted", range: "" },
-];
+// Iterations are now provided via context and editable in-app
+
+function IterationsEditorDialog({ open, onClose, onSave, iterations }: {
+  open: boolean;
+  onClose: () => void;
+  onSave: (iters: IterationsConfig) => void | Promise<void>;
+  iterations: IterationsConfig;
+}) {
+  const [local, setLocal] = useState<IterationsConfig>(iterations);
+
+  useEffect(() => {
+    setLocal(iterations);
+  }, [iterations]);
+
+  const handleChange = (index: number, field: 'label' | 'startDate' | 'endDate', value: string) => {
+    setLocal(prev => {
+      const next = [...prev];
+      next[index] = { ...next[index], [field]: value };
+      return next;
+    });
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <DialogTitle>Edit Iterations</DialogTitle>
+      <DialogContent dividers>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {local.map((iter, idx) => (
+            <Box key={iter.key} sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2 }}>
+              <TextField label="Label" size="small" value={iter.label} onChange={(e) => handleChange(idx, 'label', e.target.value)} />
+              <TextField label="Start Date (YYYY-MM-DD)" size="small" value={iter.startDate || ''} onChange={(e) => handleChange(idx, 'startDate', e.target.value)} />
+              <TextField label="End Date (YYYY-MM-DD)" size="small" value={iter.endDate || ''} onChange={(e) => handleChange(idx, 'endDate', e.target.value)} />
+            </Box>
+          ))}
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="contained" onClick={() => onSave(local)}>Save</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
 
 const teamColorMap: Record<string, string> = {
   'OG Team': '#6C63FF',
@@ -87,11 +123,11 @@ function getColorForTeam(team: string) {
   return '#' + '00000'.substring(0, 6 - c.length) + c;
 }
 
-function StatusChart({ columns }: { columns: Record<string, any[]> }) {
+function StatusChart({ columns, iterations }: { columns: Record<string, any[]>; iterations: IterationsConfig }) {
   const statusCategories = ['new', 'indeterminate', 'done'];
   
   // Calculate data for each iteration
-  const chartData = ITERATIONS.map(iter => {
+  const chartData = (iterations || []).map((iter) => {
     const cards = columns[iter.key] || [];
     const statusCounts: Record<string, number> = { 'new': 0, 'indeterminate': 0, 'done': 0 };
     
@@ -123,9 +159,9 @@ function StatusChart({ columns }: { columns: Record<string, any[]> }) {
   });
 
   // Prepare data for MUI X Charts
-  const xAxisData = chartData.map(d => d.iteration);
-  const series = statusCategories.map(status => ({
-    data: chartData.map(d => d[status as keyof typeof d] as number),
+  const xAxisData = chartData.map((d) => d.iteration);
+  const series = statusCategories.map((status) => ({
+    data: chartData.map((d) => d[status as keyof typeof d] as number),
     color: statusColors[status] || statusColors.default
   }));
 
@@ -220,6 +256,8 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
   isMinimized: boolean;
   onToggleMinimize: () => void;
 }) {
+  const { iterations } = useAppState();
+  const iterationEndDates = React.useMemo(() => getIterationEndDates((iterations || []) as IterationsConfig), [iterations]);
   // Show all child stories when card is visible (team filtering is handled at card level)
   const filteredStories = React.useMemo(() => {
     console.log(`DemoCard re-rendering for ${card.key}, stories:`, card.stories);
@@ -248,14 +286,7 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
     
     if (iterationKey === 'uncommitted') return false; // Uncommitted items can't be overdue
     
-    // Define iteration end dates (hardcoded for now)
-    const iterationEndDates: Record<string, Date> = {
-      '4.1': new Date('2025-07-22'),
-      '4.2': new Date('2025-08-05'),
-      '4.3': new Date('2025-08-19'),
-      '4.4': new Date('2025-09-02'),
-      '4.5IP': new Date('2025-09-16')
-    };
+    // Use configured iteration end dates from context
     
     const endDate = iterationEndDates[iterationKey];
     if (!endDate) return false;
@@ -464,15 +495,15 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
 }
 
 export default function DemoPage() {
-  const { selectedDataSource, setSelectedDataSource, teamFilter, setTeamFilter } = useAppState();
-  const [columns, setColumns] = useState(() =>
-    ITERATIONS.reduce((acc, iter) => {
+  const { selectedDataSource, setSelectedDataSource, teamFilter, setTeamFilter, iterations, saveIterationsConfig } = useAppState();
+  const [columns, setColumns] = useState<Record<string, any[]>>(() =>
+    (iterations || []).reduce((acc, iter) => {
       acc[iter.key] = [];
       return acc;
     }, {} as Record<string, any[]>)
   );
-  const [inputs, setInputs] = useState(() =>
-    ITERATIONS.reduce((acc, iter) => {
+  const [inputs, setInputs] = useState<Record<string, string>>(() =>
+    (iterations || []).reduce((acc, iter) => {
       acc[iter.key] = "";
       return acc;
     }, {} as Record<string, string>)
@@ -496,6 +527,7 @@ export default function DemoPage() {
     message: '',
     severity: 'info'
   });
+  const [showIterationsEditor, setShowIterationsEditor] = useState(false);
 
   // Debug effect to log when showJiraConfig changes
   useEffect(() => {
@@ -682,7 +714,7 @@ export default function DemoPage() {
       const dataSource = await loadDataSource(dataSourceKey);
       if (dataSource && dataSource.columns) {
         // Ensure all iteration keys are present in the loaded state
-        const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+        const initializedColumns = (iterations || []).reduce((acc, iter) => {
           acc[iter.key] = (dataSource.columns as Record<string, any[]>)?.[iter.key] || [];
           return acc;
         }, {} as Record<string, any[]>);
@@ -713,6 +745,19 @@ export default function DemoPage() {
       loadDataSourceData(selectedDataSource);
     }
   }, [selectedDataSource]);
+
+  // Reinitialize columns/inputs when iterations change
+  useEffect(() => {
+    const keys = (iterations || []).map(i => i.key);
+    setColumns(prev => {
+      const next: Record<string, any[]> = {};
+      keys.forEach(k => {
+        next[k] = prev[k] || [];
+      });
+      return next;
+    });
+    setInputs(() => keys.reduce((acc, k) => { acc[k] = ""; return acc; }, {} as Record<string, string>));
+  }, [iterations]);
 
   useEffect(() => {
     setLoading(false);
@@ -1236,6 +1281,24 @@ export default function DemoPage() {
           >
             Minimize All
           </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setShowIterationsEditor(true)}
+            sx={{ 
+              color: '#0d6efd',
+              borderColor: '#0d6efd',
+              fontWeight: 500,
+              borderRadius: 1,
+              '&:hover': {
+                backgroundColor: '#0d6efd',
+                color: '#ffffff',
+                borderColor: '#0d6efd'
+              }
+            }}
+          >
+            Edit Iterations
+          </Button>
         </Box>
       </Box>
       {/* Data Source and Team Filter Controls */}
@@ -1473,11 +1536,13 @@ export default function DemoPage() {
       </Box>
       {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
       <Box sx={{ display: 'flex', gap: 3, overflowX: 'auto', minWidth: 1200 }}>
-        {ITERATIONS.map(iter => (
+        {(iterations || []).map(iter => (
           <Box key={iter.key} sx={{ minWidth: 320, background: '#fff', border: '1px solid #e9ecef', borderRadius: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 600 }}>
             <Box mb={2}>
               <Typography variant="h6" fontWeight={600} sx={{ color: '#212529' }}>{iter.label}</Typography>
-              <Typography variant="caption" sx={{ color: '#6c757d' }}>{iter.range}</Typography>
+              <Typography variant="caption" sx={{ color: '#6c757d' }}>
+                {(iter.startDate && iter.endDate) ? new Date(iter.startDate).toLocaleDateString() + ' - ' + new Date(iter.endDate).toLocaleDateString() : ''}
+              </Typography>
             </Box>
             {(() => {
               // Gather all child stories for this iteration (filtered by team)
@@ -1505,7 +1570,7 @@ export default function DemoPage() {
               );
             })()}
             <Box flex={1} mb={2}>
-              {columns[iter.key].filter(cardMatchesTeamFilter).map((card, idx) => {
+              {(columns[iter.key] || []).filter(cardMatchesTeamFilter).map((card, idx) => {
                 const cardId = `${iter.key}-${card.key}-${idx}`;
                 const isMinimized = minimizedCards.has(cardId);
                 // Add iteration key to card data for overdue detection
@@ -1548,13 +1613,24 @@ export default function DemoPage() {
           </Box>
         ))}
       </Box>
-      <StatusChart columns={Object.fromEntries(
+      <StatusChart iterations={(iterations || []) as IterationsConfig} columns={Object.fromEntries(
         Object.entries(columns).map(([key, cards]) => [
           key, 
           cards.filter(cardMatchesTeamFilter)
         ])
       )} />
       
+      {/* Iterations Editor Dialog */}
+      <IterationsEditorDialog
+        open={showIterationsEditor}
+        iterations={(iterations || []) as IterationsConfig}
+        onClose={() => setShowIterationsEditor(false)}
+        onSave={async (updated) => {
+          await saveIterationsConfig(updated);
+          setShowIterationsEditor(false);
+        }}
+      />
+
       {/* Jira Configuration Dialog */}
       <JiraConfigDialog
         open={showJiraConfig}
