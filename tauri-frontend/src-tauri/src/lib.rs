@@ -228,34 +228,98 @@ async fn fetch_card_data(config: JiraConfig, issue_key: String) -> Result<serde_
 }
 
 #[tauri::command]
-async fn fetch_child_issues(config: JiraConfig, parent_key: String) -> Result<serde_json::Value, String> {
+async fn fetch_child_issues(config: JiraConfig, parent_key: String, jql_override: Option<String>) -> Result<serde_json::Value, String> {
     let client = reqwest::Client::new();
     
     // Fetch child issues for a parent
     let url = format!("{}/rest/api/3/search", config.base_url.trim_end_matches('/'));
-    
-    let params = [
-        ("jql", &format!("parent = {}", parent_key)),
-        ("fields", &"summary,status,issuetype,key,customfield_10014,customfield_10001".to_string()),
-    ];
-    
-    let response = client
-        .get(&url)
-        .header("Authorization", format!("Basic {}", base64::engine::general_purpose::STANDARD.encode(format!("{}:{}", config.email, config.api_token))))
-        .header("Accept", "application/json")
-        .query(&params)
-        .send()
-        .await
-        .map_err(|e| e.to_string())?;
 
-    if response.status().is_success() {
-        let data: serde_json::Value = response.json().await.map_err(|e| e.to_string())?;
-        Ok(data)
-    } else {
-        let status = response.status();
-        let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
-        Err(format!("Failed to fetch child issues: {} - {}", status, error_text))
+    // Try multiple JQL variants and merge unique issues by key
+    let mut jqls: Vec<String> = Vec::new();
+    if let Some(custom) = jql_override.clone() { 
+        println!("Using custom JQL: {}", custom);
+        jqls.push(custom); 
     }
+    jqls.push(format!("parent = {}", parent_key));
+    jqls.push(format!("\"Epic Link\" = {}", parent_key));
+    jqls.push(format!("parentEpic = {}", parent_key));
+    jqls.push(format!("cf[10014] = {}", parent_key)); // common Epic Link id
+
+    println!("Fetching child issues for parent: {}", parent_key);
+    println!("JQL queries to try: {:?}", jqls);
+
+    use std::collections::HashSet;
+    let mut seen: HashSet<String> = HashSet::new();
+    let mut merged_issues: Vec<serde_json::Value> = Vec::new();
+
+    for (i, jql) in jqls.iter().enumerate() {
+        println!("Trying JQL query {}: {}", i + 1, jql);
+        
+        let params = [
+            ("jql", jql.as_str()),
+            ("maxResults", "1000"),
+            ("fields", "summary,status,issuetype,key,customfield_10014,customfield_10001,parent,components,assignee,issuelinks"),
+        ];
+
+        let resp = client
+            .get(&url)
+            .header("Authorization", format!("Basic {}", base64::engine::general_purpose::STANDARD.encode(format!("{}:{}", config.email, config.api_token))))
+            .header("Accept", "application/json")
+            .query(&params)
+            .send()
+            .await;
+
+        match resp {
+            Ok(response) => {
+                println!("JQL query {} response status: {}", i + 1, response.status());
+                
+                if response.status().is_success() {
+                    match response.json::<serde_json::Value>().await {
+                        Ok(value) => {
+                            println!("JQL query {} successful, parsing response...", i + 1);
+                            
+                            if let Some(arr) = value.get("issues").and_then(|v| v.as_array()) {
+                                println!("Found {} issues in query {}", arr.len(), i + 1);
+                                
+                                for issue in arr {
+                                    if let Some(key) = issue.get("key").and_then(|k| k.as_str()) {
+                                        if seen.insert(key.to_string()) {
+                                            println!("Adding new issue: {}", key);
+                                            merged_issues.push(issue.clone());
+                                        } else {
+                                            println!("Skipping duplicate issue: {}", key);
+                                        }
+                                    }
+                                }
+                            } else {
+                                println!("No issues array found in query {} response", i + 1);
+                            }
+                        },
+                        Err(e) => {
+                            println!("Failed to parse JSON for query {}: {}", i + 1, e);
+                        }
+                    }
+                } else {
+                    let status = response.status();
+                    let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+                    println!("JQL query {} failed with status {}: {}", i + 1, status, error_text);
+                }
+            },
+            Err(e) => {
+                println!("JQL query {} request failed: {}", i + 1, e);
+            }
+        }
+    }
+
+    println!("Total unique issues found: {}", merged_issues.len());
+    
+    let result = serde_json::json!({
+        "issues": merged_issues
+    });
+    
+    println!("Returning result: {}", serde_json::to_string_pretty(&result).unwrap_or_default());
+    
+    Ok(result)
 }
 
 #[tauri::command]
@@ -332,6 +396,7 @@ async fn copy_json_files_to_data_directory(app: tauri::AppHandle) -> Result<Vec<
     // List of JSON files to copy
     let json_files = vec![
         "board-saveAdvice.json",
+        "board-saveAdvice-PI5.json",
         "board-savePDD.json",
     ];
     
@@ -498,6 +563,55 @@ async fn download_json_file(_app: tauri::AppHandle, board_data: serde_json::Valu
     Ok(file_path.to_string_lossy().to_string())
 }
 
+// Open ~/.jira-dashboard (config) directory in OS file explorer
+#[tauri::command]
+async fn open_config_directory() -> Result<(), String> {
+    let home_dir = get_home_dir()?;
+    let config_dir = std::path::Path::new(&home_dir).join(".jira-dashboard");
+
+    if !config_dir.exists() {
+        fs::create_dir_all(&config_dir)
+            .map_err(|e| format!("Failed to create config directory: {}", e))?;
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        use std::process::Command;
+        Command::new("explorer")
+            .arg(config_dir.to_string_lossy().to_string())
+            .spawn()
+            .map_err(|e| format!("Failed to open directory: {}", e))?;
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        use std::process::Command;
+        Command::new("open")
+            .arg(config_dir.to_string_lossy().to_string())
+            .spawn()
+            .map_err(|e| format!("Failed to open directory: {}", e))?;
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        use std::process::Command;
+        Command::new("xdg-open")
+            .arg(config_dir.to_string_lossy().to_string())
+            .spawn()
+            .map_err(|e| format!("Failed to open directory: {}", e))?;
+    }
+
+    Ok(())
+}
+
+// Return the path to ~/.jira-dashboard
+#[tauri::command]
+async fn get_config_directory_path() -> Result<String, String> {
+    let home_dir = get_home_dir()?;
+    let config_dir = std::path::Path::new(&home_dir).join(".jira-dashboard");
+    Ok(config_dir.to_string_lossy().to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -528,6 +642,8 @@ pub fn run() {
       list_data_directory_files,
       open_data_directory,
       get_data_directory_path,
+      open_config_directory,
+      get_config_directory_path,
       download_json_file
     ])
     .run(tauri::generate_context!())
