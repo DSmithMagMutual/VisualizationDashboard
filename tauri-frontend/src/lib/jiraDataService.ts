@@ -270,9 +270,11 @@ export async function fetchChildIssues(parentKey: string): Promise<any> {
   }
 
   try {
-    // Find subtasks and epic-linked stories across common variants
-    const jql = `(parent = ${parentKey}) OR ("Epic Link" = ${parentKey}) OR (parentEpic = ${parentKey})`;
-    const result = await invoke('fetch_child_issues', { config, parentKey: parentKey, jql_override: jql } as any);
+    // Prefer Advanced Roadmaps JQL to fetch all descendants; exclude epics for child work items
+    // Reference: Atlassian docs "Searching for issues using Advanced Roadmaps details"
+    // https://confluence.atlassian.com/jiraportfolioserver/searching-for-issues-using-portfolio-details-940678957.html
+    const primaryJql = `issuekey in childIssuesOf("${parentKey}") AND issuetype != Epic`;
+    const result = await invoke('fetch_child_issues', { config, parentKey: parentKey, jql_override: primaryJql } as any);
     return result;
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to fetch child issues');

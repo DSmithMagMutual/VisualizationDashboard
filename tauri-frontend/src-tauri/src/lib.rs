@@ -240,10 +240,20 @@ async fn fetch_child_issues(config: JiraConfig, parent_key: String, jql_override
         println!("Using custom JQL: {}", custom);
         jqls.push(custom); 
     }
-    jqls.push(format!("parent = {}", parent_key));
-    jqls.push(format!("\"Epic Link\" = {}", parent_key));
-    jqls.push(format!("parentEpic = {}", parent_key));
-    jqls.push(format!("cf[10014] = {}", parent_key)); // common Epic Link id
+    // Preferred Advanced Roadmaps query: all descendants under a parent (initiative/epic/etc.)
+    // Reference: Atlassian docs "Searching for issues using Advanced Roadmaps details"
+    // https://confluence.atlassian.com/jiraportfolioserver/searching-for-issues-using-portfolio-details-940678957.html
+    jqls.push(format!("issuekey in childIssuesOf(\"{}\") AND issuetype != Epic", parent_key));
+    jqls.push(format!("issuekey in childIssuesOf(\"{}\")", parent_key));
+
+    // Classic fallbacks
+    jqls.push(format!("parent = \"{}\"", parent_key));
+    jqls.push(format!("\"Epic Link\" = \"{}\"", parent_key));
+    jqls.push(format!("parentEpic = \"{}\"", parent_key));
+    // Some instances expose the Team/Epic link as a custom field id (less reliable, but try last)
+    jqls.push(format!("cf[10014] = \"{}\"", parent_key)); // Epic Link (common id in some instances)
+    // Subtasks linked directly under a parent
+    jqls.push(format!("issue in subtasksOf(\"{}\")", parent_key));
 
     println!("Fetching child issues for parent: {}", parent_key);
     println!("JQL queries to try: {:?}", jqls);
