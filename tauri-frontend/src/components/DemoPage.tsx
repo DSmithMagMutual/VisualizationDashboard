@@ -236,59 +236,16 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
   // Check if this is a placeholder card (with backward compatibility)
   // Older JSON files won't have isPlaceholder field, so this will be false for them
   const isPlaceholder = card.isPlaceholder === true;
-
-  // Function to check if card is overdue based on iteration
-  const isOverdue = React.useMemo(() => {
-    if (isPlaceholder || pct === 100) return false; // Don't mark completed or placeholder cards as overdue
-    
-    // Get the iteration key from the card's position in the board
-    // This is a bit of a workaround since we don't have direct iteration info in the card
-    // We'll need to pass this information from the parent component
-    const iterationKey = card.iterationKey || 'uncommitted';
-    
-    if (iterationKey === 'uncommitted') return false; // Uncommitted items can't be overdue
-    
-    // Define iteration end dates (hardcoded for now)
-    const iterationEndDates: Record<string, Date> = {
-      '4.1': new Date('2025-07-22'),
-      '4.2': new Date('2025-08-05'),
-      '4.3': new Date('2025-08-19'),
-      '4.4': new Date('2025-09-02'),
-      '4.5IP': new Date('2025-09-16')
-    };
-    
-    const endDate = iterationEndDates[iterationKey];
-    if (!endDate) return false;
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time to start of day for fair comparison
-    
-    return today > endDate;
-  }, [isPlaceholder, pct, card.iterationKey]);
   
   return (
     <Card sx={{ 
-      bgcolor: isPlaceholder ? '#f8f9fa' : (isOverdue ? '#fff5f5' : '#fff'), 
-      border: isPlaceholder ? '2px dashed #6c757d' : (isOverdue ? '2px solid #dc3545' : '1px solid #dee2e6'), 
+      bgcolor: isPlaceholder ? '#f8f9fa' : '#fff', 
+      border: isPlaceholder ? '2px dashed #6c757d' : '1px solid #dee2e6', 
       borderRadius: 1, 
-      boxShadow: isPlaceholder ? 0 : (isOverdue ? 2 : 1), 
+      boxShadow: isPlaceholder ? 0 : 1, 
       mb: 2, 
       position: 'relative',
-      opacity: isPlaceholder ? 0.8 : 1,
-      ...(isOverdue && {
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(220, 53, 69, 0.1)',
-          borderRadius: 'inherit',
-          pointerEvents: 'none',
-          zIndex: 0
-        }
-      })
+      opacity: isPlaceholder ? 0.8 : 1
     }}>
       <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 0.5, zIndex: 1 }}>
         <Tooltip title={isMinimized ? "Expand card" : "Minimize card"}>
@@ -337,7 +294,6 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
         </Tooltip>
       </Box>
       <CardContent sx={{ p: 2, pr: isMinimized ? 8 : 6 }}>
-        {/* Card title row */}
         <Box display="flex" alignItems="center" gap={1} mb={1}>
           <Typography variant="subtitle1" fontWeight={600} sx={{ color: isPlaceholder ? '#6c757d' : '#0d6efd', flex: 1, minWidth: 0 }}>
             {card.key ? (
@@ -348,39 +304,20 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
               )
             ) : card.name}
           </Typography>
+          {isPlaceholder && (
+            <Chip 
+              label="Placeholder" 
+              size="small" 
+              sx={{ 
+                bgcolor: '#6c757d', 
+                color: '#fff', 
+                fontWeight: 500, 
+                borderRadius: 1,
+                fontSize: '0.7rem'
+              }} 
+            />
+          )}
         </Box>
-        
-        {/* Status indicators row - separate from title to prevent overlap */}
-        {(isOverdue || isPlaceholder) && (
-          <Box display="flex" alignItems="center" gap={1} mb={1}>
-            {isOverdue && (
-              <Chip 
-                label="Overdue" 
-                size="small" 
-                sx={{ 
-                  bgcolor: '#dc3545', 
-                  color: '#fff', 
-                  fontWeight: 600, 
-                  borderRadius: 1,
-                  fontSize: '0.7rem'
-                }} 
-              />
-            )}
-            {isPlaceholder && (
-              <Chip 
-                label="Placeholder" 
-                size="small" 
-                sx={{ 
-                  bgcolor: '#6c757d', 
-                  color: '#fff', 
-                  fontWeight: 500, 
-                  borderRadius: 1,
-                  fontSize: '0.7rem'
-                }} 
-              />
-            )}
-          </Box>
-        )}
         <Box display="flex" alignItems="center" gap={1} mb={1} sx={{ flexWrap: 'wrap' }}>
           <Tooltip title={team} placement="top">
             <span style={{
@@ -697,8 +634,28 @@ export default function DemoPage() {
         setDataSource(dataSource.source);
         setProjectKey(dataSource.projectKey);
         
-        // Note: Relationship processing is available via the "Refresh Cards" button
-        // This will fetch relationship data for all cards including JPP-4178
+        // Temporarily disable relationship processing to fix white screen issue
+        // setTimeout(async () => {
+        //   try {
+        //     console.log('Starting background relationship processing...');
+        //     const processedColumns = await processRelationshipDataForAllCards(initializedColumns);
+        //     
+        //     // Update columns with relationship data
+        //     setColumns(processedColumns);
+        //     
+        //     // Save the processed data with relationships
+        //     const updatedDataSource = {
+        //       ...dataSource,
+        //       columns: processedColumns,
+        //       lastUpdated: new Date().toISOString()
+        //     };
+        //     const fileName = dataSourceKey === 'board-saveAdvice' ? 'board-saveAdvice.json' : 'board-savePDD.json';
+        //     await saveBoardData(updatedDataSource, fileName);
+        //     console.log(`Saved board data with relationships for ${dataSourceKey}`);
+        //   } catch (error) {
+        //     console.error(`Failed to process relationships in background:`, error);
+        //   }
+        // }, 100); // Small delay to ensure UI is responsive
       }
     } catch (error) {
       console.error('Failed to load data source:', error);
@@ -1349,7 +1306,7 @@ export default function DemoPage() {
             disabled={refreshing}
             startIcon={refreshing ? <CircularProgress size={16} /> : <RefreshIcon />}
             sx={{
-              backgroundColor: '#0d6ed7',
+              backgroundColor: '#0d6efd',
               color: '#ffffff',
               fontWeight: 600,
               '&:hover': {
@@ -1365,60 +1322,7 @@ export default function DemoPage() {
             {refreshing ? 'Refreshing...' : 'Refresh Cards'}
           </Button>
           
-          {/* Download JSON Button */}
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={async () => {
-              try {
-                const boardData = {
-                  columns: columns,
-                  lastUpdated: lastUpdated || new Date().toISOString(),
-                  source: dataSource || 'static',
-                  projectKey: projectKey,
-                  dataSourceName: selectedDataSource // Add the selected data source name
-                };
-                
-                // Create a descriptive filename that includes the data source
-                const timestamp = new Date().toISOString().split('T')[0];
-                const dataSourceSuffix = selectedDataSource ? `-${selectedDataSource}` : '';
-                const customFilename = `board-data${dataSourceSuffix}-${timestamp}.json`;
-                
-                // Use Tauri command to save file with custom filename
-                const filePath = await invoke('download_json_file', { 
-                  boardData, 
-                  customFilename 
-                });
-                
-                // Show success notification with data source info
-                setNotification({
-                  open: true,
-                  message: `${selectedDataSource || 'Board'} data saved to: ${filePath}`,
-                  severity: 'success'
-                });
-              } catch (error) {
-                console.error('Failed to download JSON:', error);
-                setNotification({
-                  open: true,
-                  message: `Failed to download JSON: ${error}`,
-                  severity: 'error'
-                });
-              }
-            }}
-            sx={{
-              borderColor: '#28a745',
-              color: '#28a745',
-              fontWeight: 600,
-              '&:hover': {
-                backgroundColor: '#28a745',
-                color: '#ffffff',
-                borderColor: '#28a745',
-              },
-              textTransform: 'none',
-            }}
-          >
-            Download JSON
-          </Button>
+
         </Box>
 
 
@@ -1508,12 +1412,10 @@ export default function DemoPage() {
               {columns[iter.key].filter(cardMatchesTeamFilter).map((card, idx) => {
                 const cardId = `${iter.key}-${card.key}-${idx}`;
                 const isMinimized = minimizedCards.has(cardId);
-                // Add iteration key to card data for overdue detection
-                const cardWithIteration = { ...card, iterationKey: iter.key };
                 return (
                   <DemoCard 
                     key={idx} 
-                    card={cardWithIteration} 
+                    card={card} 
                     onDelete={() => handleDeleteCard(iter.key, idx)}
                     isMinimized={isMinimized}
                     onToggleMinimize={() => handleToggleMinimize(iter.key, idx)}

@@ -1,5 +1,5 @@
 import { useRef, useMemo, useEffect, useState } from 'react';
-import { Card, CardContent, Typography, Box, Button, Chip, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Card, CardContent, Typography, Box, Button, Chip } from '@mui/material';
 import * as d3 from 'd3';
 
 interface Issue {
@@ -41,10 +41,10 @@ interface DependencyGraphWidgetProps {
 }
 
 const statusColors: Record<string, string> = {
-  'To Do': '#dc3545',
+  'To Do': '#ffc107',
   'In Progress': '#ff8c00',
   'Done': '#28a745',
-  'new': '#dc3545',
+  'new': '#ffc107',
   'indeterminate': '#ff8c00',
   'done': '#28a745'
 };
@@ -62,42 +62,13 @@ function getStatusCategory(status: string): string {
 }
 
 function getColorForTeam(team: string): string {
-  // Team color mapping that avoids red, orange, and green (used for status)
-  const teamColorMap: Record<string, string> = {
-    'OG Team': '#6C63FF',        // Purple
-    'Special Forces': '#8B5CF6',  // Violet (instead of red)
-    'Avengers': '#4ECDC4',        // Teal
-    'Hogwarts Express': '#45B7D1', // Blue
-    'Data Divers': '#96CEB4',     // Mint green (light enough to not conflict)
-    'Other': '#F59E0B',          // Amber (instead of yellow)
-    'Tech': '#7C3AED',           // Purple
-    'Domain Migration': '#06B6D4', // Cyan
-  };
-  
-  if (!team) return '#6c757d'; // Default gray for undefined/null teams
-  if (teamColorMap[team]) return teamColorMap[team];
-  
-  // Fallback: Generate a consistent color based on team name, avoiding red/orange/green
+  // Generate a consistent color based on team name
   let hash = 0;
   for (let i = 0; i < team.length; i++) {
     hash = team.charCodeAt(i) + ((hash << 5) - hash);
   }
-  
-  // Use only blue, purple, cyan, teal, and similar colors
-  const colors = [
-    '#3B82F6', // Blue
-    '#8B5CF6', // Violet
-    '#06B6D4', // Cyan
-    '#4ECDC4', // Teal
-    '#7C3AED', // Purple
-    '#6366F1', // Indigo
-    '#0EA5E9', // Sky blue
-    '#A855F7', // Purple
-    '#14B8A6', // Teal
-    '#0D9488', // Teal
-  ];
-  
-  return colors[Math.abs(hash) % colors.length];
+  const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+  return '#' + '00000'.substring(0, 6 - c.length) + c;
 }
 
 export default function DependencyGraphWidget({ data, title = "Dependency Graph", teamFilter = [], onNodeClick }: DependencyGraphWidgetProps) {
@@ -106,31 +77,8 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
   const [renderError, setRenderError] = useState<string | null>(null);
   const [renderStep, setRenderStep] = useState<string>('Initializing...');
   const [showDebugInfo, setShowDebugInfo] = useState<boolean>(false);
-  const [highlightedTeam, setHighlightedTeam] = useState<string | null>(null);
 
   const graphData = useMemo(() => {
-    // Function to check if a node is overdue based on iteration
-    const isNodeOverdue = (statusCategory: string, iteration: string): boolean => {
-      if (statusCategory === 'done' || iteration === 'uncommitted') return false;
-      
-      // Define iteration end dates (same as DemoPage)
-      const iterationEndDates: Record<string, Date> = {
-        '4.1': new Date('2025-07-22'),
-        '4.2': new Date('2025-08-05'),
-        '4.3': new Date('2025-08-19'),
-        '4.4': new Date('2025-09-02'),
-        '4.5IP': new Date('2025-09-16')
-      };
-      
-      const endDate = iterationEndDates[iteration];
-      if (!endDate) return false;
-      
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      return today > endDate;
-    };
-
     const nodes: Array<{
       id: string;
       label: string;
@@ -141,7 +89,6 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
       url?: string;
       summary: string;
       iteration?: string;
-      isOverdue: boolean;
       x?: number;
       y?: number;
       fx?: number | null;
@@ -154,33 +101,21 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
       type: 'epic-story' | 'relates-to' | 'blocks' | 'blocked-by';
     }> = [];
 
-    // First pass: collect all nodes that will be included in the graph
-    const allNodesToInclude = new Set<string>();
-    
-    Object.entries(data.columns).forEach(([, epics]) => {
-      epics.forEach(epic => {
-        const epicMatchesFilter = teamFilter.length === 0 || (epic.team && teamFilter.includes(epic.team));
-        const matchingStories = epic.stories.filter(story => 
-          teamFilter.length === 0 || (story.team && teamFilter.includes(story.team))
-        );
-        
-        if (epicMatchesFilter || matchingStories.length > 0) {
-          allNodesToInclude.add(epic.key);
-          matchingStories.forEach(story => {
-            allNodesToInclude.add(story.key);
-          });
-        }
-      });
-    });
+    // Create a Set of all node IDs for quick lookup
+    const nodeIds = new Set<string>();
 
-    // Second pass: build nodes and links with complete knowledge of what will be included
+    // Process all epics and their stories with iteration information
     Object.entries(data.columns).forEach(([iteration, epics]) => {
       epics.forEach(epic => {
+        // Check if epic should be included based on team filter
         const epicMatchesFilter = teamFilter.length === 0 || (epic.team && teamFilter.includes(epic.team));
+        
+        // Check if any stories match the team filter
         const matchingStories = epic.stories.filter(story => 
           teamFilter.length === 0 || (story.team && teamFilter.includes(story.team))
         );
         
+        // Include epic if it matches filter or has matching stories
         if (epicMatchesFilter || matchingStories.length > 0) {
           // Add epic node
           nodes.push({
@@ -192,9 +127,9 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
             team: epic.team,
             url: epic.url,
             summary: epic.summary,
-            iteration: iteration,
-            isOverdue: isNodeOverdue(epic.statusCategory, iteration)
+            iteration: iteration
           });
+          nodeIds.add(epic.key); // Add to node IDs set
 
           // Add only matching story nodes and links
           matchingStories.forEach(story => {
@@ -207,9 +142,9 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
               team: story.team,
               url: story.url,
               summary: story.summary,
-              iteration: iteration,
-              isOverdue: isNodeOverdue(story.statusCategory, iteration)
+              iteration: iteration
             });
+            nodeIds.add(story.key); // Add to node IDs set
 
             // Add link from epic to story
             links.push({
@@ -218,11 +153,11 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
               type: 'epic-story'
             });
 
-            // Add relationship links if they exist (check against complete set of included nodes)
+            // Add relationship links if they exist (only if target node exists in graph)
             if (story.relationships) {
               // Add "relates to" links
               story.relationships.relatesTo.forEach(relatedKey => {
-                if (allNodesToInclude.has(relatedKey)) {
+                if (nodeIds.has(relatedKey)) {
                   links.push({
                     source: story.key,
                     target: relatedKey,
@@ -233,7 +168,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
 
               // Add "blocks" links
               story.relationships.blocks.forEach(blockedKey => {
-                if (allNodesToInclude.has(blockedKey)) {
+                if (nodeIds.has(blockedKey)) {
                   links.push({
                     source: story.key,
                     target: blockedKey,
@@ -244,7 +179,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
 
               // Add "blocked by" links
               story.relationships.blockedBy.forEach(blockingKey => {
-                if (allNodesToInclude.has(blockingKey)) {
+                if (nodeIds.has(blockingKey)) {
                   links.push({
                     source: story.key,
                     target: blockingKey,
@@ -255,11 +190,11 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
             }
           });
 
-          // Add epic-level relationships if they exist (check against complete set of included nodes)
+          // Add epic-level relationships if they exist (only if target node exists in graph)
           if (epic.relationships) {
             // Add "relates to" links for epics
             epic.relationships.relatesTo.forEach(relatedKey => {
-              if (allNodesToInclude.has(relatedKey)) {
+              if (nodeIds.has(relatedKey)) {
                 links.push({
                   source: epic.key,
                   target: relatedKey,
@@ -270,7 +205,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
 
             // Add "blocks" links for epics
             epic.relationships.blocks.forEach(blockedKey => {
-              if (allNodesToInclude.has(blockedKey)) {
+              if (nodeIds.has(blockedKey)) {
                 links.push({
                   source: epic.key,
                   target: blockedKey,
@@ -281,7 +216,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
 
             // Add "blocked by" links for epics
             epic.relationships.blockedBy.forEach(blockingKey => {
-              if (allNodesToInclude.has(blockingKey)) {
+              if (nodeIds.has(blockingKey)) {
                 links.push({
                   source: epic.key,
                   target: blockingKey,
@@ -295,7 +230,7 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
     });
 
     console.log(`DependencyGraphWidget: Created ${nodes.length} nodes and ${links.length} links`);
-    console.log(`DependencyGraphWidget: Node IDs available:`, Array.from(allNodesToInclude).slice(0, 10), '...');
+    console.log(`DependencyGraphWidget: Node IDs available:`, Array.from(nodeIds).slice(0, 10), '...');
     
     return { nodes, links };
   }, [data, teamFilter]);
@@ -364,25 +299,11 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
         .force('link', d3.forceLink(graphData.links).id((d: any) => d.id).distance(200))
         .force('charge', d3.forceManyBody().strength(-800))
         .force('center', d3.forceCenter(width / 2, height / 2))
-        .force('collision', d3.forceCollide().radius((d: any) => d.type === 'epic' ? 75 : 60));
+        .force('collision', d3.forceCollide().radius(60));
 
       setRenderStep('Creating arrow markers...');
       // Define arrow markers for different relationship types
       const defs = svg.append('defs');
-      
-      // Add highlight filter for highlighted team nodes
-      defs.append('filter')
-        .attr('id', 'highlight')
-        .attr('x', '-50%')
-        .attr('y', '-50%')
-        .attr('width', '200%')
-        .attr('height', '200%')
-        .append('feDropShadow')
-        .attr('dx', '0')
-        .attr('dy', '0')
-        .attr('stdDeviation', '8')
-        .attr('flood-color', '#ffffff')
-        .attr('flood-opacity', '0.8');
       
       // Arrow marker for "relates to" (blue dotted) - Smaller and positioned away from nodes
       defs.append('marker')
@@ -499,46 +420,6 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
             default:
               return 'none';
           }
-        })
-        .attr('opacity', (d: any) => {
-          if (!highlightedTeam) return 1;
-          // Check if either source or target node belongs to the highlighted team
-          const sourceTeam = graphData.nodes.find(n => n.id === d.source.id)?.team;
-          const targetTeam = graphData.nodes.find(n => n.id === d.target.id)?.team;
-          return (sourceTeam === highlightedTeam || targetTeam === highlightedTeam) ? 1 : 0.1;
-        })
-        .attr('stroke-width', (d: any) => {
-          if (!highlightedTeam) {
-            switch (d.type) {
-              case 'epic-story': return 2;
-              case 'relates-to':
-              case 'blocks':
-              case 'blocked-by': return 3;
-              default: return 2;
-            }
-          }
-          // Check if either source or target node belongs to the highlighted team
-          const sourceTeam = graphData.nodes.find(n => n.id === d.source.id)?.team;
-          const targetTeam = graphData.nodes.find(n => n.id === d.target.id)?.team;
-          const isHighlighted = (sourceTeam === highlightedTeam || targetTeam === highlightedTeam);
-          
-          if (isHighlighted) {
-            switch (d.type) {
-              case 'epic-story': return 4;
-              case 'relates-to':
-              case 'blocks':
-              case 'blocked-by': return 5;
-              default: return 4;
-            }
-          } else {
-            switch (d.type) {
-              case 'epic-story': return 1;
-              case 'relates-to':
-              case 'blocks':
-              case 'blocked-by': return 1.5;
-              default: return 1;
-            }
-          }
         });
 
       // Create the nodes
@@ -559,60 +440,27 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
         })
         .style('cursor', 'pointer');
 
-      // Add outer highlight ring for selected team nodes
-      if (highlightedTeam) {
-        node.filter((d: any) => d.team === highlightedTeam)
-          .append('circle')
-          .attr('r', (d: any) => (d.type === 'epic' ? 50 : 25) + 8)
-          .attr('fill', 'none')
-          .attr('stroke', '#ffffff')
-          .attr('stroke-width', '3')
-          .attr('opacity', '0.9')
-          .attr('filter', 'url(#highlight)');
-      }
-
-      // Add red circle for overdue nodes
-      node.filter((d: any) => d.isOverdue)
-        .append('circle')
-        .attr('r', (d: any) => (d.type === 'epic' ? 50 : 25) + 12)
-        .attr('fill', 'none')
-        .attr('stroke', '#dc3545')
-        .attr('stroke-width', '3')
-        .attr('opacity', '0.8')
-        .attr('stroke-dasharray', '8,4');
-
       // Add circles for nodes
       node.append('circle')
-        .attr('r', (d: any) => d.type === 'epic' ? 50 : 25)
+        .attr('r', (d: any) => d.type === 'epic' ? 35 : 25)
         .attr('fill', (d: any) => getColorForTeam(d.team || ''))
         .attr('stroke', (d: any) => {
           const statusCat = getStatusCategory(d.status);
           return statusColors[statusCat] || statusColors['new'];
         })
-        .attr('stroke-width', (d: any) => {
-          if (!highlightedTeam) return 4;
-          return d.team === highlightedTeam ? 6 : 4;
-        })
-        .attr('opacity', (d: any) => {
-          if (!highlightedTeam) return 1;
-          return d.team === highlightedTeam ? 1 : 0.2;
-        });
+        .attr('stroke-width', 4);
 
       // Add labels
       node.append('text')
         .text((d: any) => d.label)
         .attr('text-anchor', 'middle')
         .attr('dy', '.35em')
-        .attr('font-size', (d: any) => d.type === 'epic' ? '16px' : '14px')
+        .attr('font-size', '14px')
         .attr('fill', 'white')
         .attr('font-weight', 'bold')
         .attr('stroke', 'black')
         .attr('stroke-width', '0.8px')
-        .attr('paint-order', 'stroke fill')
-        .attr('opacity', (d: any) => {
-          if (!highlightedTeam) return 1;
-          return d.team === highlightedTeam ? 1 : 0.3;
-        });
+        .attr('paint-order', 'stroke fill');
 
       // Add iteration labels for epics
       node.filter((d: any) => d.type === 'epic')
@@ -620,16 +468,12 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
         .text((d: any) => d.iteration || '')
         .attr('text-anchor', 'middle')
         .attr('dy', '2.2em')
-        .attr('font-size', '13px')
+        .attr('font-size', '12px')
         .attr('fill', '#666')
         .attr('font-weight', '500')
         .attr('stroke', 'black')
         .attr('stroke-width', '0.5px')
-        .attr('paint-order', 'stroke fill')
-        .attr('opacity', (d: any) => {
-          if (!highlightedTeam) return 1;
-          return d.team === highlightedTeam ? 1 : 0.3;
-        });
+        .attr('paint-order', 'stroke fill');
 
       // Add tooltips with iteration information
       node.append('title')
@@ -639,8 +483,8 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
 
       // Function to calculate link endpoints that avoid node overlap
       const getLinkEndpoints = (source: any, target: any) => {
-        const sourceRadius = source.type === 'epic' ? 50 : 25;
-        const targetRadius = target.type === 'epic' ? 50 : 25;
+        const sourceRadius = source.type === 'epic' ? 35 : 25;
+        const targetRadius = target.type === 'epic' ? 35 : 25;
         
         const dx = target.x - source.x;
         const dy = target.y - source.y;
@@ -972,79 +816,6 @@ export default function DependencyGraphWidget({ data, title = "Dependency Graph"
                   </Typography>
                 </Box>
               </Box>
-            </Box>
-
-            {/* Overdue Indicator Legend */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, color: '#212529', fontWeight: 600 }}>
-                Overdue Items:
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ 
-                  width: 20, 
-                  height: 20, 
-                  borderRadius: '50%',
-                  border: '3px dashed #dc3545',
-                  backgroundColor: 'transparent'
-                }} />
-                <Typography variant="caption" sx={{ color: '#6c757d' }}>
-                  Red dashed circle = Overdue
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Team Highlighting Control */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, color: '#212529', fontWeight: 600 }}>
-                Highlight Team:
-              </Typography>
-              <FormControl size="small" sx={{ minWidth: 150 }}>
-                <InputLabel sx={{ color: '#495057', fontWeight: 500 }}>
-                  Select Team
-                </InputLabel>
-                <Select
-                  value={highlightedTeam || ''}
-                  onChange={(e) => setHighlightedTeam(e.target.value || null)}
-                  label="Select Team"
-                  sx={{
-                    backgroundColor: '#ffffff',
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#dee2e6',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#adb5bd',
-                    },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#0d6efd',
-                    },
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>Show All Teams</em>
-                  </MenuItem>
-                  {teams.map((team) => (
-                    <MenuItem key={team || 'unknown'} value={team || ''}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Box
-                          sx={{
-                            width: 12,
-                            height: 12,
-                            borderRadius: '50%',
-                            backgroundColor: getColorForTeam(team || ''),
-                            flexShrink: 0
-                          }}
-                        />
-                        {team || 'Unknown'}
-                      </Box>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              {highlightedTeam && (
-                <Typography variant="caption" sx={{ color: '#6c757d', fontStyle: 'italic' }}>
-                  Selected team has white halo ring and thicker connections
-                </Typography>
-              )}
             </Box>
           </Box>
 

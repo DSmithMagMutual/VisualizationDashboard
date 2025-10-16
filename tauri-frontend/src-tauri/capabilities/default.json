@@ -7,8 +7,6 @@
   ],
   "permissions": [
     "core:default",
-    "store:default",
-    "core:path:default",
-    "core:resources:default"
+    "store:default"
   ]
 }

@@ -1,18 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Box, Container, Typography, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, CircularProgress, Button, Card, CardContent, Chip, LinearProgress, IconButton, Tooltip, Tabs, Tab, Divider, Paper } from '@mui/material';
+import { Box, Container, Typography, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, CircularProgress, Button, Card, CardContent, Chip, LinearProgress, IconButton, Tooltip } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CloseIcon from '@mui/icons-material/Close';
-import TimelineIcon from '@mui/icons-material/Timeline';
-import ShowChartIcon from '@mui/icons-material/ShowChart';
-import InfoIcon from '@mui/icons-material/Info';
 import DependencyGraphWidget from './DependencyGraphWidget';
 import { loadDataSource } from '../lib/dataService';
 import JiraConfigDialog from './JiraConfigDialog';
 import { useAppState } from '../contexts/AppStateContext';
-import StatusFlowVisualization from './StatusFlowVisualization';
-import StatusDurationChart from './StatusDurationChart';
-import ChildIssuesTimeline from './ChildIssuesTimeline';
-import { AnalyticsService } from '../lib/analyticsService';
 
 // Helper function to get color for team (copied from DemoPage)
 function getColorForTeam(team: string) {
@@ -34,61 +27,15 @@ function getColorForTeam(team: string) {
   return '#' + '00000'.substring(0, 6 - c.length) + c;
 }
 
-// Enhanced Preview Card Component with Tabs
-function EnhancedPreviewCard({ node, onClose, currentData, analyticsService }: { 
-  node: any; 
-  onClose: () => void; 
-  currentData: any;
-  analyticsService?: AnalyticsService;
-}) {
-  const [activeTab, setActiveTab] = useState(0);
+// Preview Card Component
+function PreviewCard({ node, onClose }: { node: any; onClose: () => void }) {
   const team = node.team || 'Other';
   const doneCount = node.stories ? node.stories.filter((s: any) => s.statusCategory === 'done').length : 0;
   const totalCount = node.stories ? node.stories.length : 0;
   const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
-  // Get child issues for this node
-  const childIssues = useMemo(() => {
-    if (node.type === 'epic' && node.stories) {
-      return node.stories;
-    }
-    return [];
-  }, [node]);
-
-  // Get all related issues (parent epics, related issues, etc.)
-  const relatedIssues = useMemo(() => {
-    const related: any[] = [];
-    
-    if (currentData && currentData.columns) {
-      Object.entries(currentData.columns).forEach(([iteration, epics]) => {
-        (epics as any[]).forEach((epic: any) => {
-          // Find if this node is a child of this epic
-          if (epic.stories && epic.stories.some((story: any) => story.key === node.key)) {
-            related.push({ ...epic, relationship: 'Parent Epic', iteration });
-          }
-          
-          // Find if this epic is related to the current node
-          if (epic.key === node.key && epic.relationships) {
-            epic.relationships.relatesTo?.forEach((relatedKey: string) => {
-              const foundEpic = (epics as any[]).find((e: any) => e.key === relatedKey);
-              if (foundEpic) {
-                related.push({ ...foundEpic, relationship: 'Related Epic', iteration });
-              }
-            });
-          }
-        });
-      });
-    }
-    
-    return related;
-  }, [node, currentData]);
-
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
-
   return (
-    <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 2, position: 'relative', height: '100%' }}>
+    <Card sx={{ bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 2, position: 'relative' }}>
       <Box sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}>
         <Tooltip title="Close preview">
           <IconButton
@@ -105,237 +52,55 @@ function EnhancedPreviewCard({ node, onClose, currentData, analyticsService }: {
           </IconButton>
         </Tooltip>
       </Box>
-      
-      <CardContent sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column' }}>
-        {/* Header Section */}
-        <Box sx={{ p: 2, pr: 6, borderBottom: '1px solid #e0e0e0' }}>
-          <Box display="flex" alignItems="center" gap={1} mb={1}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#0d6efd', flex: 1, minWidth: 0 }}>
-              {node.key ? (
-                <a href={node.url} target="_blank" rel="noopener noreferrer" style={{ color: '#0d6efd', textDecoration: 'none', fontWeight: 600 }}>{node.key}</a>
-              ) : node.label}
-            </Typography>
-          </Box>
-          
-          <Typography variant="body2" sx={{ color: '#495057', mb: 2, lineHeight: 1.4 }}>
-            {node.summary}
+      <CardContent sx={{ p: 2, pr: 6 }}>
+        <Box display="flex" alignItems="center" gap={1} mb={1}>
+          <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#0d6efd', flex: 1, minWidth: 0 }}>
+            {node.key ? (
+              <a href={node.url} target="_blank" rel="noopener noreferrer" style={{ color: '#0d6efd', textDecoration: 'none', fontWeight: 600 }}>{node.key}</a>
+            ) : node.label}
           </Typography>
-          
-          <Box display="flex" alignItems="center" gap={1} mb={1} sx={{ flexWrap: 'wrap' }}>
-            <Tooltip title={team} placement="top">
-              <span style={{
-                display: 'inline-block',
-                width: 16,
-                height: 16,
-                borderRadius: '50%',
-                background: getColorForTeam(team),
-                border: '1.5px solid #fff',
-                boxShadow: '0 0 0 1px #dee2e6',
-                flexShrink: 0
-              }} />
-            </Tooltip>
-            <Typography variant="caption" sx={{ color: '#212529', fontWeight: 500, flexShrink: 0 }}>{team}</Typography>
+        </Box>
+        
+        <Typography variant="body2" sx={{ color: '#495057', mb: 2, lineHeight: 1.4 }}>
+          {node.summary}
+        </Typography>
+        
+        <Box display="flex" alignItems="center" gap={1} mb={1} sx={{ flexWrap: 'wrap' }}>
+          <Tooltip title={team} placement="top">
+            <span style={{
+              display: 'inline-block',
+              width: 16,
+              height: 16,
+              borderRadius: '50%',
+              background: getColorForTeam(team),
+              border: '1.5px solid #fff',
+              boxShadow: '0 0 0 1px #dee2e6',
+              flexShrink: 0
+            }} />
+          </Tooltip>
+          <Typography variant="caption" sx={{ color: '#212529', fontWeight: 500, flexShrink: 0 }}>{team}</Typography>
+        </Box>
+        
+        <Box display="flex" alignItems="center" gap={1} mb={1}>
+          <Chip label={node.status} size="small" sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500, borderRadius: 1 }} />
+        </Box>
+        
+        {node.type === 'epic' && (
+          <>
+            <Box display="flex" alignItems="center" gap={1} mb={1}>
+              <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#495057', fontWeight: 500 }}>{doneCount}/{totalCount}</Typography>
+              <span style={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: 18, verticalAlign: 'middle' }}>{pct === 100 ? '✔️' : pct > 0 ? '⏳' : '⚠️'}</span>
+              <Typography variant="body2" fontWeight={600} sx={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: '0.875rem' }}>{pct}%</Typography>
+            </Box>
+            <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545' } }} />
+          </>
+        )}
+        
+        {node.iteration && (
+          <Box mt={2}>
+            <Typography variant="caption" sx={{ color: '#6c757d', fontWeight: 500 }}>Iteration: {node.iteration}</Typography>
           </Box>
-          
-          <Box display="flex" alignItems="center" gap={1} mb={1}>
-            <Chip label={node.status} size="small" sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500, borderRadius: 1 }} />
-          </Box>
-          
-          {node.type === 'epic' && (
-            <>
-              <Box display="flex" alignItems="center" gap={1} mb={1}>
-                <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#495057', fontWeight: 500 }}>{doneCount}/{totalCount}</Typography>
-                <span style={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: 18, verticalAlign: 'middle' }}>{pct === 100 ? '✔️' : pct > 0 ? '⏳' : '⚠️'}</span>
-                <Typography variant="body2" fontWeight={600} sx={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: '0.875rem' }}>{pct}%</Typography>
-              </Box>
-              <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545' } }} />
-            </>
-          )}
-          
-          {node.iteration && (
-            <Box mt={2}>
-              <Typography variant="caption" sx={{ color: '#6c757d', fontWeight: 500 }}>Iteration: {node.iteration}</Typography>
-            </Box>
-          )}
-        </Box>
-
-        {/* Tabs */}
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={activeTab} onChange={handleTabChange} aria-label="node information tabs" sx={{ minHeight: 40 }}>
-            <Tab 
-              icon={<InfoIcon fontSize="small" />} 
-              label="Overview" 
-              sx={{ minHeight: 40, fontSize: '0.75rem' }}
-            />
-            <Tab 
-              icon={<ShowChartIcon fontSize="small" />} 
-              label="Status Flow" 
-              sx={{ minHeight: 40, fontSize: '0.75rem' }}
-            />
-            <Tab 
-              icon={<TimelineIcon fontSize="small" />} 
-              label="Timeline" 
-              sx={{ minHeight: 40, fontSize: '0.75rem' }}
-            />
-          </Tabs>
-        </Box>
-
-        {/* Tab Content */}
-        <Box sx={{ flex: 1, overflowY: 'auto', p: 2 }}>
-          {activeTab === 0 && (
-            <Box>
-              <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem', fontWeight: 600, color: '#212529' }}>
-                Issue Details
-              </Typography>
-              
-              <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                <Box sx={{ flex: 1 }}>
-                  <Paper sx={{ p: 1.5, textAlign: 'center', bgcolor: '#f8f9fa' }}>
-                    <Typography variant="caption" sx={{ color: '#6c757d', display: 'block' }}>Type</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#212529' }}>
-                      {node.type === 'epic' ? 'Epic' : 'Story'}
-                    </Typography>
-                  </Paper>
-                </Box>
-                <Box sx={{ flex: 1 }}>
-                  <Paper sx={{ p: 1.5, textAlign: 'center', bgcolor: '#f8f9fa' }}>
-                    <Typography variant="caption" sx={{ color: '#6c757d', display: 'block' }}>Status</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#212529' }}>
-                      {node.status}
-                    </Typography>
-                  </Paper>
-                </Box>
-              </Box>
-
-              {node.type === 'epic' && (
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: '#212529' }}>
-                    Child Stories ({childIssues.length})
-                  </Typography>
-                  <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
-                    {childIssues.map((story: any) => (
-                      <Box key={story.key} sx={{ 
-                        p: 1, 
-                        mb: 1, 
-                        border: '1px solid #e0e0e0', 
-                        borderRadius: 1,
-                        bgcolor: '#fafafa'
-                      }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                          <Typography variant="caption" sx={{ fontWeight: 600, color: '#0d6efd' }}>
-                            {story.key}
-                          </Typography>
-                          <Chip 
-                            label={story.status} 
-                            size="small" 
-                            sx={{ 
-                              bgcolor: story.statusCategory === 'done' ? '#d4edda' : 
-                                     story.statusCategory === 'indeterminate' ? '#fff3cd' : '#f8d7da',
-                              color: story.statusCategory === 'done' ? '#155724' : 
-                                     story.statusCategory === 'indeterminate' ? '#856404' : '#721c24',
-                              fontSize: '0.7rem'
-                            }} 
-                          />
-                        </Box>
-                        <Typography variant="caption" sx={{ color: '#495057', display: 'block' }}>
-                          {story.summary}
-                        </Typography>
-                        {story.team && (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
-                            <span style={{
-                              width: 8,
-                              height: 8,
-                              borderRadius: '50%',
-                              background: getColorForTeam(story.team),
-                              flexShrink: 0
-                            }} />
-                            <Typography variant="caption" sx={{ color: '#6c757d', fontSize: '0.7rem' }}>
-                              {story.team}
-                            </Typography>
-                          </Box>
-                        )}
-                      </Box>
-                    ))}
-                  </Box>
-                </Box>
-              )}
-
-              {relatedIssues.length > 0 && (
-                <Box>
-                  <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: '#212529' }}>
-                    Related Issues
-                  </Typography>
-                  {relatedIssues.map((related: any) => (
-                    <Box key={related.key} sx={{ 
-                      p: 1, 
-                      mb: 1, 
-                      border: '1px solid #e0e0e0', 
-                      borderRadius: 1,
-                      bgcolor: '#f0f8ff'
-                    }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                        <Typography variant="caption" sx={{ fontWeight: 600, color: '#0d6efd' }}>
-                          {related.key}
-                        </Typography>
-                        <Chip 
-                          label={related.relationship} 
-                          size="small" 
-                          sx={{ 
-                            bgcolor: '#e3f2fd',
-                            color: '#1976d2',
-                            fontSize: '0.7rem'
-                          }} 
-                        />
-                      </Box>
-                      <Typography variant="caption" sx={{ color: '#495057', display: 'block' }}>
-                        {related.summary}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: '#6c757d', fontSize: '0.7rem' }}>
-                        Iteration: {related.iteration}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-              )}
-            </Box>
-          )}
-
-          {activeTab === 1 && (
-            <StatusFlowVisualization 
-              currentStatus={node.status} 
-              issueType={node.type}
-              childIssues={childIssues}
-              analyticsService={analyticsService}
-            />
-          )}
-
-          {activeTab === 2 && (
-            <Box>
-              <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem', fontWeight: 600, color: '#212529' }}>
-                Status Duration Analysis
-              </Typography>
-              
-              <StatusDurationChart 
-                currentStatus={node.status}
-                issueType={node.type}
-                childIssues={childIssues}
-                analyticsService={analyticsService}
-              />
-              
-              <Divider sx={{ my: 2 }} />
-              
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: '#212529' }}>
-                Child Issues Timeline
-              </Typography>
-              
-              <ChildIssuesTimeline 
-                childIssues={childIssues}
-                epicStatus={node.status}
-                analyticsService={analyticsService}
-              />
-            </Box>
-          )}
-        </Box>
+        )}
       </CardContent>
     </Card>
   );
@@ -347,7 +112,6 @@ export default function DependencyGraphPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showJiraConfig, setShowJiraConfig] = useState(false);
   const [selectedNode, setSelectedNode] = useState<any>(null);
-  const [analyticsService, setAnalyticsService] = useState<AnalyticsService | null>(null);
 
   // Debug effect to log when showJiraConfig changes
   useEffect(() => {
@@ -362,10 +126,6 @@ export default function DependencyGraphPage() {
           if (data) {
             setCurrentData(data);
             setTeamFilter([]); // Reset team filter when data source changes
-            
-            // Initialize analytics service with the new data
-            const analytics = new AnalyticsService(data);
-            setAnalyticsService(analytics);
           }
         })
         .catch((error) => {
@@ -591,9 +351,9 @@ export default function DependencyGraphPage() {
             )}
           </Box>
           
-          {/* Enhanced Preview Panel - Directly adjacent to graph viewport */}
+          {/* Preview Panel - Directly adjacent to graph viewport */}
           <Box sx={{ 
-            width: 400,
+            width: 320,
             flexShrink: 0,
             backgroundColor: '#fff',
             borderLeft: '1px solid #e0e0e0',
@@ -602,15 +362,13 @@ export default function DependencyGraphPage() {
             flexDirection: 'column'
           }}>
             <Typography variant="h6" gutterBottom sx={{ color: '#212529', fontWeight: 600, mb: 2, p: 2, pb: 0, borderBottom: '1px solid #e0e0e0' }}>
-              Node Information
+              Node Preview
             </Typography>
             <Box sx={{ flex: 1, overflowY: 'auto' }}>
               {selectedNode ? (
-                <EnhancedPreviewCard 
+                <PreviewCard 
                   node={selectedNode} 
-                  onClose={() => setSelectedNode(null)}
-                  currentData={currentData}
-                  analyticsService={analyticsService || undefined}
+                  onClose={() => setSelectedNode(null)} 
                 />
               ) : (
                 <Box sx={{ 
@@ -623,7 +381,7 @@ export default function DependencyGraphPage() {
                   p: 2
                 }}>
                   <Typography variant="body2" sx={{ textAlign: 'center' }}>
-                    Click on a node in the graph to see detailed information
+                    Click on a node in the graph to see details
                   </Typography>
                 </Box>
               )}

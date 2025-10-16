@@ -406,40 +406,6 @@ async fn get_data_directory_path(app: tauri::AppHandle) -> Result<String, String
     Ok(data_dir.to_string_lossy().to_string())
 }
 
-#[tauri::command]
-async fn download_json_file(_app: tauri::AppHandle, board_data: serde_json::Value, custom_filename: Option<String>) -> Result<String, String> {
-    // Use custom filename if provided, otherwise create a default filename with timestamp
-    let filename = if let Some(custom_name) = custom_filename {
-        custom_name
-    } else {
-        let timestamp = chrono::Utc::now().format("%Y-%m-%d").to_string();
-        format!("board-data-{}.json", timestamp)
-    };
-    
-    // Save to the user's Downloads folder
-    let home_dir = get_home_dir()?;
-    let downloads_dir = std::path::Path::new(&home_dir).join("Downloads");
-    
-    // Create Downloads directory if it doesn't exist
-    if !downloads_dir.exists() {
-        fs::create_dir_all(&downloads_dir)
-            .map_err(|e| format!("Failed to create Downloads directory: {}", e))?;
-    }
-    
-    let file_path = downloads_dir.join(&filename);
-    
-    // Serialize the board data to JSON
-    let json_string = serde_json::to_string_pretty(&board_data)
-        .map_err(|e| format!("Failed to serialize board data: {}", e))?;
-    
-    // Write the file
-    fs::write(&file_path, json_string)
-        .map_err(|e| format!("Failed to write file: {}", e))?;
-    
-    // Return the path where the file was saved
-    Ok(file_path.to_string_lossy().to_string())
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -467,8 +433,7 @@ pub fn run() {
       read_json_file_from_data_directory,
       list_data_directory_files,
       open_data_directory,
-      get_data_directory_path,
-      download_json_file
+      get_data_directory_path
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
