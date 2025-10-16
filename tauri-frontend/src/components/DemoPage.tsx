@@ -5,7 +5,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource } from '../lib/dataService';
 import { invoke } from '@tauri-apps/api/core';
-import { fetchCardData, fetchChildIssues, saveBoardData, loadJiraConfig } from '../lib/jiraDataService';
+import { fetchCardData, fetchChildIssues, saveBoardData } from '../lib/jiraDataService';
 import JiraConfigDialog from './JiraConfigDialog';
 import LastUpdatedIndicator from './LastUpdatedIndicator';
 import { useAppState } from '../contexts/AppStateContext';
@@ -495,8 +495,7 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
 }
 
 export default function DemoPage() {
-  const { selectedDataSource, setSelectedDataSource, teamFilter, setTeamFilter, iterations, setIterations, saveIterationsConfig } = useAppState();
-  const isLoadingRef = React.useRef(false);
+  const { selectedDataSource, setSelectedDataSource, teamFilter, setTeamFilter, iterations, saveIterationsConfig } = useAppState();
   const [columns, setColumns] = useState<Record<string, any[]>>(() =>
     (iterations || []).reduce((acc, iter) => {
       acc[iter.key] = [];
@@ -710,48 +709,13 @@ export default function DemoPage() {
   // };
 
   const loadDataSourceData = async (dataSourceKey: string) => {
-    if (isLoadingRef.current) {
-      console.log(`Already loading data source: ${dataSourceKey}, skipping`);
-      return;
-    }
-    
     try {
-      console.log(`Loading data source: ${dataSourceKey}`);
-      isLoadingRef.current = true;
       setLoading(true);
       const dataSource = await loadDataSource(dataSourceKey);
       if (dataSource && dataSource.columns) {
-        // Detect iteration keys from the data file and align context iterations
-        const dataKeys = Object.keys(dataSource.columns as Record<string, any[]>);
-
-        // Build a next iterations list based on data keys, preserving existing labels/dates when possible
-        const existingByKey = new Map((iterations || []).map(i => [i.key, i] as const));
-        const nextIterations = dataKeys.map(k => {
-          const existing = existingByKey.get(k);
-          if (existing) return existing;
-          return { key: k, label: k === 'uncommitted' ? 'Uncommitted' : `Iteration ${k}` } as any;
-        });
-        
-        // Only update iterations if they actually changed
-        const iterationsChanged = nextIterations.length !== (iterations?.length || 0) || 
-          nextIterations.some((iter, index) => iter.key !== iterations?.[index]?.key);
-        
-        console.log('Iterations comparison:', {
-          current: iterations?.map(i => i.key),
-          next: nextIterations.map(i => i.key),
-          changed: iterationsChanged
-        });
-        
-        if (iterationsChanged) {
-          console.log('Updating iterations to:', nextIterations);
-          setIterations(nextIterations as any);
-        } else {
-          console.log('Iterations unchanged, skipping update');
-        }
-
-        // Initialize columns using the data file keys
-        const initializedColumns = dataKeys.reduce((acc, key) => {
-          acc[key] = (dataSource.columns as Record<string, any[]>)[key] || [];
+        // Ensure all iteration keys are present in the loaded state
+        const initializedColumns = (iterations || []).reduce((acc, iter) => {
+          acc[iter.key] = (dataSource.columns as Record<string, any[]>)?.[iter.key] || [];
           return acc;
         }, {} as Record<string, any[]>);
         
@@ -765,13 +729,6 @@ export default function DemoPage() {
         setDataSource(dataSource.source);
         setProjectKey(dataSource.projectKey);
         
-        // Log the loaded data for debugging
-        console.log(`Loaded data source ${dataSourceKey}:`, {
-          columns: Object.keys(initializedColumns),
-          totalCards: Object.values(initializedColumns).flat().length,
-          cardsWithStories: Object.values(initializedColumns).flat().filter(card => card.stories && card.stories.length > 0).length
-        });
-        
         // Note: Relationship processing is available via the "Refresh Cards" button
         // This will fetch relationship data for all cards including JPP-4178
       }
@@ -779,17 +736,15 @@ export default function DemoPage() {
       console.error('Failed to load data source:', error);
     } finally {
       setLoading(false);
-      isLoadingRef.current = false;
     }
   };
 
   // Effect to load data when data source changes
   useEffect(() => {
     if (selectedDataSource) {
-      console.log('useEffect triggered for data source:', selectedDataSource);
       loadDataSourceData(selectedDataSource);
     }
-  }, [selectedDataSource]); // Only depend on selectedDataSource
+  }, [selectedDataSource]);
 
   // Reinitialize columns/inputs when iterations change
   useEffect(() => {
@@ -901,96 +856,6 @@ export default function DemoPage() {
     setNotification(prev => ({ ...prev, open: false }));
   };
 
-  // Test function for debugging individual cards
-  const testSpecificCard = async (cardKey: string) => {
-    console.log(`=== TESTING CARD: ${cardKey} ===`);
-    
-    try {
-      const config = await loadJiraConfig();
-      if (!config) {
-        console.error('No Jira config found');
-        return;
-      }
-      
-      console.log('Jira config:', {
-        baseUrl: config.base_url,
-        email: config.email,
-        hasToken: !!config.api_token
-      });
-      
-      // Test the JQL query directly
-      const jql = `(parent = ${cardKey}) OR ("Epic Link" = ${cardKey}) OR (parentEpic = ${cardKey})`;
-      console.log('JQL Query:', jql);
-      
-      // Make the API call
-      const result = await fetchChildIssues(cardKey);
-      console.log('Result:', result);
-      
-      // Test alternative JQL queries
-      const alternativeQueries = [
-        `parent = ${cardKey}`,
-        `"Epic Link" = ${cardKey}`,
-        `parentEpic = ${cardKey}`,
-        `issue in subtasksOf(${cardKey})`,
-        `key in linkedIssues(${cardKey})`
-      ];
-      
-      for (const query of alternativeQueries) {
-        try {
-          console.log(`Testing query: ${query}`);
-          const testResult = await invoke('fetch_child_issues', { 
-            config, 
-            parentKey: cardKey, 
-            jql_override: query 
-          });
-          console.log(`Query "${query}" result:`, testResult);
-        } catch (err) {
-          console.log(`Query "${query}" failed:`, err instanceof Error ? err.message : String(err));
-        }
-      }
-      
-    } catch (error) {
-      console.error('Test failed:', error);
-    }
-  };
-
-  // Make test function available globally for console testing
-  (window as any).testSpecificCard = testSpecificCard;
-  
-  // Simple test function to check Jira connectivity
-  const testJiraConnection = async () => {
-    try {
-      console.log('Testing Jira connection...');
-      const config = await loadJiraConfig();
-      if (!config) {
-        console.error('No Jira config found');
-        return;
-      }
-      
-      console.log('Jira config found:', {
-        baseUrl: config.base_url,
-        email: config.email,
-        hasToken: !!config.api_token
-      });
-      
-      // Test with a simple card fetch
-      const testCard = 'ADVICE-100';
-      console.log(`Testing card fetch for ${testCard}...`);
-      const cardData = await fetchCardData(testCard);
-      console.log('Card data:', cardData);
-      
-      // Test child issues fetch
-      console.log(`Testing child issues fetch for ${testCard}...`);
-      const childData = await fetchChildIssues(testCard);
-      console.log('Child issues data:', childData);
-      
-    } catch (error) {
-      console.error('Test failed:', error);
-    }
-  };
-  
-  (window as any).testJiraConnection = testJiraConnection;
-
   const handleRefreshData = async () => {
     try {
       setRefreshing(true);
@@ -1005,7 +870,6 @@ export default function DemoPage() {
           severity: 'warning'
         });
         setShowJiraConfig(true);
-        setRefreshing(false);
         return;
       }
       
@@ -1017,7 +881,6 @@ export default function DemoPage() {
           message: 'No cards to refresh on the current board',
           severity: 'info'
         });
-        setRefreshing(false);
         return;
       }
       
@@ -1106,9 +969,6 @@ export default function DemoPage() {
                 card.team = fields.customfield_10014;
               } else if (fields.customfield_10001 && fields.customfield_10001.name) {
                 card.team = fields.customfield_10001.name;
-              } else if (fields.components && Array.isArray(fields.components) && fields.components.length > 0) {
-                // Fallback: component name as team if team not set
-                card.team = fields.components[0].name || card.team;
               }
               
               // Process relationship data for the main card
@@ -1147,6 +1007,85 @@ export default function DemoPage() {
               // Update card relationships
               card.relationships = relationships;
               
+              // Fetch and update child work items (stories)
+              try {
+                console.log(`Fetching child issues for ${card.key}`);
+                
+                const childIssuesData = await fetchChildIssues(card.key);
+                console.log(`Child issues response for ${card.key}:`, childIssuesData);
+                
+                if (childIssuesData && childIssuesData.issues && Array.isArray(childIssuesData.issues)) {
+                  console.log(`Found ${childIssuesData.issues.length} child issues for ${card.key}:`, childIssuesData.issues);
+                  
+                  const updatedStories = childIssuesData.issues.map((childIssue: any) => {
+                    const newStatus = childIssue.fields.status?.name || 'Unknown';
+                    const newStatusCategory = getStatusCategory(newStatus);
+                    const newSummary = childIssue.fields.summary || childIssue.key;
+                    const newTeam = childIssue.fields.customfield_10014 || 
+                                    (childIssue.fields.customfield_10001 && childIssue.fields.customfield_10001.name) || 
+                                    'Unknown Team';
+                    
+                    // Process relationship data
+                    const relationships = {
+                      relatesTo: [] as string[],
+                      blocks: [] as string[],
+                      blockedBy: [] as string[]
+                    };
+
+                    if (childIssue.fields.issuelinks) {
+                      childIssue.fields.issuelinks.forEach((link: any) => {
+                        const relatedIssue = link.outwardIssue || link.inwardIssue;
+                        if (relatedIssue) {
+                          const relationshipType = link.type.name.toLowerCase();
+                          const issueKey = relatedIssue.key;
+                          
+                          if (relationshipType.includes('relates to') || relationshipType.includes('related')) {
+                            relationships.relatesTo.push(issueKey);
+                          } else if (relationshipType.includes('blocks')) {
+                            if (link.outwardIssue) {
+                              relationships.blocks.push(issueKey);
+                            } else {
+                              relationships.blockedBy.push(issueKey);
+                            }
+                          } else if (relationshipType.includes('blocked by')) {
+                            if (link.outwardIssue) {
+                              relationships.blockedBy.push(issueKey);
+                            } else {
+                              relationships.blocks.push(issueKey);
+                            }
+                          }
+                        }
+                      });
+                    }
+                    
+                    console.log(`Processing child issue ${childIssue.key}:`, {
+                      summary: newSummary,
+                      status: newStatus,
+                      team: newTeam,
+                      relationships
+                    });
+                    
+                    return {
+                      key: childIssue.key,
+                      summary: newSummary,
+                      status: newStatus,
+                      statusCategory: newStatusCategory,
+                      team: newTeam,
+                      relationships
+                    };
+                  });
+                  
+                  card.stories = updatedStories;
+                  console.log(`Updated ${updatedStories.length} child work items for ${card.key}:`, updatedStories);
+                } else {
+                  console.log(`No child issues found for ${card.key}`);
+                  card.stories = [];
+                }
+              } catch (error) {
+                console.error(`Error fetching child issues for ${card.key}:`, error);
+                // Keep existing stories if fetch fails
+              }
+              
               refreshedCount++;
             }
           } catch (error) {
@@ -1163,193 +1102,12 @@ export default function DemoPage() {
         }
       }
       
-      // Create updated columns object with deep copies of cards
+      // Create updated columns object
       console.log('Creating updated columns object');
       const updatedColumns = { ...columns };
       Object.keys(updatedColumns).forEach(colKey => {
-        updatedColumns[colKey] = updatedColumns[colKey].map(card => ({ ...card }));
+        updatedColumns[colKey] = [...updatedColumns[colKey]];
       });
-      
-      // Process each card and update child issues
-      for (const [, cards] of Object.entries(updatedColumns)) {
-        for (const card of cards) {
-          // Skip placeholder cards that failed to refresh
-          if (card.isPlaceholder) {
-            console.log(`Skipping child issues fetch for placeholder card: ${card.key}`);
-            continue;
-          }
-          
-          // Fetch and update child work items (stories)
-          try {
-            console.log(`=== DEBUGGING CHILD ISSUES FOR ${card.key} ===`);
-            console.log('Card details:', {
-              key: card.key,
-              summary: card.summary,
-              team: card.team,
-              status: card.status,
-              currentStories: card.stories?.length || 0
-            });
-            
-            // Check Jira config first
-            const config = await loadJiraConfig();
-            console.log('Jira config status:', {
-              hasConfig: !!config,
-              baseUrl: config?.base_url,
-              email: config?.email,
-              hasToken: !!config?.api_token
-            });
-            
-            if (!config) {
-              console.error('No Jira configuration found!');
-              continue; // Skip this card instead of returning
-            }
-            
-            console.log(`Making API call for ${card.key}...`);
-            let childIssuesData;
-            try {
-              childIssuesData = await fetchChildIssues(card.key);
-              console.log(`=== RAW API RESPONSE FOR ${card.key} ===`);
-              console.log('Full response:', JSON.stringify(childIssuesData, null, 2));
-            } catch (error) {
-              console.error(`Failed to fetch child issues for ${card.key}:`, error);
-              childIssuesData = null;
-            }
-            
-            // If no child issues found, try alternative approaches
-            if (!childIssuesData || !childIssuesData.issues || childIssuesData.issues.length === 0) {
-              console.log(`No child issues found for ${card.key}, trying alternative JQL queries...`);
-              
-              // Try different JQL approaches
-              const alternativeQueries = [
-                `parent = ${card.key}`,
-                `"Epic Link" = ${card.key}`,
-                `parentEpic = ${card.key}`,
-                `issue in subtasksOf(${card.key})`,
-                `key in linkedIssues(${card.key})`
-              ];
-              
-              for (const query of alternativeQueries) {
-                try {
-                  console.log(`Trying alternative query: ${query}`);
-                  const testResult = await invoke('fetch_child_issues', { 
-                    config, 
-                    parentKey: card.key, 
-                    jql_override: query 
-                  });
-                  
-                  if (testResult && (testResult as any).issues && (testResult as any).issues.length > 0) {
-                    console.log(`Found ${(testResult as any).issues.length} child issues with query: ${query}`);
-                    childIssuesData = testResult;
-                    break;
-                  }
-                } catch (err) {
-                  console.log(`Alternative query "${query}" failed:`, err instanceof Error ? err.message : String(err));
-                }
-              }
-            }
-            
-            if (childIssuesData) {
-              console.log('Response structure:', {
-                hasIssues: !!childIssuesData.issues,
-                issuesType: typeof childIssuesData.issues,
-                issuesLength: childIssuesData.issues?.length || 0,
-                total: childIssuesData.total || 0,
-                responseKeys: Object.keys(childIssuesData)
-              });
-              
-              if (childIssuesData.issues && Array.isArray(childIssuesData.issues)) {
-                console.log(`Found ${childIssuesData.issues.length} child issues`);
-                
-                childIssuesData.issues.forEach((issue: any, index: number) => {
-                  console.log(`Child issue ${index + 1}:`, {
-                    key: issue.key,
-                    summary: issue.fields?.summary,
-                    status: issue.fields?.status?.name,
-                    issuetype: issue.fields?.issuetype?.name,
-                    team: issue.fields?.customfield_10014,
-                    hasIssuelinks: !!issue.fields?.issuelinks,
-                    issuelinksCount: issue.fields?.issuelinks?.length || 0,
-                    fullFields: Object.keys(issue.fields || {})
-                  });
-                });
-                
-                const updatedStories = childIssuesData.issues.map((childIssue: any) => {
-                const newStatus = childIssue.fields.status?.name || 'Unknown';
-                const newStatusCategory = getStatusCategory(newStatus);
-                const newSummary = childIssue.fields.summary || childIssue.key;
-                const newTeam = childIssue.fields.customfield_10014 || 
-                                (childIssue.fields.customfield_10001 && childIssue.fields.customfield_10001.name) || 
-                                (childIssue.fields.components && childIssue.fields.components[0]?.name) ||
-                                'Unknown Team';
-                
-                // Process relationship data
-                const relationships = {
-                  relatesTo: [] as string[],
-                  blocks: [] as string[],
-                  blockedBy: [] as string[]
-                };
-
-                if (childIssue.fields.issuelinks) {
-                  childIssue.fields.issuelinks.forEach((link: any) => {
-                    const relatedIssue = link.outwardIssue || link.inwardIssue;
-                    if (relatedIssue) {
-                      const relationshipType = link.type.name.toLowerCase();
-                      const issueKey = relatedIssue.key;
-                      
-                      if (relationshipType.includes('relates to') || relationshipType.includes('related')) {
-                        relationships.relatesTo.push(issueKey);
-                      } else if (relationshipType.includes('blocks')) {
-                        if (link.outwardIssue) {
-                          relationships.blocks.push(issueKey);
-                        } else {
-                          relationships.blockedBy.push(issueKey);
-                        }
-                      } else if (relationshipType.includes('blocked by')) {
-                        if (link.outwardIssue) {
-                          relationships.blockedBy.push(issueKey);
-                        } else {
-                          relationships.blocks.push(issueKey);
-                        }
-                      }
-                    }
-                  });
-                }
-                
-                console.log(`Processing child issue ${childIssue.key}:`, {
-                  summary: newSummary,
-                  status: newStatus,
-                  team: newTeam,
-                  relationships
-                });
-                
-                return {
-                  key: childIssue.key,
-                  summary: newSummary,
-                  status: newStatus,
-                  statusCategory: newStatusCategory,
-                  team: newTeam,
-                  relationships
-                };
-              });
-              
-                // Update the card with new stories
-                card.stories = updatedStories;
-                console.log(`Updated ${updatedStories.length} child work items for ${card.key}:`, updatedStories);
-              } else {
-                console.log('No issues array found in response');
-                console.log('Available data:', childIssuesData);
-                card.stories = [];
-              }
-            } else {
-              console.log('No response data received');
-              card.stories = [];
-            }
-          } catch (error) {
-            console.error(`Error fetching child issues for ${card.key}:`, error);
-            // Keep existing stories if fetch fails
-          }
-        }
-      }
       
       // Save the updated board data to JSON file BEFORE updating state
       try {
@@ -1364,8 +1122,6 @@ export default function DemoPage() {
         let fileName = 'board-savePDD.json'; // default
         if (selectedDataSource === 'board-saveAdvice') {
           fileName = 'board-saveAdvice.json';
-        } else if (selectedDataSource === 'board-saveAdvice-PI5') {
-          fileName = 'board-saveAdvice-PI5.json';
         }
         
         console.log(`Saving updated board data to ${fileName}`);
@@ -1381,22 +1137,17 @@ export default function DemoPage() {
       setColumns(updatedColumns);
       setLastUpdated(new Date().toISOString());
       
-      // Count total child issues found
-      const totalChildIssues = Object.values(updatedColumns).flat().reduce((total, card) => {
-        return total + (card.stories ? card.stories.length : 0);
-      }, 0);
-      
       // Show success notification
       if (errorCount === 0) {
         setNotification({
           open: true,
-          message: `Successfully refreshed ${refreshedCount} cards and found ${totalChildIssues} child issues`,
+          message: `Successfully refreshed ${refreshedCount} cards on the board`,
           severity: 'success'
         });
       } else {
         setNotification({
           open: true,
-          message: `Refreshed ${refreshedCount} cards, found ${totalChildIssues} child issues, ${errorCount} failed`,
+          message: `Refreshed ${refreshedCount} cards, ${errorCount} failed`,
           severity: 'warning'
         });
       }
@@ -1548,30 +1299,6 @@ export default function DemoPage() {
           >
             Edit Iterations
           </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={async () => {
-              try {
-                await invoke('open_config_directory');
-              } catch (e) {
-                console.error('Failed to open config directory', e);
-              }
-            }}
-            sx={{ 
-              color: '#0d6efd',
-              borderColor: '#0d6efd',
-              fontWeight: 500,
-              borderRadius: 1,
-              '&:hover': {
-                backgroundColor: '#0d6efd',
-                color: '#ffffff',
-                borderColor: '#0d6efd'
-              }
-            }}
-          >
-            Open Data Folder
-          </Button>
         </Box>
       </Box>
       {/* Data Source and Team Filter Controls */}
@@ -1616,7 +1343,6 @@ export default function DemoPage() {
               }}
             >
               <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
-              <MenuItem value="board-saveAdvice-PI5">Board Save Advice - PI5</MenuItem>
               <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
             </Select>
           </FormControl>

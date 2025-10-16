@@ -270,9 +270,7 @@ export async function fetchChildIssues(parentKey: string): Promise<any> {
   }
 
   try {
-    // Find subtasks and epic-linked stories across common variants
-    const jql = `(parent = ${parentKey}) OR ("Epic Link" = ${parentKey}) OR (parentEpic = ${parentKey})`;
-    const result = await invoke('fetch_child_issues', { config, parentKey: parentKey, jql_override: jql } as any);
+    const result = await invoke('fetch_child_issues', { config, parentKey });
     return result;
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to fetch child issues');

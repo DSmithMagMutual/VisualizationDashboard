@@ -92,7 +92,6 @@ const ChildIssuesTimeline: React.FC<ChildIssuesTimelineProps> = ({
 }) => {
   // Safety check for childIssues
   if (!childIssues || !Array.isArray(childIssues)) {
-    console.warn('ChildIssuesTimeline: Invalid childIssues data:', childIssues);
     return (
       <Box sx={{ textAlign: 'center', py: 3, color: '#6c757d' }}>
         <TimelineIcon sx={{ fontSize: 48, color: '#dee2e6', mb: 1 }} />

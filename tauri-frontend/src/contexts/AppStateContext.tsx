@@ -15,14 +15,14 @@ interface AppState {
 const AppStateContext = createContext<AppState | undefined>(undefined);
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
-  const [selectedDataSource, setSelectedDataSource] = useState<string>('board-saveAdvice-PI5');
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const [teamFilter, setTeamFilter] = useState<string[]>([]);
   const [iterations, setIterations] = useState<IterationsConfig>([
-    { key: '5.1', label: '2025 Iteration 5.1', startDate: '2025-09-17', endDate: '2025-09-30' },
-    { key: '5.2', label: '2025 Iteration 5.2', startDate: '2025-10-01', endDate: '2025-10-14' },
-    { key: '5.3', label: '2025 Iteration 5.3', startDate: '2025-10-15', endDate: '2025-10-28' },
-    { key: '5.4', label: '2025 Iteration 5.4', startDate: '2025-10-29', endDate: '2025-11-11' },
-    { key: '5.5IP', label: '2025 Iteration 5.5IP', startDate: '2025-11-12', endDate: '2025-11-25' },
+    { key: '4.1', label: '2025 Iteration 4.1', startDate: '2025-07-09', endDate: '2025-07-22' },
+    { key: '4.2', label: '2025 Iteration 4.2', startDate: '2025-07-23', endDate: '2025-08-05' },
+    { key: '4.3', label: '2025 Iteration 4.3', startDate: '2025-08-06', endDate: '2025-08-19' },
+    { key: '4.4', label: '2025 Iteration 4.4', startDate: '2025-08-20', endDate: '2025-09-02' },
+    { key: '4.5IP', label: '2025 Iteration 4.5IP', startDate: '2025-09-03', endDate: '2025-09-16' },
     { key: 'uncommitted', label: 'Uncommitted' }
   ]);
 
