@@ -176,9 +176,20 @@ async fn fetch_child_issues(config: JiraConfig, parent_key: String) -> Result<se
     // Fetch child issues for a parent
     let url = format!("{}/rest/api/3/search", config.base_url.trim_end_matches('/'));
     
+    // Note: Jira subtasks use `parent = KEY`.
+    // Stories under an Epic use either "Epic Link" (company-managed) or `parentEpic` (team-managed).
+    // We include all variants in the JQL to capture children regardless of project type.
+    let jql = format!(
+        "parent = {} OR \"Epic Link\" = {} OR parentEpic = {}",
+        parent_key, parent_key, parent_key
+    );
     let params = [
-        ("jql", &format!("parent = {}", parent_key)),
-        ("fields", &"summary,status,issuetype,key,customfield_10014,customfield_10001".to_string()),
+        ("jql", &jql),
+        (
+            "fields",
+            &"summary,status,issuetype,key,parent,issuelinks,customfield_10014,customfield_10001".to_string(),
+        ),
+        ("maxResults", &"1000".to_string()),
     ];
     
     let response = client
