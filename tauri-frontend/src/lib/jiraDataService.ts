@@ -277,12 +277,22 @@ export async function fetchChildIssues(parentKey: string): Promise<any> {
   }
 }
 
-// Save board data to JSON file
+// Save board data to JSON file (private directory - deprecated)
 export async function saveBoardData(boardData: any, fileName: string): Promise<void> {
   try {
     await invoke('save_board_data', { boardData, fileName });
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to save board data');
+  }
+}
+
+// Save board data to public directory (new preferred method)
+export async function saveBoardDataToPublic(boardData: any, fileName: string): Promise<void> {
+  try {
+    // Use Tauri command to save to public directory
+    await invoke('save_board_data_to_public', { boardData, fileName });
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to save board data to public');
   }
 }
 

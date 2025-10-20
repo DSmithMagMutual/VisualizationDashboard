@@ -1,0 +1,797 @@
+{
+  "columns": {
+    "5.1": [
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-100",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": [
+            "SD-46099"
+          ]
+        },
+        "status": "Released",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "MagMutual Cookie Consent",
+        "team": "OG Team",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-100"
+      },
+      {
+        "assignee": "Jamie Clements",
+        "key": "ADVICE-127",
+        "relationships": {
+          "blockedBy": [
+            "PBS-502"
+          ],
+          "blocks": [
+            "PBS-1384"
+          ],
+          "relatesTo": [
+            "ADVICE-57",
+            "ADVICE-2025",
+            "ADVICE-2089",
+            "ADVICE-2090"
+          ]
+        },
+        "status": "Released",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Update Jury Scorecard",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-127"
+      },
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-730",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Agents' Account Access Management",
+        "team": "Hogwarts Express",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-730"
+      },
+      {
+        "assignee": "Shappell Freudenburg",
+        "key": "ADVICE-1908",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-1949",
+            "ADVICE-2025"
+          ],
+          "relatesTo": [
+            "ADVICE-1105",
+            "ADVICE-797",
+            "ADVICE-60"
+          ]
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "CSAT : Closed Claims > Add Ability to Differentiate Results by Claims Analyst and Defense Firm",
+        "team": "cad",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1908"
+      },
+      {
+        "assignee": "Clint Casteel",
+        "key": "ADVICE-773",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Error Alerting - Digital Experience",
+        "team": "OG Team",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-773"
+      },
+      {
+        "assignee": "Jamie Clements",
+        "key": "ADVICE-127",
+        "relationships": {
+          "blockedBy": [
+            "PBS-502"
+          ],
+          "blocks": [
+            "PBS-1384"
+          ],
+          "relatesTo": [
+            "ADVICE-57",
+            "ADVICE-2025",
+            "ADVICE-2089",
+            "ADVICE-2090"
+          ]
+        },
+        "status": "Released",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Update Jury Scorecard",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-127"
+      },
+      {
+        "assignee": "Lauren Crimmins",
+        "key": "ADVICE-1979",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "Done",
+        "statusCategory": "done",
+        "stories": [],
+        "summary": "ADMIN WORK - Create a Way to Associate Claims Analyst & Defense Firms with Claims Records.",
+        "team": "Hogwarts Express",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1979"
+      }
+    ],
+    "5.2": [
+      {
+        "assignee": "Jamie Clements",
+        "key": "ADVICE-1105",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-1203"
+          ],
+          "blocks": [
+            "ADVICE-797",
+            "ADVICE-1164"
+          ],
+          "relatesTo": [
+            "ADVICE-1908",
+            "EN-1287"
+          ]
+        },
+        "status": "Released",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Key Litigation Events and Dates  (Enabler (MVP): PH emotional support survey support)",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1105"
+      },
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-93",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-1157"
+          ],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "UAT",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "MOC for CME Assignments",
+        "team": "OG Team",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-93"
+      },
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-94",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "UAT",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "MOC for CME Credits",
+        "team": "OG Team",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-94"
+      },
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-95",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-96"
+          ],
+          "relatesTo": [
+            "SD-45591"
+          ]
+        },
+        "status": "Ready for Release",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "MOC Dashboard",
+        "team": "Hogwarts Express",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-95"
+      },
+      {
+        "assignee": "Shappell Freudenburg",
+        "key": "ADVICE-1908",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-1949",
+            "ADVICE-2025"
+          ],
+          "relatesTo": [
+            "ADVICE-1105",
+            "ADVICE-797",
+            "ADVICE-60"
+          ]
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "CSAT : Closed Claims > Add Ability to Differentiate Results by Claims Analyst and Defense Firm",
+        "team": "cad",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1908"
+      },
+      {
+        "assignee": "Jamie Clements",
+        "key": "ADVICE-1105",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-1203"
+          ],
+          "blocks": [
+            "ADVICE-797",
+            "ADVICE-1164"
+          ],
+          "relatesTo": [
+            "ADVICE-1908",
+            "EN-1287"
+          ]
+        },
+        "status": "Released",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Key Litigation Events and Dates  (Enabler (MVP): PH emotional support survey support)",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1105"
+      },
+      {
+        "assignee": "Jamie Clements",
+        "key": "ADVICE-797",
+        "relationships": {
+          "blockedBy": [
+            "PBS-537",
+            "ADVICE-1105"
+          ],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-354",
+            "ADVICE-1552",
+            "ADVICE-1908"
+          ]
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Global Emotional Response survey automation",
+        "team": "Fox Force",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-797"
+      },
+      {
+        "assignee": "Clint Casteel",
+        "key": "ADVICE-714",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Do Not Display Zero Frequency in Loss Experience Report",
+        "team": "Data Divers",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-714"
+      }
+    ],
+    "5.3": [
+      {
+        "assignee": "Caitlin Dodd",
+        "key": "ADVICE-1021",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-111",
+            "ADVICE-1110"
+          ]
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Implement HPL indemnity model in Oasis - API portion",
+        "team": "cad",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1021"
+      },
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-2046",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-977"
+          ]
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Bridge Content Reusability",
+        "team": "OG Team",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-2046"
+      },
+      {
+        "key": "ADVICE-877",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "Backlog",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "QA | Review Move credential documents over to new tables",
+        "team": "CAD-578",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-877"
+      },
+      {
+        "assignee": "Jamie Clements",
+        "key": "ADVICE-354",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-797",
+            "EN-483",
+            "ADVICE-1793"
+          ]
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Automating litigation materials being sent to PH (+ADVICE-1793)",
+        "team": "Fox Force",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-354"
+      }
+    ],
+    "5.4": [
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-2046",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-977"
+          ]
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Bridge Content Reusability",
+        "team": "OG Team",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-2046"
+      },
+      {
+        "assignee": "Jamie Clements",
+        "key": "ADVICE-1759",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-1760"
+          ],
+          "relatesTo": []
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Add new note categories to Oasis notes",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1759"
+      },
+      {
+        "assignee": "Caitlin Dodd",
+        "key": "ADVICE-1795",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": [
+            "PBS-1391"
+          ]
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Default to Prof Liab Out Coverage in Oasis (Appian Workflow)",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1795"
+      },
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-1831",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-677"
+          ]
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "MyMagMutual Agency Access for MagMutual Service",
+        "team": "Hogwarts Express",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1831"
+      },
+      {
+        "assignee": "Clint Casteel",
+        "key": "ADVICE-315",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "EN-431"
+          ],
+          "relatesTo": []
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Qlik Design - Risk Environment Reports",
+        "team": "Data Divers",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-315"
+      },
+      {
+        "assignee": "Melanie Villiesse",
+        "key": "ADVICE-785",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "Done",
+        "statusCategory": "done",
+        "stories": [],
+        "summary": "Claim Submission: Create Modal: US-0004316",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-785"
+      }
+    ],
+    "5.5IP": [
+      {
+        "assignee": "Blake Patterson",
+        "key": "ADVICE-1012",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-977",
+            "ADVICE-1853"
+          ]
+        },
+        "status": "Backlog",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "LC - Bridge content reusability",
+        "team": "OG Team",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1012"
+      },
+      {
+        "assignee": "Shappell Freudenburg",
+        "key": "ADVICE-1908",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-1949",
+            "ADVICE-2025"
+          ],
+          "relatesTo": [
+            "ADVICE-1105",
+            "ADVICE-797",
+            "ADVICE-60"
+          ]
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "CSAT : Closed Claims > Add Ability to Differentiate Results by Claims Analyst and Defense Firm",
+        "team": "cad",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1908"
+      },
+      {
+        "assignee": "Clint Casteel",
+        "key": "ADVICE-771",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-2078",
+            "ADVICE-2079"
+          ],
+          "relatesTo": []
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Error Alerting - MMM Salesforce Products, Ph. 1",
+        "team": "Hogwarts Express",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-771"
+      },
+      {
+        "assignee": "Sogi Skariah",
+        "key": "ADVICE-89",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "Released",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Account Risk Mitigation: CarePoint Health Systems (9/1 Renewal)",
+        "team": "Unknown Team",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-89"
+      }
+    ],
+    "uncommitted": [
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-730",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Agents' Account Access Management",
+        "team": "Hogwarts Express",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-730"
+      },
+      {
+        "assignee": "Clint Casteel",
+        "key": "ADVICE-48",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Risk Mitigation Advice Integration - User Interface/Data Management Dashboard",
+        "team": "cad",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-48"
+      },
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-720",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Learning Center Assignments Improvements",
+        "team": "OG Team",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-720"
+      },
+      {
+        "assignee": "Caitlin Dodd",
+        "key": "ADVICE-111",
+        "relationships": {
+          "blockedBy": [
+            "PBS-290"
+          ],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-1021"
+          ]
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Implement HPL indemnity model in Oasis -- Oasis/Appian portion",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-111"
+      },
+      {
+        "assignee": "Clint Casteel",
+        "key": "ADVICE-1034",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-114"
+          ],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-2048"
+          ]
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "08 MFR - MFQ Web Based Form",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1034"
+      },
+      {
+        "assignee": "Caitlin Dodd",
+        "key": "ADVICE-1794",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Special Instructions and Preferred Counsel Sync",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1794"
+      },
+      {
+        "assignee": "Melanie Villiesse",
+        "key": "ADVICE-2025",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-1908"
+          ],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-127",
+            "ADVICE-2089",
+            "ADVICE-2090"
+          ]
+        },
+        "status": "Backlog",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Jury Scorecard Enhancements 1",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-2025"
+      },
+      {
+        "assignee": "Caitlin Dodd",
+        "key": "ADVICE-700",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-834"
+          ]
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Automate getting SIR Bordereaux into the system",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-700"
+      },
+      {
+        "assignee": "Caitlin Dodd",
+        "key": "ADVICE-834",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": [
+            "ADVICE-700"
+          ]
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Enhance the claim SIR functionality in Oasis",
+        "team": "Feature Freight",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-834"
+      },
+      {
+        "assignee": "Shappell Freudenburg",
+        "key": "ADVICE-1908",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-1949",
+            "ADVICE-2025"
+          ],
+          "relatesTo": [
+            "ADVICE-1105",
+            "ADVICE-797",
+            "ADVICE-60"
+          ]
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "CSAT : Closed Claims > Add Ability to Differentiate Results by Claims Analyst and Defense Firm",
+        "team": "cad",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-1908"
+      },
+      {
+        "assignee": "Tera Benoit",
+        "key": "ADVICE-2078",
+        "relationships": {
+          "blockedBy": [
+            "ADVICE-771"
+          ],
+          "blocks": [
+            "ADVICE-2079"
+          ],
+          "relatesTo": []
+        },
+        "status": "Backlog",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Error Alerting - MMM Salesforce Products, Ph. 2",
+        "team": "Hogwarts Express",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-2078"
+      },
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-730",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [],
+          "relatesTo": []
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Agents' Account Access Management",
+        "team": "Hogwarts Express",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-730"
+      },
+      {
+        "assignee": "Clint Casteel",
+        "key": "ADVICE-713",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "BI-8634"
+          ],
+          "relatesTo": [
+            "ADVICE-715",
+            "EN-372"
+          ]
+        },
+        "status": "To Do",
+        "statusCategory": "new",
+        "stories": [],
+        "summary": "Print Risk Environment Reports without Specialty",
+        "team": "Data Divers",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-713"
+      },
+      {
+        "assignee": "Nenad Samardzic",
+        "key": "ADVICE-681",
+        "relationships": {
+          "blockedBy": [],
+          "blocks": [
+            "ADVICE-68",
+            "ADVICE-67"
+          ],
+          "relatesTo": [
+            "RCHTCTR-16"
+          ]
+        },
+        "status": "In Progress",
+        "statusCategory": "indeterminate",
+        "stories": [],
+        "summary": "Digital Experience Analytics Dashboard",
+        "team": "Data Divers",
+        "url": "https://magmutual.atlassian.net/browse/ADVICE-681"
+      }
+    ]
+  },
+  "lastUpdated": "2025-10-15T14:31:28.784Z",
+  "projectKey": "board-saveAdvice-PI5",
+  "source": "jira"
+}

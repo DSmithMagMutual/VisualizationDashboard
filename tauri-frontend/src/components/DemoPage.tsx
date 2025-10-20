@@ -5,17 +5,17 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource } from '../lib/dataService';
 import { invoke } from '@tauri-apps/api/core';
-import { fetchCardData, fetchChildIssues, saveBoardData } from '../lib/jiraDataService';
+import { fetchCardData, fetchChildIssues, saveBoardDataToPublic } from '../lib/jiraDataService';
 import JiraConfigDialog from './JiraConfigDialog';
 import LastUpdatedIndicator from './LastUpdatedIndicator';
 import { useAppState } from '../contexts/AppStateContext';
 
 const ITERATIONS = [
-  { key: "4.1", label: "2025 Iteration 4.1", range: "July 9 - July 22" },
-  { key: "4.2", label: "2025 Iteration 4.2", range: "July 23 - August 5" },
-  { key: "4.3", label: "2025 Iteration 4.3", range: "August 6 - August 19" },
-  { key: "4.4", label: "2025 Iteration 4.4", range: "August 20 - September 2" },
-  { key: "4.5IP", label: "2025 Iteration 4.5IP", range: "September 3 - September 16" },
+  { key: "5.1", label: "2025 Iteration 5.1", range: "October 7 - October 20" },
+  { key: "5.2", label: "2025 Iteration 5.2", range: "October 21 - November 3" },
+  { key: "5.3", label: "2025 Iteration 5.3", range: "November 4 - November 17" },
+  { key: "5.4", label: "2025 Iteration 5.4", range: "November 18 - December 1" },
+  { key: "5.5IP", label: "2025 Iteration 5.5IP", range: "December 2 - December 15" },
   { key: "uncommitted", label: "Uncommitted", range: "" },
 ];
 
@@ -1034,11 +1034,15 @@ export default function DemoPage() {
         let fileName = 'board-savePDD.json'; // default
         if (selectedDataSource === 'board-saveAdvice') {
           fileName = 'board-saveAdvice.json';
+        } else if (selectedDataSource === 'board-savePI5Advice') {
+          fileName = 'board-savePI5Advice.json';
+        } else if (selectedDataSource === 'board-savePI5PDD') {
+          fileName = 'board-savePI5PDD.json';
         }
         
-        console.log(`Saving updated board data to ${fileName}`);
-        await saveBoardData(boardData, fileName);
-        console.log('Board data saved successfully');
+        console.log(`Saving updated board data to public directory: ${fileName}`);
+        await saveBoardDataToPublic(boardData, fileName);
+        console.log('Board data saved successfully to public directory');
       } catch (error) {
         console.error('Failed to save board data:', error);
         // Don't show error notification for save failures, just log it
@@ -1238,6 +1242,8 @@ export default function DemoPage() {
             >
               <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
               <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
+              <MenuItem value="board-savePI5Advice">Board Save PI5 Advice</MenuItem>
+              <MenuItem value="board-savePI5PDD">Board Save PI5 PDD</MenuItem>
             </Select>
           </FormControl>
         </Box>

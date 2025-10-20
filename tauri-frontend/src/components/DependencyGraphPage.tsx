@@ -221,6 +221,8 @@ export default function DependencyGraphPage() {
             >
               <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
               <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
+              <MenuItem value="board-savePI5Advice">Board Save PI5 Advice</MenuItem>
+              <MenuItem value="board-savePI5PDD">Board Save PI5 PDD</MenuItem>
             </Select>
           </FormControl>
         </Box>

@@ -1,4 +1,4 @@
-import { loadBoardData } from './jiraDataService';
+// Removed loadBoardData import - now only using public files
 
 export interface DataSource {
   [key: string]: any;
@@ -10,6 +10,8 @@ export interface DataSource {
 export const dataSources: Record<string, string> = {
   'board-saveAdvice': 'board-saveAdvice.json',
   'board-savePDD': 'board-savePDD.json',
+  'board-savePI5Advice': 'board-savePI5Advice.json',
+  'board-savePI5PDD': 'board-savePI5PDD.json',
 };
 
 export async function loadDataSource(sourceKey: string): Promise<DataSource | null> {
@@ -20,31 +22,15 @@ export async function loadDataSource(sourceKey: string): Promise<DataSource | nu
       return null;
     }
 
-    // Prefer public file first for dev parity with browser
-    console.log(`Attempting to load from public: ${fileName}`);
-    let data: any | null = null;
-    try {
-      const response = await fetch(`/${fileName}`);
-      if (response.ok) {
-        data = await response.json();
-        console.log(`Loaded ${fileName} from public`);
-      } else {
-        console.warn(`Public fetch failed for ${fileName}: ${response.statusText}`);
-      }
-    } catch (e) {
-      console.warn(`Public fetch error for ${fileName}:`, e);
+    // Only load from public files - no fallback to private saved files
+    console.log(`Loading from public file: ${fileName}`);
+    const response = await fetch(`/${fileName}`);
+    if (!response.ok) {
+      throw new Error(`Failed to load ${fileName}: ${response.statusText}`);
     }
-
-    // Fallback to saved board data in ~/.jira-dashboard if public missing/unavailable
-    if (!data) {
-      console.log(`Falling back to saved board data: ${fileName}`);
-      const savedData = await loadBoardData(fileName);
-      if (savedData) {
-        data = savedData as DataSource;
-      } else {
-        throw new Error(`Neither public nor saved data available for ${sourceKey}`);
-      }
-    }
+    
+    const data = await response.json();
+    console.log(`Successfully loaded ${fileName} from public`);
     
     // Add metadata if not present
     if (!data.lastUpdated) {

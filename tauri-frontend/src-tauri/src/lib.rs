@@ -179,9 +179,11 @@ async fn fetch_child_issues(config: JiraConfig, parent_key: String) -> Result<se
     // Note: Jira subtasks use `parent = KEY`.
     // Stories under an Epic use either "Epic Link" (company-managed) or `parentEpic` (team-managed).
     // We include all variants in the JQL to capture children regardless of project type.
+    // Also try common custom field names for Epic Link.
+    // First try a broad search to see what fields exist
     let jql = format!(
-        "parent = {} OR \"Epic Link\" = {} OR parentEpic = {}",
-        parent_key, parent_key, parent_key
+        "key = {} OR parent = {} OR \"Epic Link\" = {} OR parentEpic = {} OR \"Parent Link\" = {} OR \"Epic\" = {} OR \"Parent\" = {} OR issue in linkedIssues({})",
+        parent_key, parent_key, parent_key, parent_key, parent_key, parent_key, parent_key, parent_key
     );
     let params = [
         ("jql", &jql),
@@ -191,6 +193,8 @@ async fn fetch_child_issues(config: JiraConfig, parent_key: String) -> Result<se
         ),
         ("maxResults", &"1000".to_string()),
     ];
+    
+    println!("Fetching child issues for {} with JQL: {}", parent_key, jql);
     
     let response = client
         .get(&url)
@@ -203,10 +207,12 @@ async fn fetch_child_issues(config: JiraConfig, parent_key: String) -> Result<se
 
     if response.status().is_success() {
         let data: serde_json::Value = response.json().await.map_err(|e| e.to_string())?;
+        println!("Child issues response for {}: {} issues found", parent_key, data["total"].as_u64().unwrap_or(0));
         Ok(data)
     } else {
         let status = response.status();
         let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+        println!("Failed to fetch child issues for {}: {} - {}", parent_key, status, error_text);
         Err(format!("Failed to fetch child issues: {} - {}", status, error_text))
     }
 }
@@ -229,6 +235,30 @@ async fn save_board_data(board_data: serde_json::Value, file_name: String) -> Re
         .map_err(|e| format!("Failed to write board file: {}", e))?;
     
     println!("Board data saved to: {:?}", board_file);
+    Ok(())
+}
+
+#[tauri::command]
+async fn save_board_data_to_public(board_data: serde_json::Value, file_name: String) -> Result<(), String> {
+    // Get the current working directory (should be the project root)
+    let current_dir = std::env::current_dir()
+        .map_err(|e| format!("Failed to get current directory: {}", e))?;
+    
+    // Save to the public directory
+    let public_dir = current_dir.join("public");
+    if !public_dir.exists() {
+        fs::create_dir_all(&public_dir)
+            .map_err(|e| format!("Failed to create public directory: {}", e))?;
+    }
+    
+    let board_file = public_dir.join(&file_name);
+    let board_json = serde_json::to_string_pretty(&board_data)
+        .map_err(|e| format!("Failed to serialize board data: {}", e))?;
+    
+    fs::write(&board_file, board_json)
+        .map_err(|e| format!("Failed to write board file: {}", e))?;
+    
+    println!("Board data saved to public directory: {:?}", board_file);
     Ok(())
 }
 
@@ -438,6 +468,7 @@ pub fn run() {
       fetch_card_data,
       fetch_child_issues,
       save_board_data,
+      save_board_data_to_public,
       load_board_data,
       initialize_data_directory,
       copy_json_files_to_data_directory,
