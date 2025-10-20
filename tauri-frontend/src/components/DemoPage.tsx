@@ -5,9 +5,10 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource } from '../lib/dataService';
 import { invoke } from '@tauri-apps/api/core';
-import { fetchCardData, fetchChildIssues, saveBoardDataToPublic } from '../lib/jiraDataService';
+import { fetchCardData, fetchChildIssues, saveBoardDataToPublic, testChildIssue } from '../lib/jiraDataService';
 import JiraConfigDialog from './JiraConfigDialog';
 import LastUpdatedIndicator from './LastUpdatedIndicator';
+import ChildWorkItemsWidget from './ChildWorkItemsWidget';
 import { useAppState } from '../contexts/AppStateContext';
 
 const ITERATIONS = [
@@ -1328,6 +1329,41 @@ export default function DemoPage() {
             {refreshing ? 'Refreshing...' : 'Refresh Cards'}
           </Button>
           
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={async () => {
+              try {
+                console.log('Testing ADVICE-1210 as child of ADVICE-100...');
+                const result = await testChildIssue('ADVICE-100', 'ADVICE-1210');
+                console.log('Test result:', result);
+                setNotification({
+                  open: true,
+                  message: `Test completed. Check console for details.`,
+                  severity: 'info'
+                });
+              } catch (error) {
+                console.error('Test failed:', error);
+                setNotification({
+                  open: true,
+                  message: `Test failed: ${error}`,
+                  severity: 'error'
+                });
+              }
+            }}
+            sx={{
+              borderColor: '#28a745',
+              color: '#28a745',
+              fontWeight: 600,
+              '&:hover': {
+                borderColor: '#218838',
+                backgroundColor: 'rgba(40, 167, 69, 0.1)'
+              },
+              textTransform: 'none',
+            }}
+          >
+            Test ADVICE-1210
+          </Button>
 
         </Box>
 
@@ -1462,6 +1498,14 @@ export default function DemoPage() {
           cards.filter(cardMatchesTeamFilter)
         ])
       )} />
+      
+      {/* Child Work Items Widget */}
+      <Box sx={{ mb: 4 }}>
+        <ChildWorkItemsWidget 
+          boardData={{ columns }} 
+          onRefresh={handleRefreshData}
+        />
+      </Box>
       
       {/* Jira Configuration Dialog */}
       <JiraConfigDialog

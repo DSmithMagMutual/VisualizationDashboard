@@ -111,7 +111,7 @@ async fn fetch_jira_data(config: JiraConfig, project_key: String) -> Result<serd
     let client = reqwest::Client::new();
     
     // Fetch project issues
-    let url = format!("{}/rest/api/3/search", config.base_url.trim_end_matches('/'));
+    let url = format!("{}/rest/api/3/search/jql", config.base_url.trim_end_matches('/'));
     
     let jql = format!("project = {} ORDER BY created DESC", project_key);
     let params = [
@@ -174,16 +174,14 @@ async fn fetch_child_issues(config: JiraConfig, parent_key: String) -> Result<se
     let client = reqwest::Client::new();
     
     // Fetch child issues for a parent
-    let url = format!("{}/rest/api/3/search", config.base_url.trim_end_matches('/'));
+    let url = format!("{}/rest/api/3/search/jql", config.base_url.trim_end_matches('/'));
     
-    // Note: Jira subtasks use `parent = KEY`.
-    // Stories under an Epic use either "Epic Link" (company-managed) or `parentEpic` (team-managed).
-    // We include all variants in the JQL to capture children regardless of project type.
-    // Also try common custom field names for Epic Link.
-    // First try a broad search to see what fields exist
+    // Use the most reliable JQL approach for finding child issues
+    // 1. Direct subtasks: parent = KEY
+    // 2. Epic children: "Epic Link" = KEY (company-managed) or parentEpic = KEY (team-managed)
     let jql = format!(
-        "key = {} OR parent = {} OR \"Epic Link\" = {} OR parentEpic = {} OR \"Parent Link\" = {} OR \"Epic\" = {} OR \"Parent\" = {} OR issue in linkedIssues({})",
-        parent_key, parent_key, parent_key, parent_key, parent_key, parent_key, parent_key, parent_key
+        "parent = {} OR \"Epic Link\" = {} OR parentEpic = {}",
+        parent_key, parent_key, parent_key
     );
     let params = [
         ("jql", &jql),
@@ -207,13 +205,225 @@ async fn fetch_child_issues(config: JiraConfig, parent_key: String) -> Result<se
 
     if response.status().is_success() {
         let data: serde_json::Value = response.json().await.map_err(|e| e.to_string())?;
-        println!("Child issues response for {}: {} issues found", parent_key, data["total"].as_u64().unwrap_or(0));
+        let total_issues = data["total"].as_u64().unwrap_or(0);
+        println!("Child issues response for {}: {} issues found", parent_key, total_issues);
+        
+        if total_issues > 0 {
+            println!("Child issue keys found: {:?}", 
+                data["issues"].as_array()
+                    .map(|issues| issues.iter()
+                        .map(|issue| issue["key"].as_str().unwrap_or("unknown"))
+                        .collect::<Vec<_>>())
+                    .unwrap_or_default()
+            );
+        }
+        
         Ok(data)
     } else {
         let status = response.status();
         let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
         println!("Failed to fetch child issues for {}: {} - {}", parent_key, status, error_text);
         Err(format!("Failed to fetch child issues: {} - {}", status, error_text))
+    }
+}
+
+#[tauri::command]
+async fn test_child_issue_query(config: JiraConfig, parent_key: String, child_key: String) -> Result<serde_json::Value, String> {
+    let client = reqwest::Client::new();
+    
+    // Test if a specific child issue exists and what its parent/epic relationship is
+    let url = format!("{}/rest/api/3/issue/{}", config.base_url.trim_end_matches('/'), child_key);
+    
+    let params = [
+        ("fields", "summary,status,issuetype,key,parent,issuelinks,customfield_10014,customfield_10001"),
+    ];
+    
+    println!("Testing child issue {} for parent {}", child_key, parent_key);
+    
+    let response = client
+        .get(&url)
+        .header("Authorization", format!("Basic {}", base64::engine::general_purpose::STANDARD.encode(format!("{}:{}", config.email, config.api_token))))
+        .header("Accept", "application/json")
+        .query(&params)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if response.status().is_success() {
+        let data: serde_json::Value = response.json().await.map_err(|e| e.to_string())?;
+        println!("Child issue {} details: {:?}", child_key, data);
+        Ok(data)
+    } else {
+        let status = response.status();
+        let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+        println!("Failed to fetch child issue {}: {} - {}", child_key, status, error_text);
+        Err(format!("Failed to fetch child issue: {} - {}", status, error_text))
+    }
+}
+
+#[tauri::command]
+async fn create_subtask(config: JiraConfig, parent_key: String, summary: String, description: Option<String>, assignee_email: Option<String>, priority: Option<String>) -> Result<serde_json::Value, String> {
+    let client = reqwest::Client::new();
+    
+    // Create a new sub-task under the parent issue
+    let url = format!("{}/rest/api/3/issue", config.base_url.trim_end_matches('/'));
+    
+    let mut fields = serde_json::Map::new();
+    
+    // Set parent
+    let mut parent_obj = serde_json::Map::new();
+    parent_obj.insert("key".to_string(), serde_json::Value::String(parent_key.clone()));
+    fields.insert("parent".to_string(), serde_json::Value::Object(parent_obj));
+    
+    // Set project (extract from parent key)
+    let project_key = parent_key.split('-').next().unwrap_or("ADVICE");
+    let mut project_obj = serde_json::Map::new();
+    project_obj.insert("key".to_string(), serde_json::Value::String(project_key.to_string()));
+    fields.insert("project".to_string(), serde_json::Value::Object(project_obj));
+    
+    // Set issue type to Sub-task
+    let mut issue_type_obj = serde_json::Map::new();
+    issue_type_obj.insert("name".to_string(), serde_json::Value::String("Sub-task".to_string()));
+    fields.insert("issuetype".to_string(), serde_json::Value::Object(issue_type_obj));
+    
+    // Set summary
+    fields.insert("summary".to_string(), serde_json::Value::String(summary.clone()));
+    
+    // Set description if provided
+    if let Some(desc) = description {
+        fields.insert("description".to_string(), serde_json::Value::String(desc));
+    }
+    
+    // Set assignee if provided
+    if let Some(email) = assignee_email {
+        let mut assignee_obj = serde_json::Map::new();
+        assignee_obj.insert("emailAddress".to_string(), serde_json::Value::String(email));
+        fields.insert("assignee".to_string(), serde_json::Value::Object(assignee_obj));
+    }
+    
+    // Set priority if provided
+    if let Some(pri) = priority {
+        let mut priority_obj = serde_json::Map::new();
+        priority_obj.insert("name".to_string(), serde_json::Value::String(pri));
+        fields.insert("priority".to_string(), serde_json::Value::Object(priority_obj));
+    }
+    
+    let request_body = serde_json::json!({
+        "fields": fields
+    });
+    
+    println!("Creating sub-task for parent {}: {}", parent_key, summary);
+    
+    let response = client
+        .post(&url)
+        .header("Authorization", format!("Basic {}", base64::engine::general_purpose::STANDARD.encode(format!("{}:{}", config.email, config.api_token))))
+        .header("Accept", "application/json")
+        .header("Content-Type", "application/json")
+        .json(&request_body)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if response.status().is_success() {
+        let data: serde_json::Value = response.json().await.map_err(|e| e.to_string())?;
+        println!("Sub-task created successfully: {:?}", data);
+        Ok(data)
+    } else {
+        let status = response.status();
+        let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+        println!("Failed to create sub-task: {} - {}", status, error_text);
+        Err(format!("Failed to create sub-task: {} - {}", status, error_text))
+    }
+}
+
+#[tauri::command]
+async fn get_issue_with_children(config: JiraConfig, issue_key: String) -> Result<serde_json::Value, String> {
+    let client = reqwest::Client::new();
+    
+    // Get issue with its sub-tasks
+    let url = format!("{}/rest/api/3/issue/{}", config.base_url.trim_end_matches('/'), issue_key);
+    
+    let params = [
+        ("fields", "summary,status,issuetype,assignee,priority,description,created,updated,subtasks,parent"),
+        ("expand", "subtasks"),
+    ];
+    
+    println!("Fetching issue with children: {}", issue_key);
+    
+    let response = client
+        .get(&url)
+        .header("Authorization", format!("Basic {}", base64::engine::general_purpose::STANDARD.encode(format!("{}:{}", config.email, config.api_token))))
+        .header("Accept", "application/json")
+        .query(&params)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if response.status().is_success() {
+        let data: serde_json::Value = response.json().await.map_err(|e| e.to_string())?;
+        println!("Issue with children fetched successfully: {}", issue_key);
+        Ok(data)
+    } else {
+        let status = response.status();
+        let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+        println!("Failed to fetch issue with children {}: {} - {}", issue_key, status, error_text);
+        Err(format!("Failed to fetch issue with children: {} - {}", status, error_text))
+    }
+}
+
+#[tauri::command]
+async fn update_subtask(config: JiraConfig, subtask_key: String, summary: Option<String>, description: Option<String>, assignee_email: Option<String>, priority: Option<String>) -> Result<(), String> {
+    let client = reqwest::Client::new();
+    
+    // Update a sub-task
+    let url = format!("{}/rest/api/3/issue/{}", config.base_url.trim_end_matches('/'), subtask_key);
+    
+    let mut fields = serde_json::Map::new();
+    
+    if let Some(sum) = summary {
+        fields.insert("summary".to_string(), serde_json::Value::String(sum));
+    }
+    
+    if let Some(desc) = description {
+        fields.insert("description".to_string(), serde_json::Value::String(desc));
+    }
+    
+    if let Some(email) = assignee_email {
+        let mut assignee_obj = serde_json::Map::new();
+        assignee_obj.insert("emailAddress".to_string(), serde_json::Value::String(email));
+        fields.insert("assignee".to_string(), serde_json::Value::Object(assignee_obj));
+    }
+    
+    if let Some(pri) = priority {
+        let mut priority_obj = serde_json::Map::new();
+        priority_obj.insert("name".to_string(), serde_json::Value::String(pri));
+        fields.insert("priority".to_string(), serde_json::Value::Object(priority_obj));
+    }
+    
+    let request_body = serde_json::json!({
+        "fields": fields
+    });
+    
+    println!("Updating sub-task: {}", subtask_key);
+    
+    let response = client
+        .put(&url)
+        .header("Authorization", format!("Basic {}", base64::engine::general_purpose::STANDARD.encode(format!("{}:{}", config.email, config.api_token))))
+        .header("Accept", "application/json")
+        .header("Content-Type", "application/json")
+        .json(&request_body)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if response.status().is_success() {
+        println!("Sub-task updated successfully: {}", subtask_key);
+        Ok(())
+    } else {
+        let status = response.status();
+        let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+        println!("Failed to update sub-task {}: {} - {}", subtask_key, status, error_text);
+        Err(format!("Failed to update sub-task: {} - {}", status, error_text))
     }
 }
 
@@ -467,6 +677,10 @@ pub fn run() {
       fetch_jira_data,
       fetch_card_data,
       fetch_child_issues,
+      test_child_issue_query,
+      create_subtask,
+      get_issue_with_children,
+      update_subtask,
       save_board_data,
       save_board_data_to_public,
       load_board_data,

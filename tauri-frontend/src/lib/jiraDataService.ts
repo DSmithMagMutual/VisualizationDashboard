@@ -305,4 +305,77 @@ export async function loadBoardData(fileName: string): Promise<any | null> {
     console.error('Failed to load board data:', error);
     return null;
   }
+}
+
+// Test function to check a specific child issue
+export async function testChildIssue(parentKey: string, childKey: string): Promise<any> {
+  const config = await loadJiraConfig();
+  if (!config) {
+    throw new Error('Jira configuration not found. Please configure Jira settings first.');
+  }
+
+  try {
+    const result = await invoke('test_child_issue_query', { config, parentKey, childKey });
+    return result;
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to test child issue');
+  }
+}
+
+// Create a new sub-task
+export async function createSubtask(parentKey: string, summary: string, description?: string, assigneeEmail?: string, priority?: string): Promise<any> {
+  const config = await loadJiraConfig();
+  if (!config) {
+    throw new Error('Jira configuration not found. Please configure Jira settings first.');
+  }
+
+  try {
+    const result = await invoke('create_subtask', { 
+      config, 
+      parentKey, 
+      summary, 
+      description: description || null, 
+      assigneeEmail: assigneeEmail || null, 
+      priority: priority || null 
+    });
+    return result;
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to create sub-task');
+  }
+}
+
+// Get issue with its children
+export async function getIssueWithChildren(issueKey: string): Promise<any> {
+  const config = await loadJiraConfig();
+  if (!config) {
+    throw new Error('Jira configuration not found. Please configure Jira settings first.');
+  }
+
+  try {
+    const result = await invoke('get_issue_with_children', { config, issueKey });
+    return result;
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to fetch issue with children');
+  }
+}
+
+// Update a sub-task
+export async function updateSubtask(subtaskKey: string, summary?: string, description?: string, assigneeEmail?: string, priority?: string): Promise<void> {
+  const config = await loadJiraConfig();
+  if (!config) {
+    throw new Error('Jira configuration not found. Please configure Jira settings first.');
+  }
+
+  try {
+    await invoke('update_subtask', { 
+      config, 
+      subtaskKey, 
+      summary: summary || null, 
+      description: description || null, 
+      assigneeEmail: assigneeEmail || null, 
+      priority: priority || null 
+    });
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to update sub-task');
+  }
 } 
