@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import { Close, ExpandMore, ExpandLess } from '@mui/icons-material';
+import { Close, ExpandMore, ExpandLess, Edit, Save, Cancel } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource } from '../lib/dataService';
@@ -88,11 +88,11 @@ function getColorForTeam(team: string) {
   return '#' + '00000'.substring(0, 6 - c.length) + c;
 }
 
-function StatusChart({ columns }: { columns: Record<string, any[]> }) {
+function StatusChart({ columns, iterations }: { columns: Record<string, any[]>; iterations: typeof ITERATIONS }) {
   const statusCategories = ['new', 'indeterminate', 'done'];
   
   // Calculate data for each iteration
-  const chartData = ITERATIONS.map(iter => {
+  const chartData = iterations.map(iter => {
     const cards = columns[iter.key] || [];
     const statusCounts: Record<string, number> = { 'new': 0, 'indeterminate': 0, 'done': 0 };
     
@@ -403,6 +403,7 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
 
 export default function DemoPage() {
   const { selectedDataSource, setSelectedDataSource, teamFilter, setTeamFilter } = useAppState();
+  const [iterations, setIterations] = useState(ITERATIONS);
   const [columns, setColumns] = useState(() =>
     ITERATIONS.reduce((acc, iter) => {
       acc[iter.key] = [];
@@ -428,6 +429,9 @@ export default function DemoPage() {
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
   const [dataSource, setDataSource] = useState<'jira' | 'static' | undefined>();
   const [projectKey, setProjectKey] = useState<string | undefined>();
+  const [editingIteration, setEditingIteration] = useState<string | null>(null);
+  const [editingIterationTitle, setEditingIterationTitle] = useState('');
+  const [editingIterationRange, setEditingIterationRange] = useState('');
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -622,11 +626,22 @@ export default function DemoPage() {
       setLoading(true);
       const dataSource = await loadDataSource(dataSourceKey);
       if (dataSource && dataSource.columns) {
+        // Load custom iterations if they exist in the data
+        if (dataSource.iterations && Array.isArray(dataSource.iterations)) {
+          setIterations(dataSource.iterations);
+        } else {
+          // Use default iterations
+          setIterations(ITERATIONS);
+        }
+        
         // Ensure all iteration keys are present in the loaded state
-        const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+        const currentIterations = dataSource.iterations && Array.isArray(dataSource.iterations) 
+          ? dataSource.iterations 
+          : ITERATIONS;
+        const initializedColumns = currentIterations.reduce((acc: Record<string, any[]>, iter: any) => {
           acc[iter.key] = (dataSource.columns as Record<string, any[]>)?.[iter.key] || [];
           return acc;
-        }, {} as Record<string, any[]>);
+        }, {});
         
         // Set columns immediately to show the board
         setColumns(initializedColumns);
@@ -717,6 +732,7 @@ export default function DemoPage() {
     // Save the updated board data to JSON file
     try {
       const boardData = {
+        iterations,
         columns: newColumns,
         lastUpdated: new Date().toISOString(),
         source: dataSource || 'jira',
@@ -741,11 +757,19 @@ export default function DemoPage() {
       console.log('Reloading data from JSON file...');
       const reloadedData = await loadDataSource(selectedDataSource);
       if (reloadedData && reloadedData.columns) {
+        // Load iterations if they exist
+        if (reloadedData.iterations && Array.isArray(reloadedData.iterations)) {
+          setIterations(reloadedData.iterations);
+        }
+        
         // Ensure all iteration keys are present in the reloaded state
-        const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+        const currentIterations = reloadedData.iterations && Array.isArray(reloadedData.iterations) 
+          ? reloadedData.iterations 
+          : iterations;
+        const initializedColumns = currentIterations.reduce((acc: Record<string, any[]>, iter: any) => {
           acc[iter.key] = (reloadedData.columns as Record<string, any[]>)?.[iter.key] || [];
           return acc;
-        }, {} as Record<string, any[]>);
+        }, {});
         
         // Update state with reloaded data
         setColumns(initializedColumns);
@@ -809,6 +833,7 @@ export default function DemoPage() {
     // Save the updated board data to JSON file
     try {
       const boardData = {
+        iterations,
         columns: newColumns,
         lastUpdated: new Date().toISOString(),
         source: dataSource || 'jira',
@@ -833,11 +858,19 @@ export default function DemoPage() {
       console.log('Reloading data from JSON file...');
       const reloadedData = await loadDataSource(selectedDataSource);
       if (reloadedData && reloadedData.columns) {
+        // Load iterations if they exist
+        if (reloadedData.iterations && Array.isArray(reloadedData.iterations)) {
+          setIterations(reloadedData.iterations);
+        }
+        
         // Ensure all iteration keys are present in the reloaded state
-        const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+        const currentIterations = reloadedData.iterations && Array.isArray(reloadedData.iterations) 
+          ? reloadedData.iterations 
+          : iterations;
+        const initializedColumns = currentIterations.reduce((acc: Record<string, any[]>, iter: any) => {
           acc[iter.key] = (reloadedData.columns as Record<string, any[]>)?.[iter.key] || [];
           return acc;
-        }, {} as Record<string, any[]>);
+        }, {});
         
         // Update state with reloaded data
         setColumns(initializedColumns);
@@ -884,6 +917,7 @@ export default function DemoPage() {
     // Save the updated board data to JSON file
     try {
       const boardData = {
+        iterations,
         columns: newColumns,
         lastUpdated: new Date().toISOString(),
         source: dataSource || 'jira',
@@ -908,11 +942,19 @@ export default function DemoPage() {
       console.log('Reloading data from JSON file...');
       const reloadedData = await loadDataSource(selectedDataSource);
       if (reloadedData && reloadedData.columns) {
+        // Load iterations if they exist
+        if (reloadedData.iterations && Array.isArray(reloadedData.iterations)) {
+          setIterations(reloadedData.iterations);
+        }
+        
         // Ensure all iteration keys are present in the reloaded state
-        const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+        const currentIterations = reloadedData.iterations && Array.isArray(reloadedData.iterations) 
+          ? reloadedData.iterations 
+          : iterations;
+        const initializedColumns = currentIterations.reduce((acc: Record<string, any[]>, iter: any) => {
           acc[iter.key] = (reloadedData.columns as Record<string, any[]>)?.[iter.key] || [];
           return acc;
-        }, {} as Record<string, any[]>);
+        }, {});
         
         // Update state with reloaded data
         setColumns(initializedColumns);
@@ -1221,6 +1263,7 @@ export default function DemoPage() {
       // Save the updated board data to JSON file BEFORE updating state
       try {
         const boardData = {
+          iterations,
           columns: updatedColumns,
           lastUpdated: new Date().toISOString(),
           source: 'jira',
@@ -1633,11 +1676,95 @@ export default function DemoPage() {
       </Box>
       {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
       <Box sx={{ display: 'flex', gap: 3, overflowX: 'auto', minWidth: 1200 }}>
-        {ITERATIONS.map(iter => (
+        {iterations.map(iter => (
           <Box key={iter.key} sx={{ minWidth: 320, background: '#fff', border: '1px solid #e9ecef', borderRadius: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 600 }}>
-            <Box mb={2}>
-              <Typography variant="h6" fontWeight={600} sx={{ color: '#212529' }}>{iter.label}</Typography>
-              <Typography variant="caption" sx={{ color: '#6c757d' }}>{iter.range}</Typography>
+            <Box mb={2} position="relative">
+              {editingIteration === iter.key ? (
+                <Box>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={editingIterationTitle}
+                    onChange={(e) => setEditingIterationTitle(e.target.value)}
+                    placeholder="Iteration Title"
+                    sx={{ mb: 1 }}
+                  />
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={editingIterationRange}
+                    onChange={(e) => setEditingIterationRange(e.target.value)}
+                    placeholder="Date Range"
+                    sx={{ mb: 1 }}
+                  />
+                  <Box display="flex" gap={1}>
+                    <IconButton
+                      size="small"
+                      onClick={async () => {
+                        const updated = iterations.map(i => 
+                          i.key === iter.key 
+                            ? { ...i, label: editingIterationTitle, range: editingIterationRange }
+                            : i
+                        );
+                        setIterations(updated);
+                        setEditingIteration(null);
+                        
+                        // Save to JSON
+                        const boardData = {
+                          iterations: updated,
+                          columns,
+                          lastUpdated: new Date().toISOString(),
+                          source: dataSource || 'jira',
+                          projectKey: projectKey
+                        };
+                        
+                        let fileName = 'board-savePDD.json';
+                        if (selectedDataSource === 'board-saveAdvice') {
+                          fileName = 'board-saveAdvice.json';
+                        } else if (selectedDataSource === 'board-savePI5Advice') {
+                          fileName = 'board-savePI5Advice.json';
+                        } else if (selectedDataSource === 'board-savePI5PDD') {
+                          fileName = 'board-savePI5PDD.json';
+                        }
+                        
+                        await saveBoardDataToPublic(boardData, fileName);
+                      }}
+                      sx={{ color: '#198754' }}
+                    >
+                      <Save />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        setEditingIteration(null);
+                      }}
+                      sx={{ color: '#dc3545' }}
+                    >
+                      <Cancel />
+                    </IconButton>
+                  </Box>
+                </Box>
+              ) : (
+                <Box>
+                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                    <Box flex={1}>
+                      <Typography variant="h6" fontWeight={600} sx={{ color: '#212529' }}>{iter.label}</Typography>
+                      <Typography variant="caption" sx={{ color: '#6c757d' }}>{iter.range}</Typography>
+                    </Box>
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        setEditingIteration(iter.key);
+                        setEditingIterationTitle(iter.label);
+                        setEditingIterationRange(iter.range);
+                      }}
+                      sx={{ color: '#6c757d' }}
+                    >
+                      <Edit fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </Box>
+              )}
             </Box>
             {(() => {
               // Gather all child stories for this iteration (filtered by team)
@@ -1706,12 +1833,15 @@ export default function DemoPage() {
           </Box>
         ))}
       </Box>
-      <StatusChart columns={Object.fromEntries(
-        Object.entries(columns).map(([key, cards]) => [
-          key, 
-          cards.filter(cardMatchesTeamFilter)
-        ])
-      )} />
+      <StatusChart 
+        columns={Object.fromEntries(
+          Object.entries(columns).map(([key, cards]) => [
+            key, 
+            cards.filter(cardMatchesTeamFilter)
+          ])
+        )}
+        iterations={iterations}
+      />
       
       {/* Child Work Items Widget */}
       <Box sx={{ mb: 4 }}>
