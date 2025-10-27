@@ -449,48 +449,45 @@ async fn save_board_data(board_data: serde_json::Value, file_name: String) -> Re
 }
 
 #[tauri::command]
-async fn save_board_data_to_public(board_data: serde_json::Value, file_name: String) -> Result<(), String> {
-    // Get the current working directory (should be the project root)
-    let current_dir = std::env::current_dir()
-        .map_err(|e| format!("Failed to get current directory: {}", e))?;
+async fn save_board_data_to_public(board_data: serde_json::Value, file_name: String, app: tauri::AppHandle) -> Result<String, String> {
+    // Get Downloads directory
+    let downloads_dir = app.path().download_dir()
+        .map_err(|_| "Could not determine Downloads directory")?;
     
-    // Save to the public directory
-    let public_dir = current_dir.join("public");
-    if !public_dir.exists() {
-        fs::create_dir_all(&public_dir)
-            .map_err(|e| format!("Failed to create public directory: {}", e))?;
-    }
-    
-    let board_file = public_dir.join(&file_name);
+    let board_file = downloads_dir.join(&file_name);
     let board_json = serde_json::to_string_pretty(&board_data)
         .map_err(|e| format!("Failed to serialize board data: {}", e))?;
     
     fs::write(&board_file, board_json)
         .map_err(|e| format!("Failed to write board file: {}", e))?;
     
-    println!("Board data saved to public directory: {:?}", board_file);
-    Ok(())
+    let file_path = board_file.to_string_lossy().to_string();
+    println!("Board data saved to Downloads: {}", file_path);
+    
+    Ok(file_path)
 }
 
 #[tauri::command]
-async fn load_board_data(file_name: String) -> Result<Option<serde_json::Value>, String> {
-    let home_dir = get_home_dir()?;
+async fn load_board_data(file_name: String, app: tauri::AppHandle) -> Result<Option<serde_json::Value>, String> {
+    // Load from Downloads directory
+    let downloads_dir = app.path().download_dir()
+        .map_err(|_| "Could not determine Downloads directory")?;
     
-    let board_file = std::path::Path::new(&home_dir).join(".jira-dashboard").join(&file_name);
+    let board_file = downloads_dir.join(&file_name);
     
-    if !board_file.exists() {
-        println!("Board file does not exist: {:?}", board_file);
-        return Ok(None);
+    if board_file.exists() {
+        let board_content = fs::read_to_string(&board_file)
+            .map_err(|e| format!("Failed to read board file: {}", e))?;
+        
+        let board_data: serde_json::Value = serde_json::from_str(&board_content)
+            .map_err(|e| format!("Failed to parse board data: {}", e))?;
+        
+        println!("Board data loaded from Downloads: {:?}", board_file);
+        return Ok(Some(board_data));
     }
     
-    let board_content = fs::read_to_string(&board_file)
-        .map_err(|e| format!("Failed to read board file: {}", e))?;
-    
-    let board_data: serde_json::Value = serde_json::from_str(&board_content)
-        .map_err(|e| format!("Failed to parse board data: {}", e))?;
-    
-    println!("Board data loaded from: {:?}", board_file);
-    Ok(Some(board_data))
+    println!("Board file does not exist in Downloads: {:?}", board_file);
+    Ok(None)
 }
 
 #[tauri::command]

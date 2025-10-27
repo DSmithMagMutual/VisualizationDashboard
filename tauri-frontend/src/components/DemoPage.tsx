@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Snackbar, Alert } from '@mui/material';
+import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Close, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -422,6 +422,9 @@ export default function DemoPage() {
   const [boardTitle, setBoardTitle] = useState("Demo Iteration Board");
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [showJiraConfig, setShowJiraConfig] = useState(false);
+  const [showMoveCardDialog, setShowMoveCardDialog] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState<string>('');
+  const [selectedTargetColumn, setSelectedTargetColumn] = useState<string>('');
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
   const [dataSource, setDataSource] = useState<'jira' | 'static' | undefined>();
   const [projectKey, setProjectKey] = useState<string | undefined>();
@@ -710,6 +713,155 @@ export default function DemoPage() {
     };
     setColumns(newColumns);
     setInputs(inputs => ({ ...inputs, [colKey]: "" }));
+    
+    // Save the updated board data to JSON file
+    try {
+      const boardData = {
+        columns: newColumns,
+        lastUpdated: new Date().toISOString(),
+        source: dataSource || 'jira',
+        projectKey: projectKey
+      };
+      
+      // Determine the file name based on the current data source
+      let fileName = 'board-savePDD.json'; // default
+      if (selectedDataSource === 'board-saveAdvice') {
+        fileName = 'board-saveAdvice.json';
+      } else if (selectedDataSource === 'board-savePI5Advice') {
+        fileName = 'board-savePI5Advice.json';
+      } else if (selectedDataSource === 'board-savePI5PDD') {
+        fileName = 'board-savePI5PDD.json';
+      }
+      
+      console.log(`Saving added card data to public directory: ${fileName}`);
+      await saveBoardDataToPublic(boardData, fileName);
+      console.log('Board data saved successfully after adding card');
+      
+      // Now reload the data from the JSON file to ensure we're in sync
+      console.log('Reloading data from JSON file...');
+      const reloadedData = await loadDataSource(selectedDataSource);
+      if (reloadedData && reloadedData.columns) {
+        // Ensure all iteration keys are present in the reloaded state
+        const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+          acc[iter.key] = (reloadedData.columns as Record<string, any[]>)?.[iter.key] || [];
+          return acc;
+        }, {} as Record<string, any[]>);
+        
+        // Update state with reloaded data
+        setColumns(initializedColumns);
+        setLastUpdated(reloadedData.lastUpdated);
+        setDataSource(reloadedData.source);
+        setProjectKey(reloadedData.projectKey);
+        console.log('Data reloaded successfully from JSON file');
+      }
+    } catch (error) {
+      console.error('Failed to save or reload board data after adding card:', error);
+    }
+  };
+
+  const handleMoveCard = async () => {
+    if (!selectedCardId || !selectedTargetColumn) {
+      setNotification({
+        open: true,
+        message: 'Please select both a card and target column',
+        severity: 'warning'
+      });
+      return;
+    }
+    
+    // Parse card ID: "columnKey:index"
+    const [sourceColumnKey, cardIndex] = selectedCardId.split(':');
+    const sourceIndex = parseInt(cardIndex);
+    
+    if (sourceColumnKey === selectedTargetColumn) {
+      setNotification({
+        open: true,
+        message: 'Card is already in the target column',
+        severity: 'info'
+      });
+      return;
+    }
+    
+    // Get the card
+    const sourceColumn = columns[sourceColumnKey] || [];
+    const card = sourceColumn[sourceIndex];
+    
+    if (!card) {
+      setNotification({
+        open: true,
+        message: 'Card not found',
+        severity: 'error'
+      });
+      return;
+    }
+    
+    // Move the card locally
+    const newColumns = { ...columns };
+    newColumns[sourceColumnKey] = sourceColumn.filter((_, index) => index !== sourceIndex);
+    newColumns[selectedTargetColumn] = [...newColumns[selectedTargetColumn], card];
+    
+    // Update state immediately for UI responsiveness
+    setColumns(newColumns);
+    setShowMoveCardDialog(false);
+    setSelectedCardId('');
+    setSelectedTargetColumn('');
+    
+    // Save the updated board data to JSON file
+    try {
+      const boardData = {
+        columns: newColumns,
+        lastUpdated: new Date().toISOString(),
+        source: dataSource || 'jira',
+        projectKey: projectKey
+      };
+      
+      // Determine the file name based on the current data source
+      let fileName = 'board-savePDD.json'; // default
+      if (selectedDataSource === 'board-saveAdvice') {
+        fileName = 'board-saveAdvice.json';
+      } else if (selectedDataSource === 'board-savePI5Advice') {
+        fileName = 'board-savePI5Advice.json';
+      } else if (selectedDataSource === 'board-savePI5PDD') {
+        fileName = 'board-savePI5PDD.json';
+      }
+      
+      console.log(`Saving moved card data to public directory: ${fileName}`);
+      await saveBoardDataToPublic(boardData, fileName);
+      console.log('Board data saved successfully after moving card');
+      
+      // Now reload the data from the JSON file to ensure we're in sync
+      console.log('Reloading data from JSON file...');
+      const reloadedData = await loadDataSource(selectedDataSource);
+      if (reloadedData && reloadedData.columns) {
+        // Ensure all iteration keys are present in the reloaded state
+        const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+          acc[iter.key] = (reloadedData.columns as Record<string, any[]>)?.[iter.key] || [];
+          return acc;
+        }, {} as Record<string, any[]>);
+        
+        // Update state with reloaded data
+        setColumns(initializedColumns);
+        setLastUpdated(reloadedData.lastUpdated);
+        setDataSource(reloadedData.source);
+        setProjectKey(reloadedData.projectKey);
+        console.log('Data reloaded successfully from JSON file');
+      }
+    } catch (error) {
+      console.error('Failed to save or reload board data after moving card:', error);
+      setNotification({
+        open: true,
+        message: 'Failed to save changes',
+        severity: 'error'
+      });
+      return;
+    }
+    
+    const targetIteration = ITERATIONS.find(iter => iter.key === selectedTargetColumn);
+    setNotification({
+      open: true,
+      message: `Moved ${card.key} to ${targetIteration?.label || selectedTargetColumn}`,
+      severity: 'success'
+    });
   };
 
   const handleDeleteCard = async (colKey: string, cardIndex: number) => {
@@ -728,6 +880,50 @@ export default function DemoPage() {
       newSet.delete(cardId);
       return newSet;
     });
+    
+    // Save the updated board data to JSON file
+    try {
+      const boardData = {
+        columns: newColumns,
+        lastUpdated: new Date().toISOString(),
+        source: dataSource || 'jira',
+        projectKey: projectKey
+      };
+      
+      // Determine the file name based on the current data source
+      let fileName = 'board-savePDD.json'; // default
+      if (selectedDataSource === 'board-saveAdvice') {
+        fileName = 'board-saveAdvice.json';
+      } else if (selectedDataSource === 'board-savePI5Advice') {
+        fileName = 'board-savePI5Advice.json';
+      } else if (selectedDataSource === 'board-savePI5PDD') {
+        fileName = 'board-savePI5PDD.json';
+      }
+      
+      console.log(`Saving deleted card data to public directory: ${fileName}`);
+      await saveBoardDataToPublic(boardData, fileName);
+      console.log('Board data saved successfully after deleting card');
+      
+      // Now reload the data from the JSON file to ensure we're in sync
+      console.log('Reloading data from JSON file...');
+      const reloadedData = await loadDataSource(selectedDataSource);
+      if (reloadedData && reloadedData.columns) {
+        // Ensure all iteration keys are present in the reloaded state
+        const initializedColumns = ITERATIONS.reduce((acc, iter) => {
+          acc[iter.key] = (reloadedData.columns as Record<string, any[]>)?.[iter.key] || [];
+          return acc;
+        }, {} as Record<string, any[]>);
+        
+        // Update state with reloaded data
+        setColumns(initializedColumns);
+        setLastUpdated(reloadedData.lastUpdated);
+        setDataSource(reloadedData.source);
+        setProjectKey(reloadedData.projectKey);
+        console.log('Data reloaded successfully from JSON file');
+      }
+    } catch (error) {
+      console.error('Failed to save or reload board data after deleting card:', error);
+    }
   };
 
 
@@ -1332,6 +1528,24 @@ export default function DemoPage() {
           <Button
             variant="outlined"
             size="small"
+            onClick={() => setShowMoveCardDialog(true)}
+            sx={{
+              borderColor: '#6c757d',
+              color: '#6c757d',
+              fontWeight: 600,
+              '&:hover': {
+                borderColor: '#5a6268',
+                backgroundColor: 'rgba(108, 117, 125, 0.1)'
+              },
+              textTransform: 'none',
+            }}
+          >
+            Move Card
+          </Button>
+          
+          <Button
+            variant="outlined"
+            size="small"
             onClick={async () => {
               try {
                 console.log('Testing ADVICE-1210 as child of ADVICE-100...');
@@ -1523,6 +1737,47 @@ export default function DemoPage() {
           }
         }}
       />
+
+      {/* Move Card Dialog */}
+      <Dialog open={showMoveCardDialog} onClose={() => setShowMoveCardDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Move Card Between Iterations</DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <FormControl fullWidth sx={{ mb: 3 }}>
+            <InputLabel>Select Card</InputLabel>
+            <Select
+              value={selectedCardId}
+              onChange={(e) => setSelectedCardId(e.target.value)}
+              label="Select Card"
+            >
+              {Object.entries(columns).map(([colKey, cards]) => 
+                cards.map((card, index) => (
+                  <MenuItem key={`${colKey}:${index}`} value={`${colKey}:${index}`}>
+                    {card.key} - {card.summary} ({ITERATIONS.find(i => i.key === colKey)?.label || colKey})
+                  </MenuItem>
+                ))
+              )}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel>Target Column</InputLabel>
+            <Select
+              value={selectedTargetColumn}
+              onChange={(e) => setSelectedTargetColumn(e.target.value)}
+              label="Target Column"
+            >
+              {ITERATIONS.map(iter => (
+                <MenuItem key={iter.key} value={iter.key}>
+                  {iter.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowMoveCardDialog(false)}>Cancel</Button>
+          <Button onClick={handleMoveCard} variant="contained">Move Card</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Notification Snackbar */}
       <Snackbar

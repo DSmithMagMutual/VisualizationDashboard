@@ -22,28 +22,51 @@ export async function loadDataSource(sourceKey: string): Promise<DataSource | nu
       return null;
     }
 
-    // Only load from public files - no fallback to private saved files
-    console.log(`Loading from public file: ${fileName}`);
-    const response = await fetch(`/${fileName}`);
-    if (!response.ok) {
-      throw new Error(`Failed to load ${fileName}: ${response.statusText}`);
+    console.log(`Loading from Downloads: ${fileName}`);
+    
+    const { invoke } = await import('@tauri-apps/api/core');
+    const data: any = await invoke('load_board_data', { fileName });
+    
+    if (data) {
+      console.log(`Successfully loaded ${fileName} from Downloads`);
+      
+      // Add metadata if not present
+      if (!data.lastUpdated) {
+        data.lastUpdated = new Date().toISOString();
+      }
+      if (!data.source) {
+        data.source = 'static';
+      }
+      if (!data.projectKey) {
+        data.projectKey = sourceKey;
+      }
+      
+      return data;
     }
     
-    const data = await response.json();
-    console.log(`Successfully loaded ${fileName} from public`);
+    // If not found in Downloads, fall back to public files
+    console.log(`File not found in Downloads, trying public files...`);
+    const response = await fetch(`/${fileName}?t=${Date.now()}`);
+    if (response.ok) {
+      const data: any = await response.json();
+      console.log(`Successfully loaded ${fileName} from public files`);
+      
+      // Add metadata if not present
+      if (!data.lastUpdated) {
+        data.lastUpdated = new Date().toISOString();
+      }
+      if (!data.source) {
+        data.source = 'static';
+      }
+      if (!data.projectKey) {
+        data.projectKey = sourceKey;
+      }
+      
+      return data;
+    }
     
-    // Add metadata if not present
-    if (!data.lastUpdated) {
-      data.lastUpdated = new Date().toISOString();
-    }
-    if (!data.source) {
-      data.source = 'static';
-    }
-    if (!data.projectKey) {
-      data.projectKey = sourceKey;
-    }
-    
-    return data;
+    console.error(`Could not load ${fileName} from any source`);
+    return null;
   } catch (error) {
     console.error(`Error loading data source ${sourceKey}:`, error);
     return null;

@@ -286,13 +286,14 @@ export async function saveBoardData(boardData: any, fileName: string): Promise<v
   }
 }
 
-// Save board data to public directory (new preferred method)
-export async function saveBoardDataToPublic(boardData: any, fileName: string): Promise<void> {
+// Save board data to Downloads directory
+export async function saveBoardDataToPublic(boardData: any, fileName: string): Promise<string> {
   try {
-    // Use Tauri command to save to public directory
-    await invoke('save_board_data_to_public', { boardData, fileName });
+    // Use Tauri command to save to Downloads directory
+    const filePath = await invoke<string>('save_board_data_to_public', { boardData, fileName });
+    return filePath;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to save board data to public');
+    throw new Error(error instanceof Error ? error.message : 'Failed to save board data to Downloads');
   }
 }
 
