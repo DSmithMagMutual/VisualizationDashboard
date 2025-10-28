@@ -3,7 +3,7 @@ import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, 
 import { Close, ExpandMore, ExpandLess, Edit, Save, Cancel } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { loadDataSource } from '../lib/dataService';
+import { loadDataSource, getAllAvailableBoards } from '../lib/dataService';
 import { invoke } from '@tauri-apps/api/core';
 import { fetchCardData, fetchChildIssues, saveBoardDataToPublic, testChildIssue } from '../lib/jiraDataService';
 import JiraConfigDialog from './JiraConfigDialog';
@@ -404,6 +404,7 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
 export default function DemoPage() {
   const { selectedDataSource, setSelectedDataSource, teamFilter, setTeamFilter } = useAppState();
   const [iterations, setIterations] = useState(ITERATIONS);
+  const [availableBoards, setAvailableBoards] = useState<Record<string, string>>({});
   const [columns, setColumns] = useState(() =>
     ITERATIONS.reduce((acc, iter) => {
       acc[iter.key] = [];
@@ -432,6 +433,8 @@ export default function DemoPage() {
   const [editingIteration, setEditingIteration] = useState<string | null>(null);
   const [editingIterationTitle, setEditingIterationTitle] = useState('');
   const [editingIterationRange, setEditingIterationRange] = useState('');
+  const [showNewBoardDialog, setShowNewBoardDialog] = useState(false);
+  const [newBoardName, setNewBoardName] = useState('');
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -682,6 +685,19 @@ export default function DemoPage() {
       setLoading(false);
     }
   };
+
+  // Load available boards on component mount
+  useEffect(() => {
+    const loadAvailableBoards = async () => {
+      try {
+        const boards = await getAllAvailableBoards();
+        setAvailableBoards(boards);
+      } catch (error) {
+        console.error('Failed to load available boards:', error);
+      }
+    };
+    loadAvailableBoards();
+  }, []);
 
   // Effect to load data when data source changes
   useEffect(() => {
@@ -1005,6 +1021,70 @@ export default function DemoPage() {
 
   const handleCloseNotification = () => {
     setNotification(prev => ({ ...prev, open: false }));
+  };
+
+  const handleCreateNewBoard = async () => {
+    if (!newBoardName.trim()) {
+      setNotification({
+        open: true,
+        message: 'Please enter a board name',
+        severity: 'warning'
+      });
+      return;
+    }
+
+    const boardKey = newBoardName.trim().replace(/\s+/g, '');
+    const fileName = `board-save${boardKey}.json`;
+
+    // Check if board already exists
+    const existingBoards = ['board-saveAdvice', 'board-savePDD', 'board-savePI5Advice', 'board-savePI5PDD'];
+    if (existingBoards.includes(`board-save${boardKey}`)) {
+      setNotification({
+        open: true,
+        message: 'A board with this name already exists',
+        severity: 'warning'
+      });
+      return;
+    }
+
+    try {
+      // Create new board with default iterations
+      const newBoardData = {
+        iterations: ITERATIONS,
+        columns: ITERATIONS.reduce((acc, iter) => {
+          acc[iter.key] = [];
+          return acc;
+        }, {} as Record<string, any[]>),
+        lastUpdated: new Date().toISOString(),
+        source: 'static',
+        projectKey: `board-save${boardKey}`
+      };
+
+      await saveBoardDataToPublic(newBoardData, fileName);
+      
+      setNotification({
+        open: true,
+        message: `New board "${newBoardName}" created successfully`,
+        severity: 'success'
+      });
+      
+      setShowNewBoardDialog(false);
+      setNewBoardName('');
+      
+      // Update available boards list
+      const updatedBoards = await getAllAvailableBoards();
+      setAvailableBoards(updatedBoards);
+      
+      // Switch to the new board
+      setSelectedDataSource(`board-save${boardKey}`);
+    } catch (error) {
+      console.error('Failed to create new board:', error);
+      setNotification({
+        open: true,
+        message: 'Failed to create new board',
+        severity: 'error'
+      });
+    }
   };
 
   const handleRefreshData = async () => {
@@ -1480,10 +1560,11 @@ export default function DemoPage() {
                 },
               }}
             >
-              <MenuItem value="board-saveAdvice">Board Save Advice (ADVICE)</MenuItem>
-              <MenuItem value="board-savePDD">Board Save PDD</MenuItem>
-              <MenuItem value="board-savePI5Advice">Board Save PI5 Advice</MenuItem>
-              <MenuItem value="board-savePI5PDD">Board Save PI5 PDD</MenuItem>
+              {Object.entries(availableBoards).map(([key]) => (
+                <MenuItem key={key} value={key}>
+                  {key.replace('board-save', '').replace(/([A-Z])/g, ' $1').trim()}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Box>
@@ -1543,7 +1624,7 @@ export default function DemoPage() {
           </FormControl>
         </Box>
 
-        {/* Refresh Cards Button */}
+        {/* Action Buttons */}
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
             variant="contained"
@@ -1584,6 +1665,24 @@ export default function DemoPage() {
             }}
           >
             Move Card
+          </Button>
+          
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setShowNewBoardDialog(true)}
+            sx={{
+              borderColor: '#28a745',
+              color: '#28a745',
+              fontWeight: 600,
+              '&:hover': {
+                borderColor: '#218838',
+                backgroundColor: 'rgba(40, 167, 69, 0.1)'
+              },
+              textTransform: 'none',
+            }}
+          >
+            New Board
           </Button>
           
           <Button
@@ -1906,6 +2005,33 @@ export default function DemoPage() {
         <DialogActions>
           <Button onClick={() => setShowMoveCardDialog(false)}>Cancel</Button>
           <Button onClick={handleMoveCard} variant="contained">Move Card</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* New Board Dialog */}
+      <Dialog open={showNewBoardDialog} onClose={() => setShowNewBoardDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Create New Board</DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <TextField
+            fullWidth
+            label="Board Name"
+            value={newBoardName}
+            onChange={(e) => setNewBoardName(e.target.value)}
+            placeholder="e.g., My Custom Board"
+            sx={{ mb: 2 }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleCreateNewBoard();
+              }
+            }}
+          />
+          <Typography variant="body2" color="text.secondary">
+            This will create a new board file in your Downloads folder that you can customize with your own iterations and cards.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowNewBoardDialog(false)}>Cancel</Button>
+          <Button onClick={handleCreateNewBoard} variant="contained">Create Board</Button>
         </DialogActions>
       </Dialog>
 

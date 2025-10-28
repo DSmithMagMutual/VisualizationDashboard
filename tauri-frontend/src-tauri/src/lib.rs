@@ -453,40 +453,50 @@ async fn save_board_data_to_public(board_data: serde_json::Value, file_name: Str
     // Get Downloads directory
     let downloads_dir = app.path().download_dir()
         .map_err(|_| "Could not determine Downloads directory")?;
+
+    // Create JiraDashboard subdirectory
+    let jira_dashboard_dir = downloads_dir.join("JiraDashboard");
     
-    let board_file = downloads_dir.join(&file_name);
+    // Create the directory if it doesn't exist
+    if !jira_dashboard_dir.exists() {
+        fs::create_dir_all(&jira_dashboard_dir)
+            .map_err(|e| format!("Failed to create JiraDashboard directory: {}", e))?;
+    }
+
+    let board_file = jira_dashboard_dir.join(&file_name);
     let board_json = serde_json::to_string_pretty(&board_data)
         .map_err(|e| format!("Failed to serialize board data: {}", e))?;
-    
+
     fs::write(&board_file, board_json)
         .map_err(|e| format!("Failed to write board file: {}", e))?;
-    
+
     let file_path = board_file.to_string_lossy().to_string();
-    println!("Board data saved to Downloads: {}", file_path);
-    
+    println!("Board data saved to JiraDashboard folder: {}", file_path);
+
     Ok(file_path)
 }
 
 #[tauri::command]
 async fn load_board_data(file_name: String, app: tauri::AppHandle) -> Result<Option<serde_json::Value>, String> {
-    // Load from Downloads directory
+    // Load from JiraDashboard subdirectory in Downloads
     let downloads_dir = app.path().download_dir()
         .map_err(|_| "Could not determine Downloads directory")?;
-    
-    let board_file = downloads_dir.join(&file_name);
-    
+
+    let jira_dashboard_dir = downloads_dir.join("JiraDashboard");
+    let board_file = jira_dashboard_dir.join(&file_name);
+
     if board_file.exists() {
         let board_content = fs::read_to_string(&board_file)
             .map_err(|e| format!("Failed to read board file: {}", e))?;
-        
+
         let board_data: serde_json::Value = serde_json::from_str(&board_content)
             .map_err(|e| format!("Failed to parse board data: {}", e))?;
-        
-        println!("Board data loaded from Downloads: {:?}", board_file);
+
+        println!("Board data loaded from JiraDashboard folder: {:?}", board_file);
         return Ok(Some(board_data));
     }
-    
-    println!("Board file does not exist in Downloads: {:?}", board_file);
+
+    println!("Board file does not exist in JiraDashboard folder: {:?}", board_file);
     Ok(None)
 }
 
@@ -646,12 +656,38 @@ async fn open_data_directory(app: tauri::AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
-async fn get_data_directory_path(app: tauri::AppHandle) -> Result<String, String> {
-    let app_dir = app.path().app_data_dir()
-        .map_err(|_| "Could not determine app data directory")?;
+async fn get_downloads_directory(app: tauri::AppHandle) -> Result<String, String> {
+    let downloads_dir = app.path().download_dir()
+        .map_err(|_| "Could not determine Downloads directory")?;
+    Ok(downloads_dir.to_string_lossy().to_string())
+}
+
+#[tauri::command]
+async fn list_downloads_files(app: tauri::AppHandle) -> Result<Vec<String>, String> {
+    let downloads_dir = app.path().download_dir()
+        .map_err(|_| "Could not determine Downloads directory")?;
     
-    let data_dir = app_dir.join("data");
-    Ok(data_dir.to_string_lossy().to_string())
+    let jira_dashboard_dir = downloads_dir.join("JiraDashboard");
+    
+    if !jira_dashboard_dir.exists() {
+        return Ok(Vec::new());
+    }
+    
+    let entries = fs::read_dir(&jira_dashboard_dir)
+        .map_err(|e| format!("Failed to read JiraDashboard directory: {}", e))?;
+    
+    let mut files = Vec::new();
+    for entry in entries {
+        if let Ok(entry) = entry {
+            if let Some(file_name) = entry.file_name().to_str() {
+                if file_name.ends_with(".json") {
+                    files.push(file_name.to_string());
+                }
+            }
+        }
+    }
+    
+    Ok(files)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -681,12 +717,8 @@ pub fn run() {
       save_board_data,
       save_board_data_to_public,
       load_board_data,
-      initialize_data_directory,
-      copy_json_files_to_data_directory,
-      read_json_file_from_data_directory,
-      list_data_directory_files,
-      open_data_directory,
-      get_data_directory_path
+      get_downloads_directory,
+      list_downloads_files
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

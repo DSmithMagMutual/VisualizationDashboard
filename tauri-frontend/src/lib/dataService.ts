@@ -14,6 +14,31 @@ export const dataSources: Record<string, string> = {
   'board-savePI5PDD': 'board-savePI5PDD.json',
 };
 
+// Function to get all available board files from Downloads
+export async function getAllAvailableBoards(): Promise<Record<string, string>> {
+  try {
+    const { invoke } = await import('@tauri-apps/api/core');
+    
+    // Get list of all JSON files in Downloads directory
+    const files = await invoke<string[]>('list_downloads_files');
+    
+    // Filter for board files and create data source mapping
+    const boardFiles = files.filter(file => file.startsWith('board-save') && file.endsWith('.json'));
+    const dynamicDataSources: Record<string, string> = {};
+    
+    boardFiles.forEach(file => {
+      const key = file.replace('.json', '');
+      dynamicDataSources[key] = file;
+    });
+    
+    // Merge with default data sources
+    return { ...dataSources, ...dynamicDataSources };
+  } catch (error) {
+    console.error('Failed to get available boards:', error);
+    return dataSources; // Fallback to default
+  }
+}
+
 export async function loadDataSource(sourceKey: string): Promise<DataSource | null> {
   try {
     const fileName = dataSources[sourceKey];
