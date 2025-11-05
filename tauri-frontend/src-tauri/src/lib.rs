@@ -147,7 +147,7 @@ async fn fetch_card_data(config: JiraConfig, issue_key: String) -> Result<serde_
     let url = format!("{}/rest/api/3/issue/{}", config.base_url.trim_end_matches('/'), issue_key);
     
     let params = [
-        ("fields", "summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001,subtasks,issuelinks"),
+        ("fields", "summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001,subtasks,issuelinks,duedate"),
     ];
     
     let response = client

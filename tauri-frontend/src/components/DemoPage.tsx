@@ -5,7 +5,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource, getAllAvailableBoards } from '../lib/dataService';
 import { invoke } from '@tauri-apps/api/core';
-import { fetchCardData, fetchChildIssues, saveBoardDataToPublic, testChildIssue } from '../lib/jiraDataService';
+import { fetchCardData, fetchChildIssues, saveBoardDataToPublic } from '../lib/jiraDataService';
 import JiraConfigDialog from './JiraConfigDialog';
 import LastUpdatedIndicator from './LastUpdatedIndicator';
 import ChildWorkItemsWidget from './ChildWorkItemsWidget';
@@ -28,7 +28,8 @@ const teamColorMap: Record<string, string> = {
 const statusColors: Record<string, string> = {
   'To Do': '#dc3545',
   'In Progress': '#fd7e14', 
-  'Done': '#198754',
+  'Done': '#32cd32',
+  'Released': '#32cd32',
   'Ready': '#6c757d',
   'Ready for Release': '#6c757d',
   'Creating': '#fd7e14',
@@ -44,7 +45,8 @@ function getStatusCategory(status: string): string {
   if (statusLower.includes('done') || 
       statusLower.includes('complete') || 
       statusLower.includes('closed') ||
-      statusLower.includes('resolved')) {
+      statusLower.includes('resolved') ||
+      statusLower.includes('released')) {
     return 'done';
   } 
   
@@ -215,11 +217,12 @@ function StatusChart({ columns, iterations }: { columns: Record<string, any[]>; 
   );
 }
 
-function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
+function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRange }: {
   card: any; 
   onDelete: () => void; 
   isMinimized: boolean;
   onToggleMinimize: () => void;
+  iterationRange?: string;
 }) {
   // Show all child stories when card is visible (team filtering is handled at card level)
   const filteredStories = React.useMemo(() => {
@@ -238,10 +241,100 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
   // Older JSON files won't have isPlaceholder field, so this will be false for them
   const isPlaceholder = card.isPlaceholder === true;
   
+  // Parse iteration range to get end date (e.g., "October 7 - October 20" -> October 20)
+  const parseIterationEndDate = React.useMemo(() => {
+    if (!iterationRange || !iterationRange.trim()) return null;
+    
+    try {
+      // Try to parse formats like "October 7 - October 20" or "Oct 7 - Oct 20" or "10/7 - 10/20"
+      const parts = iterationRange.split('-').map(s => s.trim());
+      if (parts.length >= 2) {
+        const endDateStr = parts[parts.length - 1]; // Get the last part after the last dash
+        const currentYear = new Date().getFullYear();
+        
+        // Try multiple date formats
+        const dateFormats = [
+          `${endDateStr} ${currentYear}`, // "October 20 2025"
+          endDateStr, // Try as-is in case it already includes year
+        ];
+        
+        for (const dateStr of dateFormats) {
+          const parsedDate = new Date(dateStr);
+          if (!isNaN(parsedDate.getTime())) {
+            // Validate the date is reasonable (not something like "October 40th")
+            const day = parsedDate.getDate();
+            const month = parsedDate.getMonth();
+            const year = parsedDate.getFullYear();
+            
+            // Check if the parsed date matches what we expect
+            // Re-parse to see if the day/month are valid
+            const checkDate = new Date(year, month, day);
+            if (checkDate.getDate() === day && checkDate.getMonth() === month) {
+              console.log(`Parsed iteration end date from "${iterationRange}": ${parsedDate.toISOString().split('T')[0]}`);
+              return parsedDate;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`Error parsing iteration range "${iterationRange}":`, error);
+    }
+    return null;
+  }, [iterationRange]);
+
+  // Check if card is overdue
+  const isOverdue = React.useMemo(() => {
+    // First try to use card's dueDate, then fall back to iteration end date
+    let dueDateValue = card.dueDate;
+    let dueDateSource = 'card.dueDate';
+    
+    if (!dueDateValue && parseIterationEndDate) {
+      dueDateValue = parseIterationEndDate.toISOString().split('T')[0];
+      dueDateSource = 'iteration.endDate';
+    }
+    
+    if (!dueDateValue) {
+      console.log(`Card ${card.key} has no dueDate field and no iteration range`);
+      return false;
+    }
+    
+    try {
+      const dueDate = new Date(dueDateValue);
+      if (isNaN(dueDate.getTime())) {
+        console.log(`Card ${card.key} has invalid dueDate: ${dueDateValue} (from ${dueDateSource})`);
+        return false;
+      }
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      dueDate.setHours(0, 0, 0, 0);
+      
+      // Only show as overdue if status is not done/released
+      const isDoneStatus = card.statusCategory === 'done' || 
+                           card.status?.toLowerCase().includes('done') || 
+                           card.status?.toLowerCase().includes('released');
+      
+      const overdue = dueDate < today && !isDoneStatus;
+      
+      if (overdue) {
+        console.log(`Card ${card.key} is overdue: dueDate=${dueDateValue} (from ${dueDateSource}), status=${card.status}, statusCategory=${card.statusCategory}`);
+      }
+      
+      return overdue;
+    } catch (error) {
+      console.error(`Error checking overdue for ${card.key}:`, error);
+      return false;
+    }
+  }, [card.dueDate, card.status, card.statusCategory, card.key, parseIterationEndDate]);
+  
   return (
     <Card sx={{ 
       bgcolor: isPlaceholder ? '#f8f9fa' : '#fff', 
-      border: isPlaceholder ? '2px dashed #6c757d' : '1px solid #dee2e6', 
+      border: isOverdue 
+        ? '2px solid #dc3545' 
+        : isPlaceholder 
+          ? '2px dashed #6c757d' 
+          : '1px solid #dee2e6', 
       borderRadius: 1, 
       boxShadow: isPlaceholder ? 0 : 1, 
       mb: 2, 
@@ -335,16 +428,25 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
           <Typography variant="caption" sx={{ color: '#212529', fontWeight: 500, flexShrink: 0 }}>{team}</Typography>
         </Box>
         <Box display="flex" alignItems="center" gap={1} mb={1}>
-          <Chip label={card.status} size="small" sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500, borderRadius: 1 }} />
+          <Chip 
+            label={card.status} 
+            size="small" 
+            sx={{ 
+              bgcolor: statusColors[card.status] || '#f3f4f6', 
+              color: statusColors[card.status] ? '#fff' : '#212529', 
+              fontWeight: 500, 
+              borderRadius: 1 
+            }} 
+          />
         </Box>
         
         {/* Progress bar - always visible */}
         <Box display="flex" alignItems="center" gap={1} mb={1}>
           <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#495057', fontWeight: 500 }}>{doneCount}/{totalCount}</Typography>
-          <span style={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: 18, verticalAlign: 'middle' }}>{pct === 100 ? '✔️' : pct > 0 ? '⏳' : '⚠️'}</span>
-          <Typography variant="body2" fontWeight={600} sx={{ color: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: '0.875rem' }}>{pct}%</Typography>
+          <span style={{ color: pct === 100 ? '#32cd32' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: 18, verticalAlign: 'middle' }}>{pct === 100 ? '✔️' : pct > 0 ? '⏳' : '⚠️'}</span>
+          <Typography variant="body2" fontWeight={600} sx={{ color: pct === 100 ? '#32cd32' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: '0.875rem' }}>{pct}%</Typography>
         </Box>
-        <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: pct === 100 ? '#198754' : pct > 0 ? '#fd7e14' : '#dc3545' } }} />
+        <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: pct === 100 ? '#32cd32' : pct > 0 ? '#fd7e14' : '#dc3545' } }} />
         
         {!isMinimized && (
           <>
@@ -386,7 +488,12 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize }: {
                       <Chip 
                         label={story.status} 
                         size="small" 
-                        sx={{ bgcolor: '#f3f4f6', color: '#212529', fontWeight: 500, borderRadius: 1 }} 
+                        sx={{ 
+                          bgcolor: statusColors[story.status] || '#f3f4f6', 
+                          color: statusColors[story.status] ? '#fff' : '#212529', 
+                          fontWeight: 500, 
+                          borderRadius: 1 
+                        }} 
                         onClick={() => console.log(`Story ${story.key} status:`, story.status, 'statusCategory:', story.statusCategory)}
                       />
                     </li>
@@ -913,9 +1020,12 @@ export default function DemoPage() {
     });
   };
 
-  const handleDeleteCard = async (colKey: string, cardIndex: number) => {
-    const card = columns[colKey][cardIndex];
-    const cardId = `${colKey}-${card.key}-${cardIndex}`;
+  const handleDeleteCard = async (colKey: string, cardKey: string) => {
+    // Find the actual index in the unfiltered array
+    const cardIndex = columns[colKey].findIndex(card => card.key === cardKey);
+    if (cardIndex === -1) return; // Card not found
+    
+    const cardId = `${colKey}-${cardKey}`;
     
     const newColumns = {
       ...columns,
@@ -999,9 +1109,8 @@ export default function DemoPage() {
 
 
 
-  const handleToggleMinimize = (colKey: string, cardIndex: number) => {
-    const card = columns[colKey][cardIndex];
-    const cardId = `${colKey}-${card.key}-${cardIndex}`;
+  const handleToggleMinimize = (colKey: string, cardKey: string) => {
+    const cardId = `${colKey}-${cardKey}`;
     
     setMinimizedCards(prev => {
       const newSet = new Set(prev);
@@ -1200,6 +1309,48 @@ export default function DemoPage() {
                 card.team = fields.customfield_10014;
               } else if (fields.customfield_10001 && fields.customfield_10001.name) {
                 card.team = fields.customfield_10001.name;
+              }
+              
+              // Update due date if available (check standard dueDate field and common custom fields)
+              // Try multiple possible field names/IDs
+              console.log(`Checking due date fields for ${card.key}:`, Object.keys(fields).filter(k => k.toLowerCase().includes('due')));
+              
+              if (fields.duedate) {
+                card.dueDate = fields.duedate;
+                console.log(`Found due date (duedate) for ${card.key}: ${card.dueDate}`);
+              } else if (fields.dueDate) {
+                card.dueDate = fields.dueDate;
+                console.log(`Found due date (dueDate) for ${card.key}: ${card.dueDate}`);
+              } else {
+                // Check all custom fields for a date field that might be the due date
+                // Look for fields that contain "due" in the name (case insensitive)
+                const fieldKeys = Object.keys(fields);
+                const dueDateField = fieldKeys.find(key => {
+                  const keyLower = key.toLowerCase();
+                  return keyLower.includes('due') && 
+                         fields[key] && 
+                         (typeof fields[key] === 'string' || typeof fields[key] === 'object');
+                });
+                if (dueDateField) {
+                  // Handle both string dates and date objects
+                  const dateValue = fields[dueDateField];
+                  card.dueDate = typeof dateValue === 'string' ? dateValue : (dateValue?.toString() || dateValue);
+                  console.log(`Found due date field: ${dueDateField} = ${card.dueDate} for ${card.key}`);
+                } else {
+                  // Check common custom field IDs for date-like values
+                  for (let i = 10000; i <= 10100; i++) {
+                    const fieldKey = `customfield_${i}`;
+                    const fieldValue = fields[fieldKey];
+                    if (fieldValue) {
+                      const valueStr = typeof fieldValue === 'string' ? fieldValue : (fieldValue?.toString() || '');
+                      if (valueStr.match(/\d{4}-\d{2}-\d{2}/)) {
+                        card.dueDate = valueStr;
+                        console.log(`Found due date in custom field: ${fieldKey} = ${card.dueDate} for ${card.key}`);
+                        break;
+                      }
+                    }
+                  }
+                }
               }
               
               // Process relationship data for the main card
@@ -1497,8 +1648,8 @@ export default function DemoPage() {
             onClick={() => {
               const allCardIds = new Set<string>();
               Object.entries(columns).forEach(([colKey, cards]) => {
-                cards.forEach((card, idx) => {
-                  allCardIds.add(`${colKey}-${card.key}-${idx}`);
+                cards.forEach((card) => {
+                  allCardIds.add(`${colKey}-${card.key}`);
                 });
               });
               setMinimizedCards(allCardIds);
@@ -1684,42 +1835,6 @@ export default function DemoPage() {
           >
             New Board
           </Button>
-          
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={async () => {
-              try {
-                console.log('Testing ADVICE-1210 as child of ADVICE-100...');
-                const result = await testChildIssue('ADVICE-100', 'ADVICE-1210');
-                console.log('Test result:', result);
-                setNotification({
-                  open: true,
-                  message: `Test completed. Check console for details.`,
-                  severity: 'info'
-                });
-              } catch (error) {
-                console.error('Test failed:', error);
-                setNotification({
-                  open: true,
-                  message: `Test failed: ${error}`,
-                  severity: 'error'
-                });
-              }
-            }}
-            sx={{
-              borderColor: '#28a745',
-              color: '#28a745',
-              fontWeight: 600,
-              '&:hover': {
-                borderColor: '#218838',
-                backgroundColor: 'rgba(40, 167, 69, 0.1)'
-              },
-              textTransform: 'none',
-            }}
-          >
-            Test ADVICE-1210
-          </Button>
 
         </Box>
 
@@ -1743,7 +1858,7 @@ export default function DemoPage() {
           const notStarted = allStories.filter((s: any) => getStatusCategory(s.status) === 'new').length;
           const pct = total > 0 ? Math.round((done / total) * 100) : 0;
           let barColor = '#e9ecef';
-          if (pct === 100 && total > 0) barColor = '#198754';
+          if (pct === 100 && total > 0) barColor = '#32cd32';
           else if (pct > 0) barColor = '#fd7e14';
           else if (total > 0) barColor = '#dc3545';
           let statusMsg = 'On Track';
@@ -1764,7 +1879,7 @@ export default function DemoPage() {
               </Box>
               <Box display="flex" gap={4} mb={2}>
                 <Typography variant="body1" sx={{ color: '#212529' }}>Total: <b>{total}</b></Typography>
-                <Typography variant="body1" sx={{ color: '#198754' }}>Done: <b>{done}</b></Typography>
+                <Typography variant="body1" sx={{ color: '#32cd32' }}>Done: <b>{done}</b></Typography>
                 <Typography variant="body1" sx={{ color: '#fd7e14' }}>In Progress: <b>{inProgress}</b></Typography>
                 <Typography variant="body1" sx={{ color: '#6c757d' }}>Not Started: <b>{notStarted}</b></Typography>
               </Box>
@@ -1828,7 +1943,7 @@ export default function DemoPage() {
                         
                         await saveBoardDataToPublic(boardData, fileName);
                       }}
-                      sx={{ color: '#198754' }}
+                      sx={{ color: '#32cd32' }}
                     >
                       <Save />
                     </IconButton>
@@ -1874,7 +1989,7 @@ export default function DemoPage() {
               const done = allStories.filter((s: any) => getStatusCategory(s.status) === 'done').length;
               const pct = total > 0 ? Math.round((done / total) * 100) : 0;
               let barColor = '#e9ecef';
-              if (pct === 100 && total > 0) barColor = '#198754';
+              if (pct === 100 && total > 0) barColor = '#32cd32';
               else if (pct > 0) barColor = '#fd7e14';
               else if (total > 0) barColor = '#dc3545';
               return (
@@ -1892,15 +2007,16 @@ export default function DemoPage() {
             })()}
             <Box flex={1} mb={2}>
               {columns[iter.key].filter(cardMatchesTeamFilter).map((card, idx) => {
-                const cardId = `${iter.key}-${card.key}-${idx}`;
+                const cardId = `${iter.key}-${card.key}`;
                 const isMinimized = minimizedCards.has(cardId);
                 return (
                   <DemoCard 
-                    key={idx} 
+                    key={card.key || idx} 
                     card={card} 
-                    onDelete={() => handleDeleteCard(iter.key, idx)}
+                    onDelete={() => handleDeleteCard(iter.key, card.key)}
                     isMinimized={isMinimized}
-                    onToggleMinimize={() => handleToggleMinimize(iter.key, idx)}
+                    onToggleMinimize={() => handleToggleMinimize(iter.key, card.key)}
+                    iterationRange={iter.range}
                   />
                 );
               })}
