@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import { Close, ExpandMore, ExpandLess, Edit, Save, Cancel } from '@mui/icons-material';
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, Paper, List, ListItem, ListItemButton, ListItemText as MuiListItemText, InputAdornment } from '@mui/material';
+import { Close, ExpandMore, ExpandLess, Edit, Save, Cancel, Search } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource, getAllAvailableBoards } from '../lib/dataService';
@@ -25,17 +25,40 @@ const teamColorMap: Record<string, string> = {
   // Add more known teams and colors as needed
 };
 
+// Simplified color palette
+const colors = {
+  // Status colors
+  notStarted: '#dc3545',    // Red
+  inProgress: '#fd7e14',    // Orange
+  done: '#32cd32',          // Green (lime)
+  neutral: '#6c757d',       // Gray
+  
+  // UI colors
+  primary: '#0d6efd',       // Blue
+  text: '#212529',          // Dark gray
+  textSecondary: '#495057', // Medium gray
+  border: '#dee2e6',        // Light gray
+  borderHover: '#adb5bd',  // Medium gray (for hover states)
+  background: '#f8f9fa',    // Very light gray
+  white: '#fff',
+  
+  // Special states
+  overdue: '#dc3545',       // Red (same as notStarted)
+  placeholder: '#6c757d',   // Gray
+  success: '#28a745'        // Green (for success actions)
+};
+
 const statusColors: Record<string, string> = {
-  'To Do': '#dc3545',
-  'In Progress': '#fd7e14', 
-  'Done': '#32cd32',
-  'Released': '#32cd32',
-  'Ready': '#6c757d',
-  'Ready for Release': '#6c757d',
-  'Creating': '#fd7e14',
-  'Validating': '#0d6efd',
-  'UAT': '#fd7e14',
-  'default': '#6c757d'
+  'To Do': colors.notStarted,
+  'In Progress': colors.inProgress, 
+  'Done': colors.done,
+  'Released': colors.done,
+  'Ready': colors.neutral,
+  'Ready for Release': colors.neutral,
+  'Creating': colors.inProgress,
+  'Validating': colors.inProgress,
+  'UAT': colors.inProgress,
+  'default': colors.neutral
 };
 
 function getStatusCategory(status: string): string {
@@ -80,7 +103,7 @@ function getStatusCategory(status: string): string {
 }
 
 function getColorForTeam(team: string) {
-  if (!team) return '#6c757d'; // Default gray color for undefined/null teams
+  if (!team) return colors.neutral; // Default gray color for undefined/null teams
   if (teamColorMap[team]) return teamColorMap[team];
   let hash = 0;
   for (let i = 0; i < team.length; i++) {
@@ -134,8 +157,8 @@ function StatusChart({ columns, iterations }: { columns: Record<string, any[]>; 
 
   return (
     <Card sx={{ 
-      bgcolor: '#fff', 
-      border: '1px solid #dee2e6', 
+      bgcolor: colors.white, 
+      border: `1px solid ${colors.border}`, 
       borderRadius: 1, 
       boxShadow: 1, 
       mb: 4,
@@ -143,7 +166,7 @@ function StatusChart({ columns, iterations }: { columns: Record<string, any[]>; 
       mx: 'auto'
     }}>
       <CardContent sx={{ p: 3 }}>
-        <Typography variant="h6" fontWeight={600} sx={{ color: '#212529', mb: 3 }}>
+        <Typography variant="h6" fontWeight={600} sx={{ color: colors.text, mb: 3 }}>
           Child Stories Status Distribution by Iteration
         </Typography>
         
@@ -168,7 +191,7 @@ function StatusChart({ columns, iterations }: { columns: Record<string, any[]>; 
 
             sx={{
               '& .MuiChartsBar-label': {
-                fill: '#212529',
+                fill: colors.text,
                 fontSize: '0.75rem',
                 fontWeight: 600
               }
@@ -178,12 +201,12 @@ function StatusChart({ columns, iterations }: { columns: Record<string, any[]>; 
 
         {/* Summary Table */}
         <Box sx={{ 
-          bgcolor: '#f8f9fa', 
+          bgcolor: colors.background, 
           borderRadius: 1, 
           p: 2, 
-          border: '1px solid #e9ecef'
+          border: `1px solid ${colors.border}`
         }}>
-          <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mb: 2 }}>
+          <Typography variant="subtitle2" sx={{ color: colors.text, fontWeight: 600, mb: 2 }}>
             Summary by Status (Child Stories)
           </Typography>
           <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
@@ -199,14 +222,14 @@ function StatusChart({ columns, iterations }: { columns: Record<string, any[]>; 
                       bgcolor: statusColors[status] || statusColors.default
                     }}
                   />
-                  <Typography variant="body2" sx={{ color: '#212529', fontWeight: 500 }}>
+                  <Typography variant="body2" sx={{ color: colors.text, fontWeight: 500 }}>
                     {status}: {total}
                   </Typography>
                 </Box>
               );
             })}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 'auto' }}>
-              <Typography variant="body2" sx={{ color: '#212529', fontWeight: 600 }}>
+              <Typography variant="body2" sx={{ color: colors.text, fontWeight: 600 }}>
                 Total: {chartData.reduce((sum, data) => sum + data['new'] + data['indeterminate'] + data['done'], 0)}
               </Typography>
             </Box>
@@ -217,12 +240,15 @@ function StatusChart({ columns, iterations }: { columns: Record<string, any[]>; 
   );
 }
 
-function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRange }: {
+function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRange, isHighlighted, cardRef, highlightedChildKey }: {
   card: any; 
   onDelete: () => void; 
   isMinimized: boolean;
   onToggleMinimize: () => void;
   iterationRange?: string;
+  isHighlighted?: boolean;
+  cardRef?: (el: HTMLDivElement | null) => void;
+  highlightedChildKey?: string | null;
 }) {
   // Show all child stories when card is visible (team filtering is handled at card level)
   const filteredStories = React.useMemo(() => {
@@ -327,27 +353,74 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
     }
   }, [card.dueDate, card.status, card.statusCategory, card.key, parseIterationEndDate]);
   
+  // Determine border and shadow styles based on overdue and highlighted states
+  const getBorderStyle = () => {
+    if (isOverdue && isHighlighted) {
+      // Both overdue and highlighted: double border effect - red outer, blue inner
+      return {
+        border: `3px solid ${colors.overdue}`,
+        boxShadow: `
+          0 0 0 3px rgba(220, 53, 69, 0.4),
+          0 0 0 6px rgba(13, 110, 253, 0.5),
+          0 0 0 9px rgba(220, 53, 69, 0.2),
+          0 6px 16px rgba(220, 53, 69, 0.5),
+          0 0 24px rgba(13, 110, 253, 0.4)
+        `,
+        padding: '3px',
+      };
+    } else if (isOverdue) {
+      // Only overdue: red border
+      return {
+        border: `3px solid ${colors.overdue}`,
+        boxShadow: `0 0 0 3px rgba(220, 53, 69, 0.3), 0 4px 12px rgba(220, 53, 69, 0.4)`,
+        padding: '2px',
+      };
+    } else if (isHighlighted) {
+      // Only highlighted: blue border
+      return {
+        border: `3px solid ${colors.primary}`,
+        boxShadow: `0 0 0 3px rgba(13, 110, 253, 0.3), 0 4px 12px rgba(13, 110, 253, 0.4)`,
+        padding: '2px',
+      };
+    }
+    // Neither: no border
+    return {
+      border: 'none',
+      boxShadow: 'none',
+      padding: '0',
+    };
+  };
+
+  const borderStyle = getBorderStyle();
+
   return (
-    <Card sx={{ 
-      bgcolor: isPlaceholder ? '#f8f9fa' : '#fff', 
-      border: isOverdue 
-        ? '2px solid #dc3545' 
-        : isPlaceholder 
-          ? '2px dashed #6c757d' 
-          : '1px solid #dee2e6', 
-      borderRadius: 1, 
-      boxShadow: isPlaceholder ? 0 : 1, 
-      mb: 2, 
-      position: 'relative',
-      opacity: isPlaceholder ? 0.8 : 1
-    }}>
+    <Box 
+      ref={cardRef}
+      sx={{ 
+        mb: 2,
+        ...borderStyle,
+        borderRadius: 1,
+        position: 'relative',
+        transition: 'all 0.3s ease-in-out'
+      }}>
+      <Card sx={{ 
+        bgcolor: isPlaceholder ? colors.background : colors.white, 
+        border: isPlaceholder 
+          ? `2px dashed ${colors.placeholder}` 
+          : `1px solid ${colors.border}`, 
+        borderRadius: 1, 
+        boxShadow: isPlaceholder ? 0 : 1, 
+        mb: 0, 
+        position: 'relative',
+        opacity: isPlaceholder ? 0.8 : 1
+      }}>
       <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 0.5, zIndex: 1 }}>
         <Tooltip title={isMinimized ? "Expand card" : "Minimize card"}>
           <IconButton
             size="small"
             onClick={onToggleMinimize}
             sx={{ 
-              color: '#6c757d', 
+              color: colors.neutral, 
               bgcolor: 'rgba(108, 117, 125, 0.1)',
               borderRadius: 1,
               '&:hover': { bgcolor: 'rgba(108, 117, 125, 0.2)' }
@@ -362,7 +435,7 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
             size="small"
             onClick={onReload}
             sx={{ 
-              color: '#0d6efd', 
+              color: colors.primary, 
               bgcolor: 'rgba(13, 110, 253, 0.1)',
               borderRadius: 1,
               '&:hover': { bgcolor: 'rgba(13, 110, 253, 0.2)' }
@@ -377,7 +450,7 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
             size="small"
             onClick={onDelete}
             sx={{ 
-              color: '#dc3545', 
+              color: colors.notStarted, 
               bgcolor: 'rgba(220, 53, 69, 0.1)',
               borderRadius: 1,
               '&:hover': { bgcolor: 'rgba(220, 53, 69, 0.2)' }
@@ -389,12 +462,12 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
       </Box>
       <CardContent sx={{ p: 2, pr: isMinimized ? 8 : 6 }}>
         <Box display="flex" alignItems="center" gap={1} mb={1}>
-          <Typography variant="subtitle1" fontWeight={600} sx={{ color: isPlaceholder ? '#6c757d' : '#0d6efd', flex: 1, minWidth: 0 }}>
+          <Typography variant="subtitle1" fontWeight={600} sx={{ color: isPlaceholder ? colors.placeholder : colors.primary, flex: 1, minWidth: 0 }}>
             {card.key ? (
               isPlaceholder ? (
-                <span style={{ color: '#6c757d', fontWeight: 600 }}>{card.key}</span>
+                <span style={{ color: colors.placeholder, fontWeight: 600 }}>{card.key}</span>
               ) : (
-                <a href={card.url} target="_blank" rel="noopener noreferrer" style={{ color: '#0d6efd', textDecoration: 'none', fontWeight: 600 }}>{card.key}</a>
+                <a href={card.url} target="_blank" rel="noopener noreferrer" style={{ color: colors.primary, textDecoration: 'none', fontWeight: 600 }}>{card.key}</a>
               )
             ) : card.name}
           </Typography>
@@ -403,8 +476,8 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
               label="Placeholder" 
               size="small" 
               sx={{ 
-                bgcolor: '#6c757d', 
-                color: '#fff', 
+                bgcolor: colors.placeholder, 
+                color: colors.white, 
                 fontWeight: 500, 
                 borderRadius: 1,
                 fontSize: '0.7rem'
@@ -420,59 +493,73 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
               height: 16,
               borderRadius: '50%',
               background: getColorForTeam(team),
-              border: '1.5px solid #fff',
-              boxShadow: '0 0 0 1px #dee2e6',
+              border: `1.5px solid ${colors.white}`,
+              boxShadow: `0 0 0 1px ${colors.border}`,
               flexShrink: 0
             }} />
           </Tooltip>
-          <Typography variant="caption" sx={{ color: '#212529', fontWeight: 500, flexShrink: 0 }}>{team}</Typography>
+          <Typography variant="caption" sx={{ color: colors.text, fontWeight: 500, flexShrink: 0 }}>{team}</Typography>
         </Box>
-        <Box display="flex" alignItems="center" gap={1} mb={1}>
+        <Box display="flex" alignItems="center" gap={1} mb={1} sx={{ flexWrap: 'wrap' }}>
           <Chip 
             label={card.status} 
             size="small" 
             sx={{ 
-              bgcolor: statusColors[card.status] || '#f3f4f6', 
-              color: statusColors[card.status] ? '#fff' : '#212529', 
+              bgcolor: statusColors[card.status] || colors.background, 
+              color: statusColors[card.status] ? colors.white : colors.text, 
               fontWeight: 500, 
               borderRadius: 1 
             }} 
           />
+          {(card.storyPoints !== undefined && card.storyPoints !== null) && (
+            <Chip 
+              label={`${card.storyPoints} SP`} 
+              size="small" 
+              sx={{ 
+                bgcolor: colors.background, 
+                color: colors.text, 
+                fontWeight: 600, 
+                borderRadius: 1,
+                border: `1px solid ${colors.border}`,
+                fontSize: '0.75rem'
+              }} 
+            />
+          )}
         </Box>
         
         {/* Progress bar - always visible */}
         <Box display="flex" alignItems="center" gap={1} mb={1}>
-          <Typography variant="body2" sx={{ fontSize: '0.75rem', color: '#495057', fontWeight: 500 }}>{doneCount}/{totalCount}</Typography>
-          <span style={{ color: pct === 100 ? '#32cd32' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: 18, verticalAlign: 'middle' }}>{pct === 100 ? '✔️' : pct > 0 ? '⏳' : '⚠️'}</span>
-          <Typography variant="body2" fontWeight={600} sx={{ color: pct === 100 ? '#32cd32' : pct > 0 ? '#fd7e14' : '#dc3545', fontSize: '0.875rem' }}>{pct}%</Typography>
+          <Typography variant="body2" sx={{ fontSize: '0.75rem', color: colors.textSecondary, fontWeight: 500 }}>{doneCount}/{totalCount}</Typography>
+          <span style={{ color: pct === 100 ? colors.done : pct > 0 ? colors.inProgress : colors.notStarted, fontSize: 18, verticalAlign: 'middle' }}>{pct === 100 ? '✔️' : pct > 0 ? '⏳' : '⚠️'}</span>
+          <Typography variant="body2" fontWeight={600} sx={{ color: pct === 100 ? colors.done : pct > 0 ? colors.inProgress : colors.notStarted, fontSize: '0.875rem' }}>{pct}%</Typography>
         </Box>
-        <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: pct === 100 ? '#32cd32' : pct > 0 ? '#fd7e14' : '#dc3545' } }} />
+        <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 1, background: colors.border, '& .MuiLinearProgress-bar': { background: pct === 100 ? colors.done : pct > 0 ? colors.inProgress : colors.notStarted } }} />
         
         {!isMinimized && (
           <>
-            <Typography variant="body2" sx={{ color: '#495057', fontSize: '0.95em', mb: 1, mt: 1 }}>
+            <Typography variant="body2" sx={{ color: colors.textSecondary, fontSize: '0.95em', mb: 1, mt: 1 }}>
               {card.summary || 'Card subtitle or description'}
             </Typography>
             {filteredStories && filteredStories.length > 0 && (
               <Box mt={2}>
-                <Typography variant="subtitle2" sx={{ color: '#212529', fontWeight: 600, mb: 1 }}>Child work items</Typography>
+                <Typography variant="subtitle2" sx={{ color: colors.text, fontWeight: 600, mb: 1 }}>Child work items</Typography>
                 <Box component="ul" sx={{ pl: 2, m: 0 }}>
                   {filteredStories.map((story: any) => (
-                    <li key={story.key} style={{ marginBottom: 4 }}>
+                    <li key={story.key} style={{ marginBottom: 4, background: highlightedChildKey === story.key ? 'rgba(13, 110, 253, 0.08)' : 'transparent', borderRadius: 4, padding: highlightedChildKey === story.key ? 4 : 0 }}>
                       <a 
                         href={'https://magmutual.atlassian.net/browse/' + story.key}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ 
                           fontWeight: 600, 
-                          color: '#0d6efd', 
+                          color: colors.primary, 
                           marginRight: 8,
                           textDecoration: 'none'
                         }}
                       >
                         {story.key}
                       </a>
-                      <span style={{ color: '#495057', marginRight: 8 }}>{story.summary}</span>
+                      <span style={{ color: colors.textSecondary, marginRight: 8 }}>{story.summary}</span>
                       <Tooltip title={story.team} placement="top">
                         <span style={{
                           display: 'inline-block',
@@ -480,8 +567,8 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
                           height: 12,
                           borderRadius: '50%',
                           background: getColorForTeam(story.team),
-                          border: '1px solid #fff',
-                          boxShadow: '0 0 0 1px #dee2e6',
+                          border: `1px solid ${colors.white}`,
+                          boxShadow: `0 0 0 1px ${colors.border}`,
                           marginRight: 4
                         }} />
                       </Tooltip>
@@ -489,13 +576,28 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
                         label={story.status} 
                         size="small" 
                         sx={{ 
-                          bgcolor: statusColors[story.status] || '#f3f4f6', 
-                          color: statusColors[story.status] ? '#fff' : '#212529', 
+                          bgcolor: statusColors[story.status] || colors.background, 
+                          color: statusColors[story.status] ? colors.white : colors.text, 
                           fontWeight: 500, 
-                          borderRadius: 1 
+                          borderRadius: 1,
+                          marginRight: 4
                         }} 
                         onClick={() => console.log(`Story ${story.key} status:`, story.status, 'statusCategory:', story.statusCategory)}
                       />
+                      {(story.storyPoints !== undefined && story.storyPoints !== null) && (
+                        <Chip 
+                          label={`${story.storyPoints} SP`} 
+                          size="small" 
+                          sx={{ 
+                            bgcolor: colors.background, 
+                            color: colors.text, 
+                            fontWeight: 600, 
+                            borderRadius: 1,
+                            border: `1px solid ${colors.border}`,
+                            fontSize: '0.75rem'
+                          }} 
+                        />
+                      )}
                     </li>
                   ))}
                 </Box>
@@ -505,6 +607,7 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
         )}
       </CardContent>
     </Card>
+    </Box>
   );
 }
 
@@ -540,6 +643,10 @@ export default function DemoPage() {
   const [editingIteration, setEditingIteration] = useState<string | null>(null);
   const [editingIterationTitle, setEditingIterationTitle] = useState('');
   const [editingIterationRange, setEditingIterationRange] = useState('');
+  // New: date pickers state + validation for iteration range
+  const [editingIterationStart, setEditingIterationStart] = useState<string>('');
+  const [editingIterationEnd, setEditingIterationEnd] = useState<string>('');
+  const [editingRangeError, setEditingRangeError] = useState<string>('');
   const [showNewBoardDialog, setShowNewBoardDialog] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
   const [notification, setNotification] = useState<{
@@ -551,6 +658,13 @@ export default function DemoPage() {
     message: '',
     severity: 'info'
   });
+  
+  // Global search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Array<{ card: any; iterationKey: string; cardId: string; source: 'card' | 'child'; childKey?: string; childSummary?: string }>>([]);
+  const [highlightedCardId, setHighlightedCardId] = useState<string | null>(null);
+  const [highlightedChildKey, setHighlightedChildKey] = useState<string | null>(null);
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // Debug effect to log when showJiraConfig changes
   useEffect(() => {
@@ -587,6 +701,140 @@ export default function DemoPage() {
     }
     return false;
   }
+
+  // Global search function
+  const performSearch = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return [];
+    }
+    
+    const query = searchQuery.toLowerCase().trim();
+    const results: Array<{ card: any; iterationKey: string; cardId: string; source: 'card' | 'child'; childKey?: string; childSummary?: string }> = [];
+    
+    Object.entries(columns).forEach(([iterationKey, cards]) => {
+      cards.forEach((card) => {
+        const cardId = `${iterationKey}-${card.key}`;
+        let matches = false;
+        
+        // Search by key
+        if (card.key && card.key.toLowerCase().includes(query)) {
+          matches = true;
+        }
+        
+        // Search by summary
+        if (card.summary && card.summary.toLowerCase().includes(query)) {
+          matches = true;
+        }
+        
+        // Search by assignee
+        if (card.assignee && card.assignee.toLowerCase().includes(query)) {
+          matches = true;
+        }
+        
+        if (matches) {
+          results.push({ card, iterationKey, cardId, source: 'card' });
+        }
+
+        // Search child work items
+        if (Array.isArray(card.stories) && card.stories.length > 0) {
+          for (const story of card.stories) {
+            const sKey = story.key?.toLowerCase?.() || '';
+            const sSummary = story.summary?.toLowerCase?.() || '';
+            const sTeam = story.team?.toLowerCase?.() || '';
+            const sAssignee = (story.assignee?.displayName || story.assignee)?.toLowerCase?.() || '';
+            if (
+              (sKey && sKey.includes(query)) ||
+              (sSummary && sSummary.includes(query)) ||
+              (sTeam && sTeam.includes(query)) ||
+              (sAssignee && sAssignee.includes(query))
+            ) {
+              results.push({
+                card,
+                iterationKey,
+                cardId,
+                source: 'child',
+                childKey: story.key,
+                childSummary: story.summary,
+              });
+            }
+          }
+        }
+      });
+    });
+    
+    return results;
+  }, [searchQuery, columns]);
+
+  // Update search results when search query or columns change
+  useEffect(() => {
+    setSearchResults(performSearch);
+  }, [performSearch]);
+
+  // Keyboard shortcut for search (Ctrl/Cmd+K)
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Ctrl+K (Windows/Linux) or Cmd+K (Mac)
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      // Escape to clear search
+      if (e.key === 'Escape' && searchQuery) {
+        setSearchQuery('');
+        setSearchResults([]);
+        searchInputRef.current?.blur();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [searchQuery]);
+
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        // Don't close if clicking on search results
+        if (searchResults.length > 0 && (event.target as HTMLElement).closest('[role="listbox"]')) {
+          return;
+        }
+        // Only clear if not actively searching
+        if (!searchInputRef.current?.matches(':focus')) {
+          setSearchResults([]);
+        }
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [searchResults]);
+
+  // Handle navigation to a card
+  const navigateToCard = (cardId: string, childKey?: string) => {
+    setSearchQuery('');
+    setSearchResults([]);
+    
+    // Small delay to ensure DOM is ready
+    setTimeout(() => {
+      // Scroll to the card
+      const cardElement = cardRefs.current[cardId];
+      if (cardElement) {
+        // Highlight the card temporarily
+        setHighlightedCardId(cardId);
+        setTimeout(() => setHighlightedCardId(null), 3000);
+        if (childKey) {
+          setHighlightedChildKey(childKey);
+          setTimeout(() => setHighlightedChildKey(null), 3000);
+        }
+        
+        // Scroll into view with smooth behavior
+        cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  };
 
   // Function to load data from selected data source
   // Function to process relationship data for all cards (temporarily disabled)
@@ -1311,6 +1559,14 @@ export default function DemoPage() {
                 card.team = fields.customfield_10001.name;
               }
               
+              // Update story points if available
+              if (fields.customfield_10016 !== undefined && fields.customfield_10016 !== null) {
+                card.storyPoints = fields.customfield_10016;
+                console.log(`Updated story points for ${card.key}: ${card.storyPoints}`);
+              } else {
+                console.log(`No story points found for ${card.key} (customfield_10016: ${fields.customfield_10016})`);
+              }
+              
               // Update due date if available (check standard dueDate field and common custom fields)
               // Try multiple possible field names/IDs
               console.log(`Checking due date fields for ${card.key}:`, Object.keys(fields).filter(k => k.toLowerCase().includes('due')));
@@ -1406,6 +1662,9 @@ export default function DemoPage() {
                     const newTeam = childIssue.fields.customfield_10014 || 
                                     (childIssue.fields.customfield_10001 && childIssue.fields.customfield_10001.name) || 
                                     'Unknown Team';
+                    const newStoryPoints = childIssue.fields.customfield_10016 !== undefined && childIssue.fields.customfield_10016 !== null 
+                      ? childIssue.fields.customfield_10016 
+                      : undefined;
                     
                     // Process relationship data
                     const relationships = {
@@ -1453,6 +1712,7 @@ export default function DemoPage() {
                       status: newStatus,
                       statusCategory: newStatusCategory,
                       team: newTeam,
+                      storyPoints: newStoryPoints,
                       relationships
                     };
                   });
@@ -1557,10 +1817,10 @@ export default function DemoPage() {
 
   if (loading) {
     return (
-      <Box sx={{ background: '#f8f9fa', minHeight: '100vh', p: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ background: colors.background, minHeight: '100vh', p: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Box sx={{ textAlign: 'center' }}>
-          <CircularProgress sx={{ color: '#0d6efd', mb: 2 }} size={40} />
-          <Typography variant="body1" sx={{ color: '#212529', fontWeight: 600 }}>
+          <CircularProgress sx={{ color: colors.primary, mb: 2 }} size={40} />
+          <Typography variant="body1" sx={{ color: colors.text, fontWeight: 600 }}>
             Loading saved board state...
           </Typography>
         </Box>
@@ -1569,7 +1829,113 @@ export default function DemoPage() {
   }
 
   return (
-    <Box sx={{ background: '#f8f9fa', minHeight: '100vh', p: 4 }}>
+    <Box sx={{ background: colors.background, minHeight: '100vh', p: 4 }}>
+      {/* Global Search */}
+      <Box ref={searchContainerRef} sx={{ mb: 3, position: 'relative' }}>
+        <TextField
+          inputRef={searchInputRef}
+          fullWidth
+          size="medium"
+          placeholder="Search by key, summary, or assignee... (Ctrl/Cmd+K)"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search sx={{ color: colors.textSecondary }} />
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            backgroundColor: colors.white,
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: colors.border,
+              },
+              '&:hover fieldset': {
+                borderColor: colors.borderHover,
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: colors.primary,
+              },
+            },
+          }}
+        />
+        {searchResults.length > 0 && (
+          <Paper
+            sx={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              mt: 1,
+              maxHeight: 400,
+              overflow: 'auto',
+              zIndex: 1000,
+              boxShadow: 3,
+              border: `1px solid ${colors.border}`,
+            }}
+          >
+            <List dense>
+              {searchResults.map((result) => {
+                const iteration = iterations.find(iter => iter.key === result.iterationKey);
+                return (
+                  <ListItem key={`${result.cardId}-${result.childKey || 'parent'}`} disablePadding>
+                    <ListItemButton
+                      onClick={() => navigateToCard(result.cardId, result.childKey)}
+                      sx={{
+                        '&:hover': {
+                          backgroundColor: colors.background,
+                        },
+                      }}
+                    >
+                      <MuiListItemText
+                        primary={
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography variant="body2" fontWeight={600} sx={{ color: colors.primary }}>
+                              {result.source === 'child' ? result.childKey : result.card.key}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: colors.textSecondary }}>
+                              {iteration?.label || result.iterationKey}
+                            </Typography>
+                            {result.source === 'child' && (
+                              <Chip label="Child" size="small" sx={{ bgcolor: colors.background, border: `1px solid ${colors.border}`, height: 20 }} />
+                            )}
+                          </Box>
+                        }
+                        secondary={
+                          <Box>
+                            {result.source === 'child' ? (
+                              <>
+                                <Typography variant="body2" sx={{ color: colors.text, mt: 0.5 }}>
+                                  {result.childSummary || 'No summary'}
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: colors.textSecondary }}>
+                                  Parent: {result.card.key} — {result.card.summary}
+                                </Typography>
+                              </>
+                            ) : (
+                              <Typography variant="body2" sx={{ color: colors.text, mt: 0.5 }}>
+                                {result.card.summary || 'No summary'}
+                              </Typography>
+                            )}
+                            {result.card.assignee && (
+                              <Typography variant="caption" sx={{ color: colors.textSecondary }}>
+                                Assigned to: {result.card.assignee}
+                              </Typography>
+                            )}
+                          </Box>
+                        }
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Paper>
+        )}
+      </Box>
+      
       {/* Board Title UI */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -1597,7 +1963,7 @@ export default function DemoPage() {
                 '& .MuiInput-root': {
                   fontSize: '2rem',
                   fontWeight: 700,
-                  color: '#212529',
+                  color: colors.text,
                   '&:before': { borderBottom: 'none' },
                   '&:after': { borderBottom: 'none' },
                   '&:hover:before': { borderBottom: 'none' }
@@ -1610,11 +1976,11 @@ export default function DemoPage() {
               variant="h4" 
               fontWeight={700} 
               sx={{ 
-                color: '#212529', 
+                color: colors.text, 
                 cursor: 'pointer',
                 '&:hover': { 
                   textDecoration: 'underline',
-                  textDecorationColor: '#0d6efd'
+                  textDecorationColor: colors.primary
                 }
               }}
               onClick={() => setIsEditingTitle(true)}
@@ -1629,14 +1995,14 @@ export default function DemoPage() {
             size="small"
             onClick={() => setMinimizedCards(new Set())}
             sx={{ 
-              color: '#0d6efd',
-              borderColor: '#0d6efd',
+              color: colors.primary,
+              borderColor: colors.primary,
               fontWeight: 500,
               borderRadius: 1,
               '&:hover': {
-                backgroundColor: '#0d6efd',
-                color: '#ffffff',
-                borderColor: '#0d6efd'
+                backgroundColor: colors.primary,
+                color: colors.white,
+                borderColor: colors.primary
               }
             }}
           >
@@ -1655,14 +2021,14 @@ export default function DemoPage() {
               setMinimizedCards(allCardIds);
             }}
             sx={{ 
-              color: '#6c757d',
-              borderColor: '#6c757d',
+              color: colors.neutral,
+              borderColor: colors.neutral,
               fontWeight: 500,
               borderRadius: 1,
               '&:hover': {
-                backgroundColor: '#6c757d',
-                color: '#ffffff',
-                borderColor: '#6c757d'
+                backgroundColor: colors.neutral,
+                color: colors.white,
+                borderColor: colors.neutral
               }
             }}
           >
@@ -1678,13 +2044,13 @@ export default function DemoPage() {
             <InputLabel 
               id="data-source-label" 
               sx={{ 
-                color: '#495057', 
+                color: colors.textSecondary, 
                 fontWeight: 500,
                 '&.Mui-focused': {
-                  color: '#0d6efd',
+                  color: colors.primary,
                 },
                 '&.MuiInputLabel-shrink': {
-                  color: '#0d6efd',
+                  color: colors.primary,
                 }
               }}
             >
@@ -1696,18 +2062,18 @@ export default function DemoPage() {
               label="Data Source"
               onChange={(e) => setSelectedDataSource(e.target.value)}
               sx={{
-                backgroundColor: '#ffffff',
+                backgroundColor: colors.white,
                 '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#dee2e6',
+                  borderColor: colors.border,
                 },
                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#adb5bd',
+                  borderColor: colors.borderHover,
                 },
                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#0d6efd',
+                  borderColor: colors.primary,
                 },
                 '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#0d6efd',
+                  color: colors.primary,
                 },
               }}
             >
@@ -1730,13 +2096,13 @@ export default function DemoPage() {
             <InputLabel 
               id="team-filter-label" 
               sx={{ 
-                color: '#495057', 
+                color: colors.textSecondary, 
                 fontWeight: 500,
                 '&.Mui-focused': {
-                  color: '#0d6efd',
+                  color: colors.primary,
                 },
                 '&.MuiInputLabel-shrink': {
-                  color: '#0d6efd',
+                  color: colors.primary,
                 }
               }}
             >
@@ -1750,18 +2116,18 @@ export default function DemoPage() {
               input={<OutlinedInput label="Filter by Team" />}
               renderValue={(selected) => selected.length === 0 ? 'All Teams' : selected.join(', ')}
               sx={{
-                backgroundColor: '#ffffff',
+                backgroundColor: colors.white,
                 '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#dee2e6',
+                  borderColor: colors.border,
                 },
                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#adb5bd',
+                  borderColor: colors.borderHover,
                 },
                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#0d6efd',
+                  borderColor: colors.primary,
                 },
                 '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#0d6efd',
+                  color: colors.primary,
                 },
               }}
             >
@@ -1784,15 +2150,15 @@ export default function DemoPage() {
             disabled={refreshing}
             startIcon={refreshing ? <CircularProgress size={16} /> : <RefreshIcon />}
             sx={{
-              backgroundColor: '#0d6efd',
-              color: '#ffffff',
+              backgroundColor: colors.primary,
+              color: colors.white,
               fontWeight: 600,
               '&:hover': {
-                backgroundColor: '#0b5ed7',
+                backgroundColor: colors.primary,
               },
               '&:disabled': {
-                backgroundColor: '#6c757d',
-                color: '#ffffff',
+                backgroundColor: colors.neutral,
+                color: colors.white,
               },
               textTransform: 'none',
             }}
@@ -1805,11 +2171,11 @@ export default function DemoPage() {
             size="small"
             onClick={() => setShowMoveCardDialog(true)}
             sx={{
-              borderColor: '#6c757d',
-              color: '#6c757d',
+              borderColor: colors.neutral,
+              color: colors.neutral,
               fontWeight: 600,
               '&:hover': {
-                borderColor: '#5a6268',
+                borderColor: colors.neutral,
                 backgroundColor: 'rgba(108, 117, 125, 0.1)'
               },
               textTransform: 'none',
@@ -1823,11 +2189,11 @@ export default function DemoPage() {
             size="small"
             onClick={() => setShowNewBoardDialog(true)}
             sx={{
-              borderColor: '#28a745',
-              color: '#28a745',
+              borderColor: colors.success,
+              color: colors.success,
               fontWeight: 600,
               '&:hover': {
-                borderColor: '#218838',
+                borderColor: colors.success,
                 backgroundColor: 'rgba(40, 167, 69, 0.1)'
               },
               textTransform: 'none',
@@ -1841,7 +2207,7 @@ export default function DemoPage() {
 
       </Box>
       {/* PI Status Summary Box */}
-      <Box sx={{ mb: 4, maxWidth: 600, bgcolor: '#fff', border: '1px solid #dee2e6', borderRadius: 1, boxShadow: 1, p: 3 }}>
+      <Box sx={{ mb: 4, maxWidth: 600, bgcolor: colors.white, border: `1px solid ${colors.border}`, borderRadius: 1, boxShadow: 1, p: 3 }}>
         {(() => {
           // Gather all child stories across all iterations, filtered by team if filter is applied
           const allStories = Object.values(columns).flat().flatMap(card => {
@@ -1857,31 +2223,31 @@ export default function DemoPage() {
           const inProgress = allStories.filter((s: any) => getStatusCategory(s.status) === 'indeterminate').length;
           const notStarted = allStories.filter((s: any) => getStatusCategory(s.status) === 'new').length;
           const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-          let barColor = '#e9ecef';
-          if (pct === 100 && total > 0) barColor = '#32cd32';
-          else if (pct > 0) barColor = '#fd7e14';
-          else if (total > 0) barColor = '#dc3545';
+          let barColor = colors.border;
+          if (pct === 100 && total > 0) barColor = colors.done;
+          else if (pct > 0) barColor = colors.inProgress;
+          else if (total > 0) barColor = colors.notStarted;
           let statusMsg = 'On Track';
           if (pct < 50) statusMsg = 'Behind';
           else if (pct < 80) statusMsg = 'At Risk';
           return (
             <>
-              <Typography variant="h6" fontWeight={700} sx={{ color: '#212529', mb: 2 }}>PI Status Summary</Typography>
+              <Typography variant="h6" fontWeight={700} sx={{ color: colors.text, mb: 2 }}>PI Status Summary</Typography>
               <Box display="flex" alignItems="center" gap={2} mb={2}>
                 <Box flex={1}>
                   <LinearProgress
                     variant="determinate"
                     value={pct}
-                    sx={{ height: 12, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: barColor } }}
+                    sx={{ height: 12, borderRadius: 1, background: colors.border, '& .MuiLinearProgress-bar': { background: barColor } }}
                   />
                 </Box>
                 <Typography variant="h6" fontWeight={700} sx={{ color: barColor, minWidth: 72, textAlign: 'right' }}>{pct}% Done</Typography>
               </Box>
               <Box display="flex" gap={4} mb={2}>
-                <Typography variant="body1" sx={{ color: '#212529' }}>Total: <b>{total}</b></Typography>
-                <Typography variant="body1" sx={{ color: '#32cd32' }}>Done: <b>{done}</b></Typography>
-                <Typography variant="body1" sx={{ color: '#fd7e14' }}>In Progress: <b>{inProgress}</b></Typography>
-                <Typography variant="body1" sx={{ color: '#6c757d' }}>Not Started: <b>{notStarted}</b></Typography>
+                <Typography variant="body1" sx={{ color: colors.text }}>Total: <b>{total}</b></Typography>
+                <Typography variant="body1" sx={{ color: colors.done }}>Done: <b>{done}</b></Typography>
+                <Typography variant="body1" sx={{ color: colors.inProgress }}>In Progress: <b>{inProgress}</b></Typography>
+                <Typography variant="body1" sx={{ color: colors.neutral }}>Not Started: <b>{notStarted}</b></Typography>
               </Box>
               <Typography variant="subtitle1" fontWeight={600} sx={{ color: barColor }}>{statusMsg}</Typography>
             </>
@@ -1891,7 +2257,7 @@ export default function DemoPage() {
       {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
       <Box sx={{ display: 'flex', gap: 3, overflowX: 'auto', minWidth: 1200 }}>
         {iterations.map(iter => (
-          <Box key={iter.key} sx={{ minWidth: 320, background: '#fff', border: '1px solid #e9ecef', borderRadius: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 600 }}>
+          <Box key={iter.key} sx={{ minWidth: 320, background: colors.white, border: `1px solid ${colors.border}`, borderRadius: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 600 }}>
             <Box mb={2} position="relative">
               {editingIteration === iter.key ? (
                 <Box>
@@ -1903,21 +2269,67 @@ export default function DemoPage() {
                     placeholder="Iteration Title"
                     sx={{ mb: 1 }}
                   />
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={editingIterationRange}
-                    onChange={(e) => setEditingIterationRange(e.target.value)}
-                    placeholder="Date Range"
-                    sx={{ mb: 1 }}
-                  />
+                  {/* Date range pickers with validation */}
+                  <Box display="flex" gap={1} sx={{ mb: 1 }}>
+                    <TextField
+                      label="Start Date"
+                      type="date"
+                      fullWidth
+                      size="small"
+                      value={editingIterationStart}
+                      onChange={(e) => {
+                        setEditingIterationStart(e.target.value);
+                        // clear error and validate
+                        setEditingRangeError('');
+                        if (editingIterationEnd && e.target.value && new Date(e.target.value) > new Date(editingIterationEnd)) {
+                          setEditingRangeError('Start date must be on or before end date');
+                        }
+                      }}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                    <TextField
+                      label="End Date"
+                      type="date"
+                      fullWidth
+                      size="small"
+                      value={editingIterationEnd}
+                      onChange={(e) => {
+                        setEditingIterationEnd(e.target.value);
+                        setEditingRangeError('');
+                        if (editingIterationStart && e.target.value && new Date(e.target.value) < new Date(editingIterationStart)) {
+                          setEditingRangeError('End date must be on or after start date');
+                        }
+                      }}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Box>
+                  {editingRangeError && (
+                    <Typography variant="caption" color="error" sx={{ mb: 1, display: 'block' }}>{editingRangeError}</Typography>
+                  )}
                   <Box display="flex" gap={1}>
                     <IconButton
                       size="small"
                       onClick={async () => {
+                        // Compose range string from valid dates; fallback to existing range if needed
+                        let newRange = editingIterationRange;
+                        if (!editingRangeError && editingIterationStart && editingIterationEnd) {
+                          // Parse dates as local dates (not UTC) to avoid timezone issues
+                          const parseLocalDate = (dateStr: string) => {
+                            const [year, month, day] = dateStr.split('-').map(Number);
+                            return new Date(year, month - 1, day); // month is 0-indexed
+                          };
+                          const start = parseLocalDate(editingIterationStart);
+                          const end = parseLocalDate(editingIterationEnd);
+                          if (isNaN(start.getTime()) || isNaN(end.getTime()) || start > end) {
+                            setEditingRangeError('Please enter a valid date range');
+                            return;
+                          }
+                          const fmt = (d: Date) => d.toLocaleString(undefined, { month: 'long', day: 'numeric' });
+                          newRange = `${fmt(start)} - ${fmt(end)}`;
+                        }
                         const updated = iterations.map(i => 
                           i.key === iter.key 
-                            ? { ...i, label: editingIterationTitle, range: editingIterationRange }
+                            ? { ...i, label: editingIterationTitle, range: newRange }
                             : i
                         );
                         setIterations(updated);
@@ -1943,7 +2355,7 @@ export default function DemoPage() {
                         
                         await saveBoardDataToPublic(boardData, fileName);
                       }}
-                      sx={{ color: '#32cd32' }}
+                      sx={{ color: colors.done }}
                     >
                       <Save />
                     </IconButton>
@@ -1952,7 +2364,7 @@ export default function DemoPage() {
                       onClick={() => {
                         setEditingIteration(null);
                       }}
-                      sx={{ color: '#dc3545' }}
+                      sx={{ color: colors.notStarted }}
                     >
                       <Cancel />
                     </IconButton>
@@ -1962,8 +2374,8 @@ export default function DemoPage() {
                 <Box>
                   <Box display="flex" justifyContent="space-between" alignItems="flex-start">
                     <Box flex={1}>
-                      <Typography variant="h6" fontWeight={600} sx={{ color: '#212529' }}>{iter.label}</Typography>
-                      <Typography variant="caption" sx={{ color: '#6c757d' }}>{iter.range}</Typography>
+                      <Typography variant="h6" fontWeight={600} sx={{ color: colors.text }}>{iter.label}</Typography>
+                      <Typography variant="caption" sx={{ color: colors.neutral }}>{iter.range}</Typography>
                     </Box>
                     <IconButton
                       size="small"
@@ -1971,8 +2383,43 @@ export default function DemoPage() {
                         setEditingIteration(iter.key);
                         setEditingIterationTitle(iter.label);
                         setEditingIterationRange(iter.range);
+                        // Initialize date pickers by parsing existing range
+                        try {
+                          const parts = (iter.range || '').split('-').map(s => s.trim());
+                          if (parts.length >= 2) {
+                            const currentYear = new Date().getFullYear();
+                            // Parse dates as local dates to avoid timezone issues
+                            const parseDateString = (dateStr: string) => {
+                              // Try to parse formats like "October 20" or "Oct 20"
+                              const date = new Date(`${dateStr} ${currentYear}`);
+                              if (!isNaN(date.getTime())) {
+                                // Format as YYYY-MM-DD for the date input (local date, not UTC)
+                                const year = date.getFullYear();
+                                const month = String(date.getMonth() + 1).padStart(2, '0');
+                                const day = String(date.getDate()).padStart(2, '0');
+                                return `${year}-${month}-${day}`;
+                              }
+                              return null;
+                            };
+                            const startStr = parseDateString(parts[0]);
+                            const endStr = parseDateString(parts[parts.length - 1]);
+                            if (startStr) setEditingIterationStart(startStr);
+                            if (endStr) setEditingIterationEnd(endStr);
+                            if (!startStr || !endStr) {
+                              setEditingIterationStart('');
+                              setEditingIterationEnd('');
+                            }
+                          } else {
+                            setEditingIterationStart('');
+                            setEditingIterationEnd('');
+                          }
+                        } catch {
+                          setEditingIterationStart('');
+                          setEditingIterationEnd('');
+                        }
+                        setEditingRangeError('');
                       }}
-                      sx={{ color: '#6c757d' }}
+                      sx={{ color: colors.neutral }}
                     >
                       <Edit fontSize="small" />
                     </IconButton>
@@ -1988,17 +2435,17 @@ export default function DemoPage() {
               const total = allStories.length;
               const done = allStories.filter((s: any) => getStatusCategory(s.status) === 'done').length;
               const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-              let barColor = '#e9ecef';
-              if (pct === 100 && total > 0) barColor = '#32cd32';
-              else if (pct > 0) barColor = '#fd7e14';
-              else if (total > 0) barColor = '#dc3545';
+              let barColor = colors.border;
+              if (pct === 100 && total > 0) barColor = colors.done;
+              else if (pct > 0) barColor = colors.inProgress;
+              else if (total > 0) barColor = colors.notStarted;
               return (
                 <Box display="flex" alignItems="center" gap={1} mb={1}>
                   <Box flex={1}>
                     <LinearProgress
                       variant="determinate"
                       value={pct}
-                      sx={{ height: 8, borderRadius: 1, background: '#e9ecef', '& .MuiLinearProgress-bar': { background: barColor } }}
+                      sx={{ height: 8, borderRadius: 1, background: colors.border, '& .MuiLinearProgress-bar': { background: barColor } }}
                     />
                   </Box>
                   <Typography variant="body2" fontWeight={600} sx={{ color: barColor, minWidth: 56, textAlign: 'right' }}>{pct}% Done</Typography>
@@ -2009,6 +2456,7 @@ export default function DemoPage() {
               {columns[iter.key].filter(cardMatchesTeamFilter).map((card, idx) => {
                 const cardId = `${iter.key}-${card.key}`;
                 const isMinimized = minimizedCards.has(cardId);
+                const isHighlighted = highlightedCardId === cardId;
                 return (
                   <DemoCard 
                     key={card.key || idx} 
@@ -2017,6 +2465,11 @@ export default function DemoPage() {
                     isMinimized={isMinimized}
                     onToggleMinimize={() => handleToggleMinimize(iter.key, card.key)}
                     iterationRange={iter.range}
+                    isHighlighted={isHighlighted}
+                    cardRef={(el) => {
+                      cardRefs.current[cardId] = el;
+                    }}
+                    highlightedChildKey={highlightedChildKey}
                   />
                 );
               })}
@@ -2032,8 +2485,8 @@ export default function DemoPage() {
                 onKeyDown={e => {
                   if (e.key === "Enter") handleAddCard(iter.key);
                 }}
-                sx={{ mb: 1, background: '#fff', borderRadius: 1 }}
-                inputProps={{ style: { color: '#212529' } }}
+                sx={{ mb: 1, background: colors.white, borderRadius: 1 }}
+                inputProps={{ style: { color: colors.text } }}
               />
               <Button
                 variant="contained"
