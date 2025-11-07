@@ -1,5 +1,5 @@
 // Version utility for the Tauri app
-export const APP_VERSION = '1.0.1';
+export const APP_VERSION = '1.1.1';
 
 // Function to get version from package.json (for future use)
 export const getAppVersion = async (): Promise<string> => {
