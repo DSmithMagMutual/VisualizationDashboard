@@ -297,6 +297,64 @@ export async function saveBoardDataToPublic(boardData: any, fileName: string): P
   }
 }
 
+// Log action to board-specific log file
+export async function logBoardAction(
+  boardKey: string,
+  action: 'add_card' | 'delete_card' | 'move_card' | 'rename_iteration' | 'change_iteration_date',
+  data: {
+    cardKey?: string;
+    cardSummary?: string;
+    fromIteration?: string;
+    toIteration?: string;
+    iterationKey?: string;
+    oldValue?: string;
+    newValue?: string;
+    [key: string]: any;
+  }
+): Promise<void> {
+  try {
+    // Get log file name based on board key
+    const logFileName = `${boardKey}-log.json`;
+    
+    // Read existing logs
+    let logs: Array<{
+      timestamp: string;
+      action: string;
+      data: any;
+    }> = [];
+    
+    try {
+      const existingLogs = await invoke<any>('load_board_data', { fileName: logFileName });
+      if (existingLogs && Array.isArray(existingLogs)) {
+        logs = existingLogs;
+      }
+    } catch (error) {
+      // Log file doesn't exist yet, start with empty array
+      console.log(`Creating new log file: ${logFileName}`);
+    }
+    
+    // Add new log entry
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      action,
+      data
+    };
+    
+    logs.push(logEntry);
+    
+    // Save updated logs
+    await invoke('save_board_data_to_public', { 
+      boardData: logs, 
+      fileName: logFileName 
+    });
+    
+    console.log(`Logged action: ${action} for board ${boardKey}`);
+  } catch (error) {
+    console.error(`Failed to log action for board ${boardKey}:`, error);
+    // Don't throw - logging failures shouldn't break the app
+  }
+}
+
 // Load saved board data from JSON file
 export async function loadBoardData(fileName: string): Promise<any | null> {
   try {

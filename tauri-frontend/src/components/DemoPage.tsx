@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Box, Card, CardContent, Typography, Button, TextField, LinearProgress, Chip, Tooltip, CircularProgress, IconButton, Select, MenuItem, InputLabel, FormControl, OutlinedInput, Checkbox, ListItemText, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, Paper, List, ListItem, ListItemButton, ListItemText as MuiListItemText, InputAdornment } from '@mui/material';
 import { Close, ExpandMore, ExpandLess, Edit, Save, Cancel, Search } from '@mui/icons-material';
-import { BarChart } from '@mui/x-charts/BarChart';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { loadDataSource, getAllAvailableBoards } from '../lib/dataService';
 import { invoke } from '@tauri-apps/api/core';
-import { fetchCardData, fetchChildIssues, saveBoardDataToPublic } from '../lib/jiraDataService';
+import { fetchCardData, fetchChildIssues, saveBoardDataToPublic, logBoardAction } from '../lib/jiraDataService';
 import JiraConfigDialog from './JiraConfigDialog';
 import LastUpdatedIndicator from './LastUpdatedIndicator';
-import ChildWorkItemsWidget from './ChildWorkItemsWidget';
 import { useAppState } from '../contexts/AppStateContext';
 
 const ITERATIONS = [
@@ -111,133 +109,6 @@ function getColorForTeam(team: string) {
   }
   const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
   return '#' + '00000'.substring(0, 6 - c.length) + c;
-}
-
-function StatusChart({ columns, iterations }: { columns: Record<string, any[]>; iterations: typeof ITERATIONS }) {
-  const statusCategories = ['new', 'indeterminate', 'done'];
-  
-  // Calculate data for each iteration
-  const chartData = iterations.map(iter => {
-    const cards = columns[iter.key] || [];
-    const statusCounts: Record<string, number> = { 'new': 0, 'indeterminate': 0, 'done': 0 };
-    
-    cards.forEach(card => {
-      // Count child stories instead of parent stories
-      if (card.stories && card.stories.length > 0) {
-        card.stories.forEach((story: any) => {
-          const statusCategory = getStatusCategory(story.status);
-          if (statusCounts.hasOwnProperty(statusCategory)) {
-            statusCounts[statusCategory]++;
-          }
-        });
-      } else {
-        // If no child stories, count the parent story itself
-        const statusCategory = getStatusCategory(card.status);
-        if (statusCounts.hasOwnProperty(statusCategory)) {
-          statusCounts[statusCategory]++;
-        }
-      }
-    });
-    
-    return {
-      iteration: iter.label,
-      key: iter.key,
-      'new': statusCounts['new'],
-      'indeterminate': statusCounts['indeterminate'],
-      'done': statusCounts['done']
-    };
-  });
-
-  // Prepare data for MUI X Charts
-  const xAxisData = chartData.map(d => d.iteration);
-  const series = statusCategories.map(status => ({
-    data: chartData.map(d => d[status as keyof typeof d] as number),
-    color: statusColors[status] || statusColors.default
-  }));
-
-  return (
-    <Card sx={{ 
-      bgcolor: colors.white, 
-      border: `1px solid ${colors.border}`, 
-      borderRadius: 1, 
-      boxShadow: 1, 
-      mb: 4,
-      maxWidth: '50%',
-      mx: 'auto'
-    }}>
-      <CardContent sx={{ p: 3 }}>
-        <Typography variant="h6" fontWeight={600} sx={{ color: colors.text, mb: 3 }}>
-          Child Stories Status Distribution by Iteration
-        </Typography>
-        
-        {/* MUI X Charts BarChart */}
-        <Box sx={{ mb: 3, height: 400 }}>
-          <BarChart
-            xAxis={[{ 
-              data: xAxisData,
-              scaleType: 'band',
-              categoryGapRatio: 0.3,
-              barGapRatio: 0.1,
-              label: 'Iterations',
-              tickLabelPlacement: 'middle'
-            }]}
-            yAxis={[{
-              label: 'Number of Stories'
-            }]}
-            series={series}
-            height={350}
-            barLabel={(item) => item.value?.toString() || ''}
-            margin={{ left: 80, right: 20, top: 20, bottom: 80 }}
-
-            sx={{
-              '& .MuiChartsBar-label': {
-                fill: colors.text,
-                fontSize: '0.75rem',
-                fontWeight: 600
-              }
-            }}
-          />
-        </Box>
-
-        {/* Summary Table */}
-        <Box sx={{ 
-          bgcolor: colors.background, 
-          borderRadius: 1, 
-          p: 2, 
-          border: `1px solid ${colors.border}`
-        }}>
-          <Typography variant="subtitle2" sx={{ color: colors.text, fontWeight: 600, mb: 2 }}>
-            Summary by Status (Child Stories)
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-            {statusCategories.map(status => {
-              const total = chartData.reduce((sum, data) => sum + (data[status as keyof typeof data] as number), 0);
-              return (
-                <Box key={status} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box
-                    sx={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: 0.5,
-                      bgcolor: statusColors[status] || statusColors.default
-                    }}
-                  />
-                  <Typography variant="body2" sx={{ color: colors.text, fontWeight: 500 }}>
-                    {status}: {total}
-                  </Typography>
-                </Box>
-              );
-            })}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 'auto' }}>
-              <Typography variant="body2" sx={{ color: colors.text, fontWeight: 600 }}>
-                Total: {chartData.reduce((sum, data) => sum + data['new'] + data['indeterminate'] + data['done'], 0)}
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-      </CardContent>
-    </Card>
-  );
 }
 
 function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRange, isHighlighted, cardRef, highlightedChildKey }: {
@@ -511,20 +382,6 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
               borderRadius: 1 
             }} 
           />
-          {(card.storyPoints !== undefined && card.storyPoints !== null) && (
-            <Chip 
-              label={`${card.storyPoints} SP`} 
-              size="small" 
-              sx={{ 
-                bgcolor: colors.background, 
-                color: colors.text, 
-                fontWeight: 600, 
-                borderRadius: 1,
-                border: `1px solid ${colors.border}`,
-                fontSize: '0.75rem'
-              }} 
-            />
-          )}
         </Box>
         
         {/* Progress bar - always visible */}
@@ -584,20 +441,6 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
                         }} 
                         onClick={() => console.log(`Story ${story.key} status:`, story.status, 'statusCategory:', story.statusCategory)}
                       />
-                      {(story.storyPoints !== undefined && story.storyPoints !== null) && (
-                        <Chip 
-                          label={`${story.storyPoints} SP`} 
-                          size="small" 
-                          sx={{ 
-                            bgcolor: colors.background, 
-                            color: colors.text, 
-                            fontWeight: 600, 
-                            borderRadius: 1,
-                            border: `1px solid ${colors.border}`,
-                            fontSize: '0.75rem'
-                          }} 
-                        />
-                      )}
                     </li>
                   ))}
                 </Box>
@@ -661,6 +504,7 @@ export default function DemoPage() {
   
   // Global search state
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Array<{ card: any; iterationKey: string; cardId: string; source: 'card' | 'child'; childKey?: string; childSummary?: string }>>([]);
   const [highlightedCardId, setHighlightedCardId] = useState<string | null>(null);
   const [highlightedChildKey, setHighlightedChildKey] = useState<string | null>(null);
@@ -703,67 +547,112 @@ export default function DemoPage() {
   }
 
   // Global search function
-  const performSearch = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return [];
-    }
+  // Debounce search query to improve performance
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 200); // 200ms debounce delay
     
-    const query = searchQuery.toLowerCase().trim();
-    const results: Array<{ card: any; iterationKey: string; cardId: string; source: 'card' | 'child'; childKey?: string; childSummary?: string }> = [];
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Pre-compute searchable data for better performance
+  const searchableData = useMemo(() => {
+    const data: Array<{
+      card: any;
+      iterationKey: string;
+      cardId: string;
+      searchableKey: string;
+      searchableSummary: string;
+      searchableAssignee: string;
+      children: Array<{
+        key: string;
+        summary: string;
+        team: string;
+        assignee: string;
+      }>;
+    }> = [];
     
     Object.entries(columns).forEach(([iterationKey, cards]) => {
       cards.forEach((card) => {
         const cardId = `${iterationKey}-${card.key}`;
-        let matches = false;
+        const children = (Array.isArray(card.stories) ? card.stories : []).map((story: any) => ({
+          key: (story.key || '').toLowerCase(),
+          summary: (story.summary || '').toLowerCase(),
+          team: (story.team || '').toLowerCase(),
+          assignee: ((story.assignee?.displayName || story.assignee) || '').toLowerCase(),
+        }));
         
-        // Search by key
-        if (card.key && card.key.toLowerCase().includes(query)) {
-          matches = true;
-        }
-        
-        // Search by summary
-        if (card.summary && card.summary.toLowerCase().includes(query)) {
-          matches = true;
-        }
-        
-        // Search by assignee
-        if (card.assignee && card.assignee.toLowerCase().includes(query)) {
-          matches = true;
-        }
-        
-        if (matches) {
-          results.push({ card, iterationKey, cardId, source: 'card' });
-        }
-
-        // Search child work items
-        if (Array.isArray(card.stories) && card.stories.length > 0) {
-          for (const story of card.stories) {
-            const sKey = story.key?.toLowerCase?.() || '';
-            const sSummary = story.summary?.toLowerCase?.() || '';
-            const sTeam = story.team?.toLowerCase?.() || '';
-            const sAssignee = (story.assignee?.displayName || story.assignee)?.toLowerCase?.() || '';
-            if (
-              (sKey && sKey.includes(query)) ||
-              (sSummary && sSummary.includes(query)) ||
-              (sTeam && sTeam.includes(query)) ||
-              (sAssignee && sAssignee.includes(query))
-            ) {
-              results.push({
-                card,
-                iterationKey,
-                cardId,
-                source: 'child',
-                childKey: story.key,
-                childSummary: story.summary,
-              });
-            }
-          }
-        }
+        data.push({
+          card,
+          iterationKey,
+          cardId,
+          searchableKey: (card.key || '').toLowerCase(),
+          searchableSummary: (card.summary || '').toLowerCase(),
+          searchableAssignee: (card.assignee || '').toLowerCase(),
+          children,
+        });
       });
     });
     
+    return data;
+  }, [columns]);
+
+  const performSearch = useMemo(() => {
+    const query = debouncedSearchQuery.toLowerCase().trim();
+    
+    // Early exit for empty or very short queries
+    if (!query || query.length < 2) {
+      return [];
+    }
+    
+    const results: Array<{ card: any; iterationKey: string; cardId: string; source: 'card' | 'child'; childKey?: string; childSummary?: string }> = [];
+    const MAX_RESULTS = 50; // Limit results for performance
+    
+    // Use pre-computed searchable data
+    for (const item of searchableData) {
+      if (results.length >= MAX_RESULTS) break;
+      
+      // Fast string matching using indexOf (faster than includes)
+      if (
+        item.searchableKey.indexOf(query) !== -1 ||
+        item.searchableSummary.indexOf(query) !== -1 ||
+        item.searchableAssignee.indexOf(query) !== -1
+      ) {
+        results.push({ 
+          card: item.card, 
+          iterationKey: item.iterationKey, 
+          cardId: item.cardId, 
+          source: 'card' 
+        });
+      }
+
+      // Search child work items
+      if (item.children.length > 0) {
+        for (const child of item.children) {
+          if (results.length >= MAX_RESULTS) break;
+          
+          if (
+            child.key.indexOf(query) !== -1 ||
+            child.summary.indexOf(query) !== -1 ||
+            child.team.indexOf(query) !== -1 ||
+            child.assignee.indexOf(query) !== -1
+          ) {
+            results.push({
+              card: item.card,
+              iterationKey: item.iterationKey,
+              cardId: item.cardId,
+              source: 'child',
+              childKey: item.card.stories.find((s: any) => s.key?.toLowerCase() === child.key)?.key,
+              childSummary: item.card.stories.find((s: any) => s.key?.toLowerCase() === child.key)?.summary,
+            });
+          }
+        }
+      }
+    }
+    
     return results;
-  }, [searchQuery, columns]);
+  }, [debouncedSearchQuery, searchableData]);
 
   // Update search results when search query or columns change
   useEffect(() => {
@@ -1124,6 +1013,16 @@ export default function DemoPage() {
       await saveBoardDataToPublic(boardData, fileName);
       console.log('Board data saved successfully after adding card');
       
+      // Log the action
+      if (selectedDataSource) {
+        await logBoardAction(selectedDataSource, 'add_card', {
+          cardKey: cardName,
+          cardSummary: placeholderCard.summary,
+          iterationKey: colKey,
+          iterationLabel: iterations.find(iter => iter.key === colKey)?.label || colKey
+        });
+      }
+      
       // Now reload the data from the JSON file to ensure we're in sync
       console.log('Reloading data from JSON file...');
       const reloadedData = await loadDataSource(selectedDataSource);
@@ -1225,6 +1124,20 @@ export default function DemoPage() {
       await saveBoardDataToPublic(boardData, fileName);
       console.log('Board data saved successfully after moving card');
       
+      // Log the action
+      if (selectedDataSource) {
+        const fromIteration = iterations.find(iter => iter.key === sourceColumnKey);
+        const toIteration = iterations.find(iter => iter.key === selectedTargetColumn);
+        await logBoardAction(selectedDataSource, 'move_card', {
+          cardKey: card.key,
+          cardSummary: card.summary,
+          fromIteration: sourceColumnKey,
+          fromIterationLabel: fromIteration?.label || sourceColumnKey,
+          toIteration: selectedTargetColumn,
+          toIterationLabel: toIteration?.label || selectedTargetColumn
+        });
+      }
+      
       // Now reload the data from the JSON file to ensure we're in sync
       console.log('Reloading data from JSON file...');
       const reloadedData = await loadDataSource(selectedDataSource);
@@ -1273,6 +1186,9 @@ export default function DemoPage() {
     const cardIndex = columns[colKey].findIndex(card => card.key === cardKey);
     if (cardIndex === -1) return; // Card not found
     
+    // Get card data for logging before deleting
+    const card = columns[colKey][cardIndex];
+    
     const cardId = `${colKey}-${cardKey}`;
     
     const newColumns = {
@@ -1311,6 +1227,17 @@ export default function DemoPage() {
       console.log(`Saving deleted card data to public directory: ${fileName}`);
       await saveBoardDataToPublic(boardData, fileName);
       console.log('Board data saved successfully after deleting card');
+      
+      // Log the action
+      if (selectedDataSource) {
+        const iteration = iterations.find(iter => iter.key === colKey);
+        await logBoardAction(selectedDataSource, 'delete_card', {
+          cardKey: cardKey,
+          cardSummary: card?.summary,
+          iterationKey: colKey,
+          iterationLabel: iteration?.label || colKey
+        });
+      }
       
       // Now reload the data from the JSON file to ensure we're in sync
       console.log('Reloading data from JSON file...');
@@ -1559,14 +1486,6 @@ export default function DemoPage() {
                 card.team = fields.customfield_10001.name;
               }
               
-              // Update story points if available
-              if (fields.customfield_10016 !== undefined && fields.customfield_10016 !== null) {
-                card.storyPoints = fields.customfield_10016;
-                console.log(`Updated story points for ${card.key}: ${card.storyPoints}`);
-              } else {
-                console.log(`No story points found for ${card.key} (customfield_10016: ${fields.customfield_10016})`);
-              }
-              
               // Update due date if available (check standard dueDate field and common custom fields)
               // Try multiple possible field names/IDs
               console.log(`Checking due date fields for ${card.key}:`, Object.keys(fields).filter(k => k.toLowerCase().includes('due')));
@@ -1653,18 +1572,17 @@ export default function DemoPage() {
                 console.log(`Child issues response for ${card.key}:`, childIssuesData);
                 
                 if (childIssuesData && childIssuesData.issues && Array.isArray(childIssuesData.issues)) {
-                  console.log(`Found ${childIssuesData.issues.length} child issues for ${card.key}:`, childIssuesData.issues);
+                  // Filter out the parent card itself from the child issues
+                  const actualChildIssues = childIssuesData.issues.filter((issue: any) => issue.key !== card.key);
+                  console.log(`Found ${childIssuesData.issues.length} child issues for ${card.key}, ${actualChildIssues.length} after filtering out parent:`, actualChildIssues);
                   
-                  const updatedStories = childIssuesData.issues.map((childIssue: any) => {
+                  const updatedStories = actualChildIssues.map((childIssue: any) => {
                     const newStatus = childIssue.fields.status?.name || 'Unknown';
                     const newStatusCategory = getStatusCategory(newStatus);
                     const newSummary = childIssue.fields.summary || childIssue.key;
                     const newTeam = childIssue.fields.customfield_10014 || 
                                     (childIssue.fields.customfield_10001 && childIssue.fields.customfield_10001.name) || 
                                     'Unknown Team';
-                    const newStoryPoints = childIssue.fields.customfield_10016 !== undefined && childIssue.fields.customfield_10016 !== null 
-                      ? childIssue.fields.customfield_10016 
-                      : undefined;
                     
                     // Process relationship data
                     const relationships = {
@@ -1712,7 +1630,6 @@ export default function DemoPage() {
                       status: newStatus,
                       statusCategory: newStatusCategory,
                       team: newTeam,
-                      storyPoints: newStoryPoints,
                       relationships
                     };
                   });
@@ -2257,7 +2174,7 @@ export default function DemoPage() {
       {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
       <Box sx={{ display: 'flex', gap: 3, overflowX: 'auto', minWidth: 1200 }}>
         {iterations.map(iter => (
-          <Box key={iter.key} sx={{ minWidth: 320, background: colors.white, border: `1px solid ${colors.border}`, borderRadius: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 600 }}>
+          <Box key={iter.key} data-iteration-key={iter.key} sx={{ minWidth: 320, background: colors.white, border: `1px solid ${colors.border}`, borderRadius: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 600 }}>
             <Box mb={2} position="relative">
               {editingIteration === iter.key ? (
                 <Box>
@@ -2327,6 +2244,11 @@ export default function DemoPage() {
                           const fmt = (d: Date) => d.toLocaleString(undefined, { month: 'long', day: 'numeric' });
                           newRange = `${fmt(start)} - ${fmt(end)}`;
                         }
+                        // Get old values for logging
+                        const oldIteration = iterations.find(i => i.key === iter.key);
+                        const oldTitle = oldIteration?.label || '';
+                        const oldRange = oldIteration?.range || '';
+                        
                         const updated = iterations.map(i => 
                           i.key === iter.key 
                             ? { ...i, label: editingIterationTitle, range: newRange }
@@ -2354,6 +2276,28 @@ export default function DemoPage() {
                         }
                         
                         await saveBoardDataToPublic(boardData, fileName);
+                        
+                        // Log iteration changes
+                        if (selectedDataSource) {
+                          // Log rename if title changed
+                          if (oldTitle !== editingIterationTitle) {
+                            await logBoardAction(selectedDataSource, 'rename_iteration', {
+                              iterationKey: iter.key,
+                              oldValue: oldTitle,
+                              newValue: editingIterationTitle
+                            });
+                          }
+                          
+                          // Log date change if range changed
+                          if (oldRange !== newRange) {
+                            await logBoardAction(selectedDataSource, 'change_iteration_date', {
+                              iterationKey: iter.key,
+                              iterationLabel: editingIterationTitle,
+                              oldValue: oldRange,
+                              newValue: newRange
+                            });
+                          }
+                        }
                       }}
                       sx={{ color: colors.done }}
                     >
@@ -2473,8 +2417,42 @@ export default function DemoPage() {
                   />
                 );
               })}
+              {/* Quick Add Button - positioned directly under the last card */}
+              <Box mt={2} mb={2}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  fullWidth
+                  onClick={() => {
+                    // Find and focus the input field for this specific iteration
+                    setTimeout(() => {
+                      // Find the input that's in the same iteration column
+                      const iterationBox = document.querySelector(`[data-iteration-key="${iter.key}"]`);
+                      if (iterationBox) {
+                        const input = iterationBox.querySelector(`input[placeholder="Add card (Jira key)..."]`) as HTMLInputElement;
+                        if (input) {
+                          input.focus();
+                          input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                      }
+                    }, 100);
+                  }}
+                  sx={{ 
+                    fontWeight: 600, 
+                    borderRadius: 1,
+                    borderColor: colors.primary,
+                    color: colors.primary,
+                    '&:hover': {
+                      borderColor: colors.primary,
+                      backgroundColor: `${colors.primary}15`
+                    }
+                  }}
+                >
+                  + Add Card
+                </Button>
+              </Box>
             </Box>
-            <Box mt="auto" pt={2}>
+            <Box pt={2}>
               <TextField
                 variant="outlined"
                 size="small"
@@ -2500,23 +2478,6 @@ export default function DemoPage() {
             </Box>
           </Box>
         ))}
-      </Box>
-      <StatusChart 
-        columns={Object.fromEntries(
-          Object.entries(columns).map(([key, cards]) => [
-            key, 
-            cards.filter(cardMatchesTeamFilter)
-          ])
-        )}
-        iterations={iterations}
-      />
-      
-      {/* Child Work Items Widget */}
-      <Box sx={{ mb: 4 }}>
-        <ChildWorkItemsWidget 
-          boardData={{ columns }} 
-          onRefresh={handleRefreshData}
-        />
       </Box>
       
       {/* Jira Configuration Dialog */}
