@@ -455,7 +455,7 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
 }
 
 export default function DemoPage() {
-  const { selectedDataSource, setSelectedDataSource, teamFilter, setTeamFilter } = useAppState();
+  const { selectedDataSource, setSelectedDataSource, teamFilter, setTeamFilter, assigneeFilter, setAssigneeFilter } = useAppState();
   const [iterations, setIterations] = useState(ITERATIONS);
   const [availableBoards, setAvailableBoards] = useState<Record<string, string>>({});
   const [columns, setColumns] = useState(() =>
@@ -536,6 +536,22 @@ export default function DemoPage() {
     return Array.from(teams).sort();
   }, [columns]);
 
+  const allAssignees = React.useMemo(() => {
+    const assignees = new Set<string>();
+    Object.values(columns).forEach(cards => {
+      cards.forEach(card => {
+        if (card.assignee) assignees.add(card.assignee);
+        if (Array.isArray(card.stories)) {
+          card.stories.forEach((story: any) => {
+            const assignee = story.assignee?.displayName || story.assignee;
+            if (assignee) assignees.add(assignee);
+          });
+        }
+      });
+    });
+    return Array.from(assignees).sort();
+  }, [columns]);
+
   // Filtering logic: show card if parent or any child story matches selected team(s)
   function cardMatchesTeamFilter(card: any) {
     if (teamFilter.length === 0) return true;
@@ -544,6 +560,23 @@ export default function DemoPage() {
       return card.stories.some((story: any) => teamFilter.includes(story.team));
     }
     return false;
+  }
+
+  function cardMatchesAssigneeFilter(card: any) {
+    if (assigneeFilter.length === 0) return true;
+    if (card.assignee && assigneeFilter.includes(card.assignee)) return true;
+    if (Array.isArray(card.stories)) {
+      return card.stories.some((story: any) => {
+        const assignee = story.assignee?.displayName || story.assignee;
+        return assignee && assigneeFilter.includes(assignee);
+      });
+    }
+    return false;
+  }
+
+  // Combined filter function
+  function cardMatchesFilters(card: any) {
+    return cardMatchesTeamFilter(card) && cardMatchesAssigneeFilter(card);
   }
 
   // Global search function
@@ -894,6 +927,7 @@ export default function DemoPage() {
         setColumns(initializedColumns);
         setBoardTitle(`Demo Iteration Board - ${dataSourceKey}`);
         setTeamFilter([]); // Reset team filter when data source changes
+        setAssigneeFilter([]); // Reset assignee filter when data source changes
         
         // Update metadata
         setLastUpdated(dataSource.lastUpdated);
@@ -2058,6 +2092,57 @@ export default function DemoPage() {
           </FormControl>
         </Box>
 
+        {/* Assignee Filter */}
+        <Box sx={{ minWidth: 300 }}>
+          <FormControl fullWidth size="small">
+            <InputLabel 
+              id="assignee-filter-label" 
+              sx={{ 
+                color: colors.textSecondary, 
+                fontWeight: 500,
+                '&.Mui-focused': {
+                  color: colors.primary,
+                },
+                '&.MuiInputLabel-shrink': {
+                  color: colors.primary,
+                }
+              }}
+            >
+              Filter by Assignee
+            </InputLabel>
+            <Select
+              labelId="assignee-filter-label"
+              multiple
+              value={assigneeFilter}
+              onChange={e => setAssigneeFilter(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+              input={<OutlinedInput label="Filter by Assignee" />}
+              renderValue={(selected) => selected.length === 0 ? 'All Assignees' : selected.join(', ')}
+              sx={{
+                backgroundColor: colors.white,
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: colors.border,
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: colors.borderHover,
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: colors.primary,
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: colors.primary,
+                },
+              }}
+            >
+              {allAssignees.map(assignee => (
+                <MenuItem key={assignee} value={assignee}>
+                  <Checkbox checked={assigneeFilter.indexOf(assignee) > -1} />
+                  <ListItemText primary={assignee} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
         {/* Action Buttons */}
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
@@ -2129,8 +2214,8 @@ export default function DemoPage() {
           // Gather all child stories across all iterations, filtered by team if filter is applied
           const allStories = Object.values(columns).flat().flatMap(card => {
             if (!card.stories) return [];
-            // Only include stories from cards that match the team filter
-            if (cardMatchesTeamFilter(card)) {
+            // Only include stories from cards that match the filters
+            if (cardMatchesFilters(card)) {
               return card.stories;
             }
             return [];
@@ -2374,7 +2459,7 @@ export default function DemoPage() {
             {(() => {
               // Gather all child stories for this iteration (filtered by team)
               const cards = columns[iter.key] || [];
-              const filteredCards = cards.filter(cardMatchesTeamFilter);
+              const filteredCards = cards.filter(cardMatchesFilters);
               const allStories = filteredCards.flatMap(card => card.stories || []);
               const total = allStories.length;
               const done = allStories.filter((s: any) => getStatusCategory(s.status) === 'done').length;
@@ -2397,7 +2482,7 @@ export default function DemoPage() {
               );
             })()}
             <Box flex={1} mb={2}>
-              {columns[iter.key].filter(cardMatchesTeamFilter).map((card, idx) => {
+              {columns[iter.key].filter(cardMatchesFilters).map((card, idx) => {
                 const cardId = `${iter.key}-${card.key}`;
                 const isMinimized = minimizedCards.has(cardId);
                 const isHighlighted = highlightedCardId === cardId;
