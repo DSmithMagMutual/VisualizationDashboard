@@ -23,7 +23,12 @@ export async function getAllAvailableBoards(): Promise<Record<string, string>> {
     const files = await invoke<string[]>('list_downloads_files');
     
     // Filter for board files and create data source mapping
-    const boardFiles = files.filter(file => file.startsWith('board-save') && file.endsWith('.json'));
+    // Exclude log files (files ending with -log.json)
+    const boardFiles = files.filter(file => 
+      file.startsWith('board-save') && 
+      file.endsWith('.json') && 
+      !file.endsWith('-log.json')
+    );
     const dynamicDataSources: Record<string, string> = {};
     
     boardFiles.forEach(file => {
@@ -41,10 +46,16 @@ export async function getAllAvailableBoards(): Promise<Record<string, string>> {
 
 export async function loadDataSource(sourceKey: string): Promise<DataSource | null> {
   try {
-    const fileName = dataSources[sourceKey];
+    // First check hardcoded sources, then check dynamic sources
+    let fileName = dataSources[sourceKey];
     if (!fileName) {
-      console.error(`Unknown data source: ${sourceKey}`);
-      return null;
+      // Try to get from dynamic sources
+      const allBoards = await getAllAvailableBoards();
+      fileName = allBoards[sourceKey];
+      if (!fileName) {
+        console.error(`Unknown data source: ${sourceKey}`);
+        return null;
+      }
     }
 
     console.log(`Loading from Downloads: ${fileName}`);

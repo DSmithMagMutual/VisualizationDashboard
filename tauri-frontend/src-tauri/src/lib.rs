@@ -187,7 +187,7 @@ async fn fetch_child_issues(config: JiraConfig, parent_key: String) -> Result<se
         ("jql", &jql),
         (
             "fields",
-            &"summary,status,issuetype,key,parent,issuelinks,customfield_10014,customfield_10001".to_string(),
+            &"summary,status,issuetype,key,parent,issuelinks,customfield_10014,customfield_10001,assignee".to_string(),
         ),
         ("maxResults", &"1000".to_string()),
     ];

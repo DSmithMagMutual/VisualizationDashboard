@@ -111,7 +111,7 @@ function getColorForTeam(team: string) {
   return '#' + '00000'.substring(0, 6 - c.length) + c;
 }
 
-function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRange, isHighlighted, cardRef, highlightedChildKey }: {
+function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRange, isHighlighted, cardRef, highlightedChildKey, assigneeFilter }: {
   card: any; 
   onDelete: () => void; 
   isMinimized: boolean;
@@ -120,6 +120,7 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
   isHighlighted?: boolean;
   cardRef?: (el: HTMLDivElement | null) => void;
   highlightedChildKey?: string | null;
+  assigneeFilter?: string[];
 }) {
   // Show all child stories when card is visible (team filtering is handled at card level)
   const filteredStories = React.useMemo(() => {
@@ -133,7 +134,8 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
   const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
   
   console.log(`Progress for ${card.key}: ${doneCount}/${totalCount} = ${pct}%`);
-  const team = card.team || 'Other';
+  // Handle "Loading..." team - show as "Unknown Team" instead
+  const team = (card.team && card.team !== 'Loading...') ? card.team : 'Unknown Team';
   // Check if this is a placeholder card (with backward compatibility)
   // Older JSON files won't have isPlaceholder field, so this will be false for them
   const isPlaceholder = card.isPlaceholder === true;
@@ -263,7 +265,7 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
   };
 
   const borderStyle = getBorderStyle();
-
+  
   return (
     <Box 
       ref={cardRef}
@@ -274,17 +276,17 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
         position: 'relative',
         transition: 'all 0.3s ease-in-out'
       }}>
-      <Card sx={{ 
+    <Card sx={{ 
         bgcolor: isPlaceholder ? colors.background : colors.white, 
         border: isPlaceholder 
           ? `2px dashed ${colors.placeholder}` 
           : `1px solid ${colors.border}`, 
-        borderRadius: 1, 
-        boxShadow: isPlaceholder ? 0 : 1, 
+      borderRadius: 1, 
+      boxShadow: isPlaceholder ? 0 : 1, 
         mb: 0, 
-        position: 'relative',
-        opacity: isPlaceholder ? 0.8 : 1
-      }}>
+      position: 'relative',
+      opacity: isPlaceholder ? 0.8 : 1
+    }}>
       <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 0.5, zIndex: 1 }}>
         <Tooltip title={isMinimized ? "Expand card" : "Minimize card"}>
           <IconButton
@@ -356,6 +358,42 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
             />
           )}
         </Box>
+        <Box mb={1}>
+          {card.assignee ? (
+            <Chip 
+              label={card.assignee} 
+              size="small" 
+              sx={{ 
+                bgcolor: colors.background, 
+                color: colors.text, 
+                fontWeight: 500, 
+                borderRadius: 1,
+                border: `1px solid ${colors.border}`,
+                fontSize: '0.75rem'
+              }} 
+            />
+          ) : (
+            <Chip 
+              label="Unassigned" 
+              size="small" 
+              sx={{ 
+                bgcolor: colors.background, 
+                color: colors.textSecondary, 
+                fontWeight: 500, 
+                borderRadius: 1,
+                border: `1px solid ${colors.border}`,
+                fontSize: '0.75rem',
+                fontStyle: 'italic'
+              }} 
+            />
+          )}
+        </Box>
+        {/* Summary - always visible at top level */}
+        {card.summary && (
+          <Typography variant="body2" sx={{ color: colors.text, fontSize: '0.95em', mb: 1, fontWeight: 500 }}>
+            {card.summary}
+          </Typography>
+        )}
         <Box display="flex" alignItems="center" gap={1} mb={1} sx={{ flexWrap: 'wrap' }}>
           <Tooltip title={team} placement="top">
             <span style={{
@@ -394,29 +432,69 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
         
         {!isMinimized && (
           <>
-            <Typography variant="body2" sx={{ color: colors.textSecondary, fontSize: '0.95em', mb: 1, mt: 1 }}>
-              {card.summary || 'Card subtitle or description'}
-            </Typography>
             {filteredStories && filteredStories.length > 0 && (
               <Box mt={2}>
                 <Typography variant="subtitle2" sx={{ color: colors.text, fontWeight: 600, mb: 1 }}>Child work items</Typography>
                 <Box component="ul" sx={{ pl: 2, m: 0 }}>
-                  {filteredStories.map((story: any) => (
-                    <li key={story.key} style={{ marginBottom: 4, background: highlightedChildKey === story.key ? 'rgba(13, 110, 253, 0.08)' : 'transparent', borderRadius: 4, padding: highlightedChildKey === story.key ? 4 : 0 }}>
+                  {filteredStories.map((story: any) => {
+                    const storyAssignee = story.assignee?.displayName || story.assignee;
+                    const isChildHighlighted = highlightedChildKey === story.key || 
+                      (assigneeFilter && assigneeFilter.length > 0 && storyAssignee && assigneeFilter.includes(storyAssignee));
+                    
+                    return (
+                      <li key={story.key} style={{ 
+                        marginBottom: 8, 
+                        background: isChildHighlighted ? 'rgba(13, 110, 253, 0.08)' : 'transparent', 
+                        borderRadius: 4, 
+                        padding: isChildHighlighted ? 8 : 4 
+                      }}>
+                        <Box>
+                          <Box mb={0.5}>
                       <a 
                         href={'https://magmutual.atlassian.net/browse/' + story.key}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ 
                           fontWeight: 600, 
-                          color: colors.primary, 
-                          marginRight: 8,
+                                color: colors.primary, 
                           textDecoration: 'none'
                         }}
                       >
                         {story.key}
                       </a>
-                      <span style={{ color: colors.textSecondary, marginRight: 8 }}>{story.summary}</span>
+                          </Box>
+                          <Box mb={1}>
+                            {storyAssignee ? (
+                              <Chip 
+                                label={storyAssignee} 
+                                size="small" 
+                                sx={{ 
+                                  bgcolor: colors.background, 
+                                  color: colors.text, 
+                                  fontWeight: 500, 
+                                  borderRadius: 1,
+                                  border: `1px solid ${colors.border}`,
+                                  fontSize: '0.75rem'
+                                }} 
+                              />
+                            ) : (
+                              <Chip 
+                                label="Unassigned" 
+                                size="small" 
+                                sx={{ 
+                                  bgcolor: colors.background, 
+                                  color: colors.textSecondary, 
+                                  fontWeight: 500, 
+                                  borderRadius: 1,
+                                  border: `1px solid ${colors.border}`,
+                                  fontSize: '0.75rem',
+                                  fontStyle: 'italic'
+                                }} 
+                              />
+                            )}
+                          </Box>
+                          <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
+                            <span style={{ color: colors.textSecondary, marginRight: 8 }}>{story.summary}</span>
                       <Tooltip title={story.team} placement="top">
                         <span style={{
                           display: 'inline-block',
@@ -424,25 +502,27 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
                           height: 12,
                           borderRadius: '50%',
                           background: getColorForTeam(story.team),
-                          border: `1px solid ${colors.white}`,
-                          boxShadow: `0 0 0 1px ${colors.border}`,
+                                border: `1px solid ${colors.white}`,
+                                boxShadow: `0 0 0 1px ${colors.border}`,
                           marginRight: 4
                         }} />
                       </Tooltip>
                       <Chip 
                         label={story.status} 
                         size="small" 
-                        sx={{ 
-                          bgcolor: statusColors[story.status] || colors.background, 
-                          color: statusColors[story.status] ? colors.white : colors.text, 
-                          fontWeight: 500, 
-                          borderRadius: 1,
-                          marginRight: 4
-                        }} 
+                              sx={{ 
+                                bgcolor: statusColors[story.status] || colors.background, 
+                                color: statusColors[story.status] ? colors.white : colors.text, 
+                                fontWeight: 500, 
+                                borderRadius: 1
+                              }} 
                         onClick={() => console.log(`Story ${story.key} status:`, story.status, 'statusCategory:', story.statusCategory)}
                       />
+                          </Box>
+                        </Box>
                     </li>
-                  ))}
+                    );
+                  })}
                 </Box>
               </Box>
             )}
@@ -474,6 +554,7 @@ export default function DemoPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [minimizedCards, setMinimizedCards] = useState<Set<string>>(new Set());
+  const [hasInitializedMinimized, setHasInitializedMinimized] = useState(false);
   const [boardTitle, setBoardTitle] = useState("Demo Iteration Board");
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [showJiraConfig, setShowJiraConfig] = useState(false);
@@ -509,6 +590,7 @@ export default function DemoPage() {
   const [highlightedCardId, setHighlightedCardId] = useState<string | null>(null);
   const [highlightedChildKey, setHighlightedChildKey] = useState<string | null>(null);
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  
 
   // Debug effect to log when showJiraConfig changes
   useEffect(() => {
@@ -929,6 +1011,18 @@ export default function DemoPage() {
         setTeamFilter([]); // Reset team filter when data source changes
         setAssigneeFilter([]); // Reset assignee filter when data source changes
         
+        // Initialize all cards as minimized
+        const allCardIds = new Set<string>();
+        Object.entries(initializedColumns).forEach(([iterKey, cards]) => {
+          cards.forEach((card) => {
+            if (card.key) {
+              allCardIds.add(`${iterKey}-${card.key}`);
+            }
+          });
+        });
+        setMinimizedCards(allCardIds);
+        setHasInitializedMinimized(true);
+        
         // Update metadata
         setLastUpdated(dataSource.lastUpdated);
         setDataSource(dataSource.source);
@@ -980,9 +1074,28 @@ export default function DemoPage() {
   // Effect to load data when data source changes
   useEffect(() => {
     if (selectedDataSource) {
+      setHasInitializedMinimized(false); // Reset flag when data source changes
       loadDataSourceData(selectedDataSource);
     }
   }, [selectedDataSource]);
+  
+  // Initialize all cards as minimized when columns change (after initial load)
+  useEffect(() => {
+    if (!hasInitializedMinimized && Object.keys(columns).length > 0) {
+      const allCardIds = new Set<string>();
+      Object.entries(columns).forEach(([iterKey, cards]) => {
+        cards.forEach((card) => {
+          if (card.key) {
+            allCardIds.add(`${iterKey}-${card.key}`);
+          }
+        });
+      });
+      if (allCardIds.size > 0) {
+        setMinimizedCards(allCardIds);
+        setHasInitializedMinimized(true);
+      }
+    }
+  }, [columns, hasInitializedMinimized]);
 
   useEffect(() => {
     setLoading(false);
@@ -1023,6 +1136,10 @@ export default function DemoPage() {
     setColumns(newColumns);
     setInputs(inputs => ({ ...inputs, [colKey]: "" }));
     
+    // Add new card to minimized set so it starts minimized
+    const newCardId = `${colKey}-${cardName}`;
+    setMinimizedCards(prev => new Set(prev).add(newCardId));
+    
     // Save the updated board data to JSON file
     try {
       const boardData = {
@@ -1034,13 +1151,10 @@ export default function DemoPage() {
       };
       
       // Determine the file name based on the current data source
-      let fileName = 'board-savePDD.json'; // default
-      if (selectedDataSource === 'board-saveAdvice') {
-        fileName = 'board-saveAdvice.json';
-      } else if (selectedDataSource === 'board-savePI5Advice') {
-        fileName = 'board-savePI5Advice.json';
-      } else if (selectedDataSource === 'board-savePI5PDD') {
-        fileName = 'board-savePI5PDD.json';
+      let fileName = selectedDataSource || 'board-savePDD.json';
+      // Ensure it ends with .json
+      if (!fileName.endsWith('.json')) {
+        fileName = fileName + '.json';
       }
       
       console.log(`Saving added card data to public directory: ${fileName}`);
@@ -1057,31 +1171,9 @@ export default function DemoPage() {
         });
       }
       
-      // Now reload the data from the JSON file to ensure we're in sync
-      console.log('Reloading data from JSON file...');
-      const reloadedData = await loadDataSource(selectedDataSource);
-      if (reloadedData && reloadedData.columns) {
-        // Load iterations if they exist
-        if (reloadedData.iterations && Array.isArray(reloadedData.iterations)) {
-          setIterations(reloadedData.iterations);
-        }
-        
-        // Ensure all iteration keys are present in the reloaded state
-        const currentIterations = reloadedData.iterations && Array.isArray(reloadedData.iterations) 
-          ? reloadedData.iterations 
-          : iterations;
-        const initializedColumns = currentIterations.reduce((acc: Record<string, any[]>, iter: any) => {
-          acc[iter.key] = (reloadedData.columns as Record<string, any[]>)?.[iter.key] || [];
-          return acc;
-        }, {});
-        
-        // Update state with reloaded data
-        setColumns(initializedColumns);
-        setLastUpdated(reloadedData.lastUpdated);
-        setDataSource(reloadedData.source);
-        setProjectKey(reloadedData.projectKey);
-        console.log('Data reloaded successfully from JSON file');
-      }
+      // Don't reload data after adding card - it causes issues with renamed iterations
+      // The state is already updated, so we're good
+      console.log('Card added successfully');
     } catch (error) {
       console.error('Failed to save or reload board data after adding card:', error);
     }
@@ -1145,13 +1237,11 @@ export default function DemoPage() {
       };
       
       // Determine the file name based on the current data source
-      let fileName = 'board-savePDD.json'; // default
-      if (selectedDataSource === 'board-saveAdvice') {
-        fileName = 'board-saveAdvice.json';
-      } else if (selectedDataSource === 'board-savePI5Advice') {
-        fileName = 'board-savePI5Advice.json';
-      } else if (selectedDataSource === 'board-savePI5PDD') {
-        fileName = 'board-savePI5PDD.json';
+      // Determine the file name based on the current data source
+      let fileName = selectedDataSource || 'board-savePDD.json';
+      // Ensure it ends with .json
+      if (!fileName.endsWith('.json')) {
+        fileName = fileName + '.json';
       }
       
       console.log(`Saving moved card data to public directory: ${fileName}`);
@@ -1249,13 +1339,11 @@ export default function DemoPage() {
       };
       
       // Determine the file name based on the current data source
-      let fileName = 'board-savePDD.json'; // default
-      if (selectedDataSource === 'board-saveAdvice') {
-        fileName = 'board-saveAdvice.json';
-      } else if (selectedDataSource === 'board-savePI5Advice') {
-        fileName = 'board-savePI5Advice.json';
-      } else if (selectedDataSource === 'board-savePI5PDD') {
-        fileName = 'board-savePI5PDD.json';
+      // Determine the file name based on the current data source
+      let fileName = selectedDataSource || 'board-savePDD.json';
+      // Ensure it ends with .json
+      if (!fileName.endsWith('.json')) {
+        fileName = fileName + '.json';
       }
       
       console.log(`Saving deleted card data to public directory: ${fileName}`);
@@ -1439,10 +1527,23 @@ export default function DemoPage() {
       let refreshedCount = 0;
       let errorCount = 0;
       
+      // Create a map to track updated cards by their ID (iterationKey-cardKey)
+      const updatedCardsMap = new Map<string, any>();
+      
       for (const card of allCards) {
         if (card.key) {
           try {
-            console.log(`Refreshing card: ${card.key}`);
+            // Find which iteration this card belongs to
+            let cardIterationKey = '';
+            for (const [iterKey, iterCards] of Object.entries(columns)) {
+              if (iterCards.some(c => c.key === card.key)) {
+                cardIterationKey = iterKey;
+                break;
+              }
+            }
+            
+            const cardId = `${cardIterationKey}-${card.key}`;
+            console.log(`Refreshing card: ${card.key} in iteration ${cardIterationKey}`);
             console.log(`Original card structure:`, card);
             
             // Fetch fresh data from Jira
@@ -1457,7 +1558,7 @@ export default function DemoPage() {
               if (card.isPlaceholder) {
                 console.log(`Keeping ${card.key} as placeholder - API call failed`);
               }
-              return; // Don't update the card if the API call failed
+              continue; // Skip this card if the API call failed
             }
             
             // Check if we got a valid response with fields
@@ -1466,10 +1567,10 @@ export default function DemoPage() {
               if (card.isPlaceholder) {
                 console.log(`Keeping ${card.key} as placeholder - no valid response received`);
               }
-              return; // Don't update the card if we didn't get valid data
+              continue; // Skip this card if we didn't get valid data
             }
             
-            // Update the card with fresh data
+            // Create a new card object with updated data (don't mutate the original)
             if (freshCardData && freshCardData.fields) {
               const fields = freshCardData.fields;
               
@@ -1479,11 +1580,14 @@ export default function DemoPage() {
               const hasValidTeam = (fields.customfield_10014 && fields.customfield_10014 !== 'Loading...') || 
                                    (fields.customfield_10001 && fields.customfield_10001.name && fields.customfield_10001.name !== 'Loading...');
               
+              // Create updated card object
+              const updatedCard = { ...card };
+              
               // Only convert placeholder card to real card if we got meaningful data
-              if (card.isPlaceholder && (hasValidStatus || hasValidSummary || hasValidTeam)) {
+              if (updatedCard.isPlaceholder && (hasValidStatus || hasValidSummary || hasValidTeam)) {
                 console.log(`Converting placeholder card ${card.key} to real card with valid data`);
-                card.isPlaceholder = false;
-              } else if (card.isPlaceholder) {
+                updatedCard.isPlaceholder = false;
+              } else if (updatedCard.isPlaceholder) {
                 console.log(`Keeping ${card.key} as placeholder - no valid data received`);
               }
               
@@ -1497,27 +1601,38 @@ export default function DemoPage() {
                   oldStatusCategory: card.statusCategory,
                   newStatusCategory: newStatusCategory
                 });
-                card.status = newStatus;
-                card.statusCategory = newStatusCategory;
+                updatedCard.status = newStatus;
+                updatedCard.statusCategory = newStatusCategory;
               } else {
                 console.log(`No status found in fresh data for ${card.key}`);
               }
               
               // Update card summary
               if (fields.summary) {
-                card.summary = fields.summary;
+                updatedCard.summary = fields.summary;
+                console.log(`Updated summary for ${card.key}: ${updatedCard.summary}`);
               }
               
               // Update assignee
               if (fields.assignee && fields.assignee.displayName) {
-                card.assignee = fields.assignee.displayName;
+                updatedCard.assignee = fields.assignee.displayName;
+              } else {
+                updatedCard.assignee = null;
               }
               
               // Update team if available (check both possible team fields)
               if (fields.customfield_10014) {
-                card.team = fields.customfield_10014;
+                updatedCard.team = fields.customfield_10014;
+                console.log(`Updated team for ${card.key}: ${updatedCard.team} (from customfield_10014)`);
               } else if (fields.customfield_10001 && fields.customfield_10001.name) {
-                card.team = fields.customfield_10001.name;
+                updatedCard.team = fields.customfield_10001.name;
+                console.log(`Updated team for ${card.key}: ${updatedCard.team} (from customfield_10001)`);
+              } else {
+                // If no team field is available, set to "Unknown Team" instead of keeping "Loading..."
+                if (updatedCard.team === 'Loading...' || !updatedCard.team) {
+                  updatedCard.team = 'Unknown Team';
+                  console.log(`No team field found for ${card.key}, setting to "Unknown Team"`);
+                }
               }
               
               // Update due date if available (check standard dueDate field and common custom fields)
@@ -1525,11 +1640,11 @@ export default function DemoPage() {
               console.log(`Checking due date fields for ${card.key}:`, Object.keys(fields).filter(k => k.toLowerCase().includes('due')));
               
               if (fields.duedate) {
-                card.dueDate = fields.duedate;
-                console.log(`Found due date (duedate) for ${card.key}: ${card.dueDate}`);
+                updatedCard.dueDate = fields.duedate;
+                console.log(`Found due date (duedate) for ${card.key}: ${updatedCard.dueDate}`);
               } else if (fields.dueDate) {
-                card.dueDate = fields.dueDate;
-                console.log(`Found due date (dueDate) for ${card.key}: ${card.dueDate}`);
+                updatedCard.dueDate = fields.dueDate;
+                console.log(`Found due date (dueDate) for ${card.key}: ${updatedCard.dueDate}`);
               } else {
                 // Check all custom fields for a date field that might be the due date
                 // Look for fields that contain "due" in the name (case insensitive)
@@ -1543,8 +1658,8 @@ export default function DemoPage() {
                 if (dueDateField) {
                   // Handle both string dates and date objects
                   const dateValue = fields[dueDateField];
-                  card.dueDate = typeof dateValue === 'string' ? dateValue : (dateValue?.toString() || dateValue);
-                  console.log(`Found due date field: ${dueDateField} = ${card.dueDate} for ${card.key}`);
+                  updatedCard.dueDate = typeof dateValue === 'string' ? dateValue : (dateValue?.toString() || dateValue);
+                  console.log(`Found due date field: ${dueDateField} = ${updatedCard.dueDate} for ${card.key}`);
                 } else {
                   // Check common custom field IDs for date-like values
                   for (let i = 10000; i <= 10100; i++) {
@@ -1553,8 +1668,8 @@ export default function DemoPage() {
                     if (fieldValue) {
                       const valueStr = typeof fieldValue === 'string' ? fieldValue : (fieldValue?.toString() || '');
                       if (valueStr.match(/\d{4}-\d{2}-\d{2}/)) {
-                        card.dueDate = valueStr;
-                        console.log(`Found due date in custom field: ${fieldKey} = ${card.dueDate} for ${card.key}`);
+                        updatedCard.dueDate = valueStr;
+                        console.log(`Found due date in custom field: ${fieldKey} = ${updatedCard.dueDate} for ${card.key}`);
                         break;
                       }
                     }
@@ -1596,7 +1711,7 @@ export default function DemoPage() {
               }
               
               // Update card relationships
-              card.relationships = relationships;
+              updatedCard.relationships = relationships;
               
               // Fetch and update child work items (stories)
               try {
@@ -1651,10 +1766,14 @@ export default function DemoPage() {
                       });
                     }
                     
+                    // Extract assignee
+                    const newAssignee = childIssue.fields.assignee?.displayName || childIssue.fields.assignee || null;
+                    
                     console.log(`Processing child issue ${childIssue.key}:`, {
                       summary: newSummary,
                       status: newStatus,
                       team: newTeam,
+                      assignee: newAssignee,
                       relationships
                     });
                     
@@ -1664,21 +1783,25 @@ export default function DemoPage() {
                       status: newStatus,
                       statusCategory: newStatusCategory,
                       team: newTeam,
+                      assignee: newAssignee,
                       relationships
                     };
                   });
                   
-                  card.stories = updatedStories;
+                  updatedCard.stories = updatedStories;
                   console.log(`Updated ${updatedStories.length} child work items for ${card.key}:`, updatedStories);
                 } else {
                   console.log(`No child issues found for ${card.key}`);
-                  card.stories = [];
+                  updatedCard.stories = [];
                 }
               } catch (error) {
                 console.error(`Error fetching child issues for ${card.key}:`, error);
                 // Keep existing stories if fetch fails
+                updatedCard.stories = card.stories || [];
               }
               
+              // Store the updated card in the map
+              updatedCardsMap.set(cardId, updatedCard);
               refreshedCount++;
             }
           } catch (error) {
@@ -1695,11 +1818,15 @@ export default function DemoPage() {
         }
       }
       
-      // Create updated columns object
+      // Create updated columns object with the updated cards
       console.log('Creating updated columns object');
-      const updatedColumns = { ...columns };
-      Object.keys(updatedColumns).forEach(colKey => {
-        updatedColumns[colKey] = [...updatedColumns[colKey]];
+      const updatedColumns: Record<string, any[]> = {};
+      Object.keys(columns).forEach(colKey => {
+        updatedColumns[colKey] = columns[colKey].map(card => {
+          const cardId = `${colKey}-${card.key}`;
+          // Use updated card if available, otherwise keep original
+          return updatedCardsMap.has(cardId) ? updatedCardsMap.get(cardId)! : card;
+        });
       });
       
       // Save the updated board data to JSON file BEFORE updating state
@@ -1713,13 +1840,10 @@ export default function DemoPage() {
         };
         
         // Determine the file name based on the current data source
-        let fileName = 'board-savePDD.json'; // default
-        if (selectedDataSource === 'board-saveAdvice') {
-          fileName = 'board-saveAdvice.json';
-        } else if (selectedDataSource === 'board-savePI5Advice') {
-          fileName = 'board-savePI5Advice.json';
-        } else if (selectedDataSource === 'board-savePI5PDD') {
-          fileName = 'board-savePI5PDD.json';
+        let fileName = selectedDataSource || 'board-savePDD.json';
+        // Ensure it ends with .json
+        if (!fileName.endsWith('.json')) {
+          fileName = fileName + '.json';
         }
         
         console.log(`Saving updated board data to public directory: ${fileName}`);
@@ -2009,9 +2133,32 @@ export default function DemoPage() {
             </InputLabel>
             <Select
               labelId="data-source-label"
-              value={selectedDataSource}
+              value={selectedDataSource || ''}
               label="Data Source"
-              onChange={(e) => setSelectedDataSource(e.target.value)}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                if (newValue && availableBoards[newValue]) {
+                  setSelectedDataSource(newValue);
+                }
+              }}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 300,
+                    zIndex: 9999,
+                  },
+                },
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                },
+                transformOrigin: {
+                  vertical: 'top',
+                  horizontal: 'left',
+                },
+                disableScrollLock: false,
+                disablePortal: false,
+              }}
               sx={{
                 backgroundColor: colors.white,
                 '& .MuiOutlinedInput-notchedOutline': {
@@ -2027,12 +2174,17 @@ export default function DemoPage() {
                   color: colors.primary,
                 },
               }}
+              displayEmpty
             >
-              {Object.entries(availableBoards).map(([key]) => (
+              {Object.keys(availableBoards).length === 0 ? (
+                <MenuItem value="" disabled>Loading boards...</MenuItem>
+              ) : (
+                Object.entries(availableBoards).map(([key]) => (
                 <MenuItem key={key} value={key}>
                   {key.replace('board-save', '').replace(/([A-Z])/g, ' $1').trim()}
                 </MenuItem>
-              ))}
+                ))
+              )}
             </Select>
           </FormControl>
         </Box>
@@ -2066,6 +2218,24 @@ export default function DemoPage() {
               onChange={e => setTeamFilter(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
               input={<OutlinedInput label="Filter by Team" />}
               renderValue={(selected) => selected.length === 0 ? 'All Teams' : selected.join(', ')}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 300,
+                    zIndex: 9999,
+                  },
+                },
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                },
+                transformOrigin: {
+                  vertical: 'top',
+                  horizontal: 'left',
+                },
+                disableScrollLock: false,
+                disablePortal: false,
+              }}
               sx={{
                 backgroundColor: colors.white,
                 '& .MuiOutlinedInput-notchedOutline': {
@@ -2117,6 +2287,24 @@ export default function DemoPage() {
               onChange={e => setAssigneeFilter(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
               input={<OutlinedInput label="Filter by Assignee" />}
               renderValue={(selected) => selected.length === 0 ? 'All Assignees' : selected.join(', ')}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 300,
+                    zIndex: 9999,
+                  },
+                },
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                },
+                transformOrigin: {
+                  vertical: 'top',
+                  horizontal: 'left',
+                },
+                disableScrollLock: false,
+                disablePortal: false,
+              }}
               sx={{
                 backgroundColor: colors.white,
                 '& .MuiOutlinedInput-notchedOutline': {
@@ -2273,11 +2461,11 @@ export default function DemoPage() {
                   />
                   {/* Date range pickers with validation */}
                   <Box display="flex" gap={1} sx={{ mb: 1 }}>
-                    <TextField
+                  <TextField
                       label="Start Date"
                       type="date"
-                      fullWidth
-                      size="small"
+                    fullWidth
+                    size="small"
                       value={editingIterationStart}
                       onChange={(e) => {
                         setEditingIterationStart(e.target.value);
@@ -2351,13 +2539,11 @@ export default function DemoPage() {
                           projectKey: projectKey
                         };
                         
-                        let fileName = 'board-savePDD.json';
-                        if (selectedDataSource === 'board-saveAdvice') {
-                          fileName = 'board-saveAdvice.json';
-                        } else if (selectedDataSource === 'board-savePI5Advice') {
-                          fileName = 'board-savePI5Advice.json';
-                        } else if (selectedDataSource === 'board-savePI5PDD') {
-                          fileName = 'board-savePI5PDD.json';
+                        // Determine the file name based on the current data source
+                        let fileName = selectedDataSource || 'board-savePDD.json';
+                        // Ensure it ends with .json
+                        if (!fileName.endsWith('.json')) {
+                          fileName = fileName + '.json';
                         }
                         
                         await saveBoardDataToPublic(boardData, fileName);
@@ -2499,6 +2685,7 @@ export default function DemoPage() {
                       cardRefs.current[cardId] = el;
                     }}
                     highlightedChildKey={highlightedChildKey}
+                    assigneeFilter={assigneeFilter}
                   />
                 );
               })}
@@ -2535,7 +2722,7 @@ export default function DemoPage() {
                 >
                   + Add Card
                 </Button>
-              </Box>
+            </Box>
             </Box>
             <Box pt={2}>
               <TextField
