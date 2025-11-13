@@ -420,6 +420,18 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
               borderRadius: 1 
             }} 
           />
+          <Chip 
+            label={typeof card.storyPoints === 'number' ? `${card.storyPoints} SP` : '? SP'} 
+            size="small" 
+            sx={{ 
+              bgcolor: colors.background, 
+              color: colors.text, 
+              fontWeight: 500, 
+              borderRadius: 1,
+              border: `1px solid ${colors.border}`,
+              fontSize: '0.75rem'
+            }} 
+          />
         </Box>
         
         {/* Progress bar - always visible */}
@@ -517,6 +529,18 @@ function DemoCard({ card, onDelete, isMinimized, onToggleMinimize, iterationRang
                                 borderRadius: 1
                               }} 
                         onClick={() => console.log(`Story ${story.key} status:`, story.status, 'statusCategory:', story.statusCategory)}
+                      />
+                      <Chip 
+                        label={typeof story.storyPoints === 'number' ? `${story.storyPoints} SP` : '? SP'} 
+                        size="small" 
+                        sx={{ 
+                          bgcolor: colors.background, 
+                          color: colors.text, 
+                          fontWeight: 500, 
+                          borderRadius: 1,
+                          border: `1px solid ${colors.border}`,
+                          fontSize: '0.75rem'
+                        }} 
                       />
                           </Box>
                         </Box>
@@ -1677,6 +1701,12 @@ export default function DemoPage() {
                 }
               }
               
+              // Extract story points for the parent card
+              const parentStoryPoints = typeof fields.customfield_12078 === 'number' ? fields.customfield_12078 : undefined;
+              if (parentStoryPoints !== undefined) {
+                console.log(`Found story points for parent card ${card.key}: ${parentStoryPoints}`);
+              }
+              
               // Process relationship data for the main card
               const relationships = {
                 relatesTo: [] as string[],
@@ -1769,11 +1799,15 @@ export default function DemoPage() {
                     // Extract assignee
                     const newAssignee = childIssue.fields.assignee?.displayName || childIssue.fields.assignee || null;
                     
+                    // Extract story points
+                    const storyPoints = typeof childIssue.fields.customfield_12078 === 'number' ? childIssue.fields.customfield_12078 : undefined;
+                    
                     console.log(`Processing child issue ${childIssue.key}:`, {
                       summary: newSummary,
                       status: newStatus,
                       team: newTeam,
                       assignee: newAssignee,
+                      storyPoints: storyPoints,
                       relationships
                     });
                     
@@ -1784,20 +1818,35 @@ export default function DemoPage() {
                       statusCategory: newStatusCategory,
                       team: newTeam,
                       assignee: newAssignee,
+                      storyPoints: storyPoints,
                       relationships
                     };
                   });
                   
                   updatedCard.stories = updatedStories;
                   console.log(`Updated ${updatedStories.length} child work items for ${card.key}:`, updatedStories);
+                  
+                  // Calculate total story points: parent + all children
+                  const parentSP = parentStoryPoints !== undefined ? parentStoryPoints : 0;
+                  const childrenStoryPoints = updatedStories.reduce((sum: number, story: any) => {
+                    const sp = typeof story.storyPoints === 'number' ? story.storyPoints : 0;
+                    return sum + sp;
+                  }, 0);
+                  const totalStoryPoints = parentSP + childrenStoryPoints;
+                  updatedCard.storyPoints = Number.isFinite(totalStoryPoints) && totalStoryPoints > 0 ? totalStoryPoints : undefined;
+                  console.log(`Updated story points for ${card.key}: parent=${parentSP}, children=${childrenStoryPoints}, total=${totalStoryPoints}`);
                 } else {
                   console.log(`No child issues found for ${card.key}`);
                   updatedCard.stories = [];
+                  // Still update parent card's story points even if no children
+                  updatedCard.storyPoints = parentStoryPoints;
                 }
               } catch (error) {
                 console.error(`Error fetching child issues for ${card.key}:`, error);
                 // Keep existing stories if fetch fails
                 updatedCard.stories = card.stories || [];
+                // Still update parent card's story points even if child fetch fails
+                updatedCard.storyPoints = parentStoryPoints;
               }
               
               // Store the updated card in the map

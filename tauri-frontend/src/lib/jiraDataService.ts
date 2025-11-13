@@ -25,6 +25,7 @@ export interface JiraIssue {
     };
     customfield_10014?: string; // Team field
     customfield_10001?: string; // Sprint field
+    customfield_12078?: number; // Story Points
     issuelinks?: {
       id: string;
       type: {
@@ -163,10 +164,21 @@ export function transformJiraDataToBoard(jiraData: JiraResponse, projectKey?: st
     Object.entries(issuesByParent).forEach(([parentKey, childIssues]) => {
       const parentIssue = childIssues.find(issue => issue.key === parentKey) || childIssues[0];
       
+      // Sum story points across child issues (and include parent if it has points)
+      const parentStoryPoints = typeof parentIssue.fields.customfield_12078 === 'number' ? parentIssue.fields.customfield_12078 : 0;
+      const childrenStoryPoints = childIssues
+        .filter(ci => ci.key !== parentIssue.key)
+        .reduce((sum, ci) => {
+          const sp = typeof ci.fields.customfield_12078 === 'number' ? ci.fields.customfield_12078 : 0;
+          return sum + sp;
+        }, 0);
+      const totalStoryPoints = parentStoryPoints + childrenStoryPoints;
+      
       const card = {
         id: parentKey,
         title: parentIssue.fields.summary,
         team: parentIssue.fields.customfield_10014 || 'Unknown Team',
+        storyPoints: Number.isFinite(totalStoryPoints) && totalStoryPoints > 0 ? totalStoryPoints : undefined,
         stories: childIssues.map(issue => {
           // Process relationship data
           const relationships = {
@@ -208,6 +220,7 @@ export function transformJiraDataToBoard(jiraData: JiraResponse, projectKey?: st
             type: issue.fields.issuetype.name,
             assignee: issue.fields.assignee?.displayName || 'Unassigned',
             team: issue.fields.customfield_10014 || 'Unknown Team',
+            storyPoints: typeof issue.fields.customfield_12078 === 'number' ? issue.fields.customfield_12078 : undefined,
             relationships
           };
         })

@@ -117,7 +117,7 @@ async fn fetch_jira_data(config: JiraConfig, project_key: String) -> Result<serd
     let params = [
         ("jql", jql.as_str()),
         ("maxResults", "1000"),
-        ("fields", "summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001,issuelinks"),
+        ("fields", "summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001,issuelinks,customfield_12078"),
     ];
     
     let response = client
@@ -147,7 +147,7 @@ async fn fetch_card_data(config: JiraConfig, issue_key: String) -> Result<serde_
     let url = format!("{}/rest/api/3/issue/{}", config.base_url.trim_end_matches('/'), issue_key);
     
     let params = [
-        ("fields", "summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001,subtasks,issuelinks,duedate"),
+        ("fields", "summary,status,issuetype,parent,customfield_10014,assignee,customfield_10001,subtasks,issuelinks,duedate,customfield_12078"),
     ];
     
     let response = client
@@ -187,7 +187,7 @@ async fn fetch_child_issues(config: JiraConfig, parent_key: String) -> Result<se
         ("jql", &jql),
         (
             "fields",
-            &"summary,status,issuetype,key,parent,issuelinks,customfield_10014,customfield_10001,assignee".to_string(),
+            &"summary,status,issuetype,key,parent,issuelinks,customfield_10014,customfield_10001,assignee,customfield_12078".to_string(),
         ),
         ("maxResults", &"1000".to_string()),
     ];
